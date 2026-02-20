@@ -1,0 +1,156 @@
+import type { Job, Skill, TechRow } from '../types';
+
+export const TECH_ROWS: TechRow[] = [
+  { cat: 'Front End', items: 'HTML5, CSS / SCSS / SASS / LESS, JS (OOP, Functional, FRP)', yrs: '15+' },
+  { cat: 'Design Tools', items: 'Photoshop, Sketch, Figma', yrs: '15+' },
+  { cat: 'JS Frameworks', items: 'React, React Native, Redux, TypeScript, Next.js', yrs: '13+' },
+  { cat: 'Testing', items: 'React Testing Library, Cypress, Jest, Enzyme, Mocha, Karma, Istanbul', yrs: '13+' },
+  { cat: 'Wireframing', items: 'Axure, Balsamiq, FluidUI, Sketch, Pen & Paper', yrs: '13+' },
+  { cat: 'CMS / Ecomm', items: 'WordPress, Magento/OSCommerce, Umbraco, Adobe CQ5', yrs: '10+' },
+  { cat: 'Version Control', items: 'Git, Mercurial, SVN', yrs: '15+' },
+  { cat: 'State Mgmt', items: 'Redux, Redux Toolkit, Context API, Zustand, React Query, TRPC', yrs: '12+' },
+  { cat: 'Backend / DB', items: 'Node.js, MongoDB, MySQL, PHP, GraphQL', yrs: '11+' },
+  { cat: 'Visualisation', items: 'D3.js, Three.js, Highcharts, Canvas (FabricJS, PixiJS)', yrs: '10+' },
+];
+
+export const SKILLS: Skill[] = [
+  { n: 'React', c: 'core' }, { n: 'React Native', c: 'core' }, { n: 'TypeScript', c: 'core' }, { n: 'JavaScript (ES6+)', c: 'core' },
+  { n: 'HTML5', c: 'core' }, { n: 'CSS3 / SCSS / LESS', c: 'core' }, { n: 'Next.js', c: 'core' }, { n: 'Node.js', c: 'core' },
+  { n: 'GraphQL', c: 'core' }, { n: 'RESTful APIs', c: 'core' },
+  { n: 'Redux', c: 'state' }, { n: 'Redux Toolkit', c: 'state' }, { n: 'React Query', c: 'state' },
+  { n: 'TRPC', c: 'state' }, { n: 'Zustand', c: 'state' }, { n: 'Context API', c: 'state' },
+  { n: 'Jest', c: 'testing' }, { n: 'React Testing Library', c: 'testing' }, { n: 'Cypress', c: 'testing' },
+  { n: 'Enzyme', c: 'testing' }, { n: 'Mocha', c: 'testing' }, { n: 'Karma', c: 'testing' },
+  { n: 'Figma', c: 'ui' }, { n: 'Sketch', c: 'ui' }, { n: 'Chakra UI', c: 'ui' }, { n: 'Mantine UI', c: 'ui' },
+  { n: 'Material-UI', c: 'ui' }, { n: 'styled-components', c: 'ui' }, { n: 'Storybook', c: 'ui' },
+  { n: 'Ag-grid', c: 'ui' }, { n: 'Highcharts', c: 'ui' }, { n: 'D3.js', c: 'ui' }, { n: 'Three.js', c: 'ui' },
+  { n: 'Webpack', c: 'tooling' }, { n: 'Babel', c: 'tooling' }, { n: 'Git', c: 'tooling' }, { n: 'Rollup', c: 'tooling' }, { n: 'Gulp', c: 'tooling' },
+  { n: 'WordPress', c: 'cms' }, { n: 'Magento', c: 'cms' }, { n: 'Umbraco', c: 'cms' }, { n: 'Adobe CQ5', c: 'cms' },
+];
+
+export const JOBS: Job[] = [
+  {
+    co: 'Bank of America',
+    date: 'Nov 2024 – Present',
+    title: 'Senior Fullstack JS Engineer',
+    desc: 'Ongoing engagement delivering new features and resolving legacy code and bugs for an internal portal.',
+    bullets: [
+      'Developed and shipped new features for a business-critical internal portal used across the organisation',
+      'Identified and resolved long-standing bugs in legacy code, improving stability and user experience',
+      'Maintained high code quality with Jest and React Testing Library throughout',
+      'Built an automated PowerPoint deck generator, replacing a manual process that previously took users weeks or even months to complete',
+    ],
+    stack: ['React', 'TypeScript', 'GraphQL', 'Material-UI', 'Jest', 'React Testing Library'],
+  },
+  {
+    co: 'Anmut Consulting',
+    date: 'Dec 2022 – Apr 2024',
+    title: 'Fullstack Engineer',
+    desc: 'Greenfield project with multiple critical release milestones, fast-growing team, high autonomy.',
+    bullets: [
+      'Translated complex Figma designs into a reusable React component library with pixel-perfect fidelity',
+      'Developed and maintained a comprehensive component library using Next.js and React 18',
+      'Implemented state management using TRPC and React Query, optimising data flow and performance',
+    ],
+    stack: ['Next.js', 'React 18', 'TRPC', 'Mantine UI', 'React Query'],
+  },
+  {
+    co: 'Bank of America',
+    date: 'Feb – Aug 2022',
+    title: 'Contract Senior React Developer',
+    desc: 'FX Options Risk trading team — optimising rendering speeds of large financial datasets.',
+    bullets: [
+      'Reduced rendering times from seconds to milliseconds, dramatically improving trader workflow efficiency',
+      'Built a production-grade RFQ instrument editor in React 18, TypeScript and Redux',
+      'Applied virtualisation and memoisation techniques to handle large-scale data at speed',
+    ],
+    stack: ['React 18', 'ReactGrid', 'TypeScript', 'Redux', 'Jest'],
+  },
+  {
+    co: 'ITRIOM',
+    date: 'Sep – Dec 2021',
+    title: 'Contract Senior React Developer',
+    desc: 'Delivered a high-fidelity rapid prototype for a confidential client, showcasing product features and user flows.',
+    bullets: [
+      'Built a fully functional prototype within tight deadlines for key stakeholder review and testing',
+      'Utilised Chakra UI for a consistent and responsive design system',
+      'Implemented complex animations using react-spring to enhance user engagement',
+    ],
+    stack: ['TypeScript', 'React', 'Chakra UI', 'react-router-dom', 'react-spring'],
+  },
+  {
+    co: 'Visa',
+    date: 'Jun – Sep 2021',
+    title: 'Contract Senior React Developer',
+    desc: 'Joined an overdue project to resolve critical bugs and implement new features, ensuring timely delivery.',
+    bullets: [
+      'Refactored legacy code, reducing bug reports by 40%',
+      'Implemented new UI components using styled-components and GSAP animations',
+      'Collaborated with QA to establish comprehensive test coverage',
+    ],
+    stack: ['React', 'react-router-dom', 'styled-components', 'Zustand', 'GSAP'],
+  },
+  {
+    co: 'CompareTheMarket.com',
+    date: 'Jan – Mar 2021',
+    title: 'Contract Senior React Developer',
+    desc: 'Delivered a high-fidelity rapid prototype for a new product offering, working tightly with UX and product stakeholders.',
+    bullets: [
+      'Developed a fully interactive prototype enabling stakeholders to test and refine the user journey',
+      'Created a responsive and accessible interface using Chakra UI',
+      'Implemented complex form logic and validation using Formik and Yup',
+    ],
+    stack: ['React', 'Chakra UI', 'react-router-dom', 'Formik', 'Yup'],
+  },
+  {
+    co: 'Deutsche Bank',
+    date: 'May – Dec 2020',
+    title: 'Contract Senior React Developer',
+    desc: 'Led migration of components from a legacy Angular application to a new React-based system.',
+    bullets: [
+      'Successfully migrated critical components with full feature parity and improved performance',
+      'Implemented robust state management with Redux and Redux Toolkit',
+      'Achieved 90%+ code coverage with Jest and React Testing Library',
+    ],
+    stack: ['TypeScript', 'React', 'Redux', 'Redux Toolkit', 'styled-components', 'Jest', 'React Testing Library'],
+  },
+  {
+    co: 'Deloitte Digital',
+    date: 'Feb – Mar 2020',
+    title: 'Contract Senior React Developer',
+    desc: 'Brought in as a specialist resource to fix critical issues on an outsourced project.',
+    bullets: [],
+    stack: ['React', 'SCSS', 'Formik', 'Reach Router'],
+  },
+  {
+    co: 'GotU (77Agency)',
+    date: 'Nov 2019 – Jan 2020',
+    title: 'Contract Senior React Developer',
+    desc: 'Delivered a full platform rebuild for the tech unit of 77Agency under very tight deadlines.',
+    bullets: ['Delivered an entire platform rebuild, meeting aggressive project milestones'],
+    stack: ['React', 'TypeScript', 'GraphQL', 'Apollo Client', 'Material-UI', 'React Testing Library'],
+  },
+  {
+    co: 'UBS',
+    date: 'Nov 2018 – Nov 2019',
+    title: 'Contract Senior React Developer',
+    desc: 'Developed a React-based UI component library for the UBS Financial Reporting department.',
+    bullets: [
+      'Built a comprehensive, reusable component library using React 16 and Storybook',
+      'Integrated Ag-grid and Highcharts for complex financial data visualisation',
+    ],
+    stack: ['React 16', 'Storybook', 'React Testing Library', 'Jest', 'Ag-grid', 'Highcharts', 'LESS', 'CSS Modules'],
+  },
+  {
+    co: 'Goldman Sachs',
+    date: 'Jan – Oct 2017',
+    title: 'Contract Senior React Developer — SPACE',
+    desc: 'Designed and built SPACE — a highly scalable web platform for the retail client base within the Securities division.',
+    bullets: [
+      'Shaped client experience, creating new technology-driven businesses',
+      'Externalised core analytics and data to both existing clients and new markets',
+      'Platform supported the full trading lifecycle: idea generation, price discovery, primary/secondary trading',
+    ],
+    stack: ['HTML5', 'CSS3', 'React', 'Redux', 'Redux-Saga', 'Reselect', 'Redux Form', 'Material-UI', 'Webpack', 'Karma', 'Mocha', 'Enzyme'],
+  },
+];

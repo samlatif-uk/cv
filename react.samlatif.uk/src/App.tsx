@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react';
+import { Education } from './components/Education';
+import { Experience } from './components/Experience';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { Nav } from './components/Nav';
+import { Overview } from './components/Overview';
+import { StackTags } from './components/StackTags';
+import { TechSkills } from './components/TechSkills';
+
+const SECTION_IDS = ['overview', 'techskills', 'skills', 'experience', 'education'];
+
+function App() {
+  const [activeTech, setActiveTech] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeNav, setActiveNav] = useState('techskills');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentSection = SECTION_IDS.reduce((current, id) => {
+        const sectionElement = document.getElementById(id);
+        if (sectionElement && window.scrollY >= sectionElement.offsetTop - 80) {
+          return id;
+        }
+
+        return current;
+      }, '');
+
+      if (currentSection) {
+        setActiveNav(currentSection);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleTechClick = (tech: string) => {
+    const nextTech = activeTech === tech ? null : tech;
+    setActiveTech(nextTech);
+
+    if (nextTech) {
+      document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <Nav activeNav={activeNav} />
+      <Overview />
+      <TechSkills />
+      <StackTags activeCategory={activeCategory} activeTech={activeTech} onCategoryChange={setActiveCategory} />
+      <Experience activeTech={activeTech} onTechClick={handleTechClick} onClearTech={() => setActiveTech(null)} />
+      <Education />
+      <Footer />
+    </>
+  );
+}
+
+export default App;
