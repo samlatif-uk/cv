@@ -37,10 +37,6 @@ function App() {
 
   const handleTechClick = (tech: string) => {
     setActiveTechs((current) => (current.includes(tech) ? current.filter((item) => item !== tech) : [...current, tech]));
-
-    if (!activeTechs.includes(tech)) {
-      document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   return (

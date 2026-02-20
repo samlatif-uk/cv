@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { JOBS } from '../data/cv';
 
 const shouldIncludeES6 = (date: string) => {
@@ -24,7 +25,19 @@ interface ExperienceProps {
   onClearTech: () => void;
 }
 
-export const Experience = ({ activeTechs, onTechClick, onClearTech }: ExperienceProps) => (
+export const Experience = ({ activeTechs, onTechClick, onClearTech }: ExperienceProps) => {
+  useEffect(() => {
+    if (!activeTechs.length) {
+      return;
+    }
+
+    const firstMatch = document.querySelector('#experience .job:not(.filtered)') as HTMLElement | null;
+    if (firstMatch) {
+      firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeTechs]);
+
+  return (
   <section id="experience">
     <div className="container">
       <div className="shead">
@@ -90,4 +103,5 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
     </div>
   </section>
-);
+  );
+};

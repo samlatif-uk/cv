@@ -503,7 +503,14 @@ function filterTech(t){
   document.getElementById('fbar').classList.toggle('show',activeTechs.length>0);
   renderSkills();
   renderJobs();
-  if(activeTechs.length) document.getElementById('experience').scrollIntoView({behavior:'smooth'});
+  if(activeTechs.length){
+    const firstMatch=document.querySelector('#experience .job:not(.filtered)');
+    if(firstMatch){
+      firstMatch.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{
+      document.getElementById('experience').scrollIntoView({behavior:'smooth'});
+    }
+  }
 }
 
 function clearF(){
