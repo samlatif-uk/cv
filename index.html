@@ -475,14 +475,15 @@ document.querySelectorAll('.fbtn').forEach(b=>{
 
 function renderJobs(){
   document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
-    const matched=activeTechs.length?activeTechs.some(a=>j.stack.some(t=>t.toLowerCase().includes(a.toLowerCase()))):false;
+    const stackWithDefaults=j.stack.includes('JavaScript (ES6+)')?j.stack:['JavaScript (ES6+)',...j.stack];
+    const matched=activeTechs.length?activeTechs.some(a=>stackWithDefaults.some(t=>t.toLowerCase().includes(a.toLowerCase()))):false;
     const filtered=activeTechs.length&&!matched;
     return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">
       <div class="jhead"><div class="jco">${j.co}</div><div class="jdate">${j.date}</div></div>
       <div class="jtitle">${j.title}</div>
       <div class="jdesc">${j.desc}</div>
       ${j.bullets.length?`<ul class="jbuls">${j.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`:''}
-      ${j.stack.length?`<div class="jstack">${j.stack.map(t=>`<button class="jtag" onclick="filterTech('${t}')">${t}</button>`).join('')}</div>`:''}
+      ${stackWithDefaults.length?`<div class="jstack">${stackWithDefaults.map(t=>`<button class="jtag" onclick="filterTech('${t}')">${t}</button>`).join('')}</div>`:''}
     </div>`;
   }).join('');
   const io=new IntersectionObserver((es,o)=>{

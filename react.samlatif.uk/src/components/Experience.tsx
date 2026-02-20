@@ -24,8 +24,9 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
+          const stackWithDefaults = job.stack.includes('JavaScript (ES6+)') ? job.stack : ['JavaScript (ES6+)', ...job.stack];
           const matched = activeTechs.length
-            ? activeTechs.some((activeTech) => job.stack.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
+            ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
             : false;
           const filtered = activeTechs.length > 0 && !matched;
 
@@ -50,9 +51,9 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
                 </ul>
               )}
 
-              {job.stack.length > 0 && (
+              {stackWithDefaults.length > 0 && (
                 <div className="jstack">
-                  {job.stack.map((tech) => (
+                  {stackWithDefaults.map((tech) => (
                     <button key={`${job.co}-${tech}`} className="jtag" onClick={() => onTechClick(tech)} type="button">
                       {tech}
                     </button>
