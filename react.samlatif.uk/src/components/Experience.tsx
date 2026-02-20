@@ -1,12 +1,12 @@
 import { JOBS } from '../data/cv';
 
 interface ExperienceProps {
-  activeTech: string | null;
+  activeTechs: string[];
   onTechClick: (tech: string) => void;
   onClearTech: () => void;
 }
 
-export const Experience = ({ activeTech, onTechClick, onClearTech }: ExperienceProps) => (
+export const Experience = ({ activeTechs, onTechClick, onClearTech }: ExperienceProps) => (
   <section id="experience">
     <div className="container">
       <div className="shead">
@@ -14,9 +14,9 @@ export const Experience = ({ activeTech, onTechClick, onClearTech }: ExperienceP
         <h2>Experience</h2>
         <div className="sline" />
       </div>
-      <div className={`fbar ${activeTech ? 'show' : ''}`}>
+      <div className={`fbar ${activeTechs.length ? 'show' : ''}`}>
         <span>
-          Filtering by: <strong>{activeTech}</strong>
+          Filtering by: <strong>{activeTechs.join(', ')}</strong>
         </span>
         <button className="fclear" onClick={onClearTech} type="button">
           Clear ×
@@ -24,8 +24,10 @@ export const Experience = ({ activeTech, onTechClick, onClearTech }: ExperienceP
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
-          const matched = !!activeTech && job.stack.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase()));
-          const filtered = !!activeTech && !matched;
+          const matched = activeTechs.length
+            ? activeTechs.some((activeTech) => job.stack.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
+            : false;
+          const filtered = activeTechs.length > 0 && !matched;
 
           return (
             <div

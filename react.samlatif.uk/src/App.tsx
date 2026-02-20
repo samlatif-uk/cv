@@ -11,7 +11,7 @@ import { TechSkills } from './components/TechSkills';
 const SECTION_IDS = ['overview', 'techskills', 'skills', 'experience', 'education'];
 
 function App() {
-  const [activeTech, setActiveTech] = useState<string | null>(null);
+  const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeNav, setActiveNav] = useState('techskills');
 
@@ -36,10 +36,9 @@ function App() {
   }, []);
 
   const handleTechClick = (tech: string) => {
-    const nextTech = activeTech === tech ? null : tech;
-    setActiveTech(nextTech);
+    setActiveTechs((current) => (current.includes(tech) ? current.filter((item) => item !== tech) : [...current, tech]));
 
-    if (nextTech) {
+    if (!activeTechs.includes(tech)) {
       document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -50,8 +49,8 @@ function App() {
       <Nav activeNav={activeNav} />
       <Overview />
       <TechSkills />
-      <StackTags activeCategory={activeCategory} activeTech={activeTech} onCategoryChange={setActiveCategory} />
-      <Experience activeTech={activeTech} onTechClick={handleTechClick} onClearTech={() => setActiveTech(null)} />
+      <StackTags activeCategory={activeCategory} activeTechs={activeTechs} onCategoryChange={setActiveCategory} />
+      <Experience activeTechs={activeTechs} onTechClick={handleTechClick} onClearTech={() => setActiveTechs([])} />
       <Education />
       <Footer />
     </>

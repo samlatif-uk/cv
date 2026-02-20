@@ -2,7 +2,7 @@ import { SKILLS } from '../data/cv';
 
 interface StackTagsProps {
   activeCategory: string;
-  activeTech: string | null;
+  activeTechs: string[];
   onCategoryChange: (category: string) => void;
 }
 
@@ -14,7 +14,7 @@ const getCategoryLabel = (category: string) => {
   return category[0].toUpperCase() + category.slice(1);
 };
 
-export const StackTags = ({ activeCategory, activeTech, onCategoryChange }: StackTagsProps) => (
+export const StackTags = ({ activeCategory, activeTechs, onCategoryChange }: StackTagsProps) => (
   <section id="skills">
     <div className="container">
       <div className="shead">
@@ -40,7 +40,7 @@ export const StackTags = ({ activeCategory, activeTech, onCategoryChange }: Stac
       <div className="swrap">
         {SKILLS.map((skill) => {
           const visible = activeCategory === 'all' || skill.c === activeCategory;
-          const highlighted = !!activeTech && skill.n.toLowerCase().includes(activeTech.toLowerCase());
+          const highlighted = activeTechs.some((activeTech) => skill.n.toLowerCase().includes(activeTech.toLowerCase()));
 
           return (
             <span key={skill.n} className={`stag ${visible ? '' : 'dim'} ${highlighted ? 'lit' : ''}`}>

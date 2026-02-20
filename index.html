@@ -456,12 +456,12 @@ function renderTechTable(){
   document.querySelectorAll('#techTable tr').forEach(r=>io.observe(r));
 }
 
-let activeCat='all', activeTech=null;
+let activeCat='all', activeTechs=[];
 
 function renderSkills(){
   document.getElementById('swrap').innerHTML = SKILLS.map(s=>{
     const show=activeCat==='all'||s.c===activeCat;
-    const lit=activeTech&&s.n.toLowerCase().includes(activeTech.toLowerCase());
+    const lit=activeTechs.some(t=>s.n.toLowerCase().includes(t.toLowerCase()));
     return `<span class="stag${!show?' dim':''}${lit?' lit':''}">${s.n}</span>`;
   }).join('');
 }
@@ -475,8 +475,8 @@ document.querySelectorAll('.fbtn').forEach(b=>{
 
 function renderJobs(){
   document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
-    const matched=activeTech&&j.stack.some(t=>t.toLowerCase().includes(activeTech.toLowerCase()));
-    const filtered=activeTech&&!matched;
+    const matched=activeTechs.length?activeTechs.some(a=>j.stack.some(t=>t.toLowerCase().includes(a.toLowerCase()))):false;
+    const filtered=activeTechs.length&&!matched;
     return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">
       <div class="jhead"><div class="jco">${j.co}</div><div class="jdate">${j.date}</div></div>
       <div class="jtitle">${j.title}</div>
@@ -492,16 +492,19 @@ function renderJobs(){
 }
 
 function filterTech(t){
-  activeTech=activeTech===t?null:t;
-  document.getElementById('flabel').textContent=activeTech||'';
-  document.getElementById('fbar').classList.toggle('show',!!activeTech);
+  activeTechs=activeTechs.includes(t)?activeTechs.filter(x=>x!==t):[...activeTechs,t];
+  document.getElementById('flabel').textContent=activeTechs.join(', ');
+  document.getElementById('fbar').classList.toggle('show',activeTechs.length>0);
+  renderSkills();
   renderJobs();
-  if(activeTech) document.getElementById('experience').scrollIntoView({behavior:'smooth'});
+  if(activeTechs.length) document.getElementById('experience').scrollIntoView({behavior:'smooth'});
 }
 
 function clearF(){
-  activeTech=null;
+  activeTechs=[];
+  document.getElementById('flabel').textContent='';
   document.getElementById('fbar').classList.remove('show');
+  renderSkills();
   renderJobs();
 }
 
