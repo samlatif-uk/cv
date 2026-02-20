@@ -1,4 +1,6 @@
 # CV — samlatif.uk
+[![Deploy React site to Pages](https://github.com/samlatif-uk/cv/actions/workflows/deploy-react-pages.yml/badge.svg)](https://github.com/samlatif-uk/cv/actions/workflows/deploy-react-pages.yml)
+
 A minimal personal CV / portfolio website for Sam Latif.
 
 ## Contents
