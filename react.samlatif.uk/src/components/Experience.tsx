@@ -50,7 +50,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
             stackWithDefaults = ['JavaScript (ES5)', ...stackWithDefaults];
           }
           const matched = activeTechs.length
-            ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
+            ? activeTechs.every((activeTech) => stackWithDefaults.includes(activeTech))
             : false;
           const filtered = activeTechs.length > 0 && !matched;
 

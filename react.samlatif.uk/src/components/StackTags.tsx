@@ -41,7 +41,7 @@ export const StackTags = ({ activeCategory, activeTechs, onCategoryChange, onTec
       <div className="swrap">
         {SKILLS.map((skill) => {
           const visible = activeCategory === 'all' || skill.c === activeCategory;
-          const highlighted = activeTechs.some((activeTech) => skill.n.toLowerCase().includes(activeTech.toLowerCase()));
+          const highlighted = activeTechs.includes(skill.n);
 
           return (
             <button
