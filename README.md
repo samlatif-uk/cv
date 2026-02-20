@@ -40,6 +40,17 @@ A minimal personal CV / portfolio website for Sam Latif.
   - `VPS_PORT` (optional, default `22`)
 
 ### One-time VPS Setup (Nginx)
+Before running setup, ensure DNS has an `A` record:
+- Host: `react`
+- Value: `79.99.45.146`
+
+Run the bootstrap script directly on the VPS:
+```bash
+scp scripts/bootstrap-react-vps.sh root@79.99.45.146:/root/
+ssh root@79.99.45.146 "chmod +x /root/bootstrap-react-vps.sh && /root/bootstrap-react-vps.sh react.samlatif.uk /var/www/react.samlatif.uk hello@samlatif.uk"
+```
+
+Manual equivalent:
 ```bash
 sudo apt update
 sudo apt install -y nginx
