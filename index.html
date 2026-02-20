@@ -506,7 +506,8 @@ function filterTech(t){
   if(activeTechs.length){
     const firstMatch=document.querySelector('#experience .job:not(.filtered)');
     if(firstMatch){
-      firstMatch.scrollIntoView({behavior:'smooth',block:'start'});
+      const targetY=firstMatch.getBoundingClientRect().top+window.scrollY-10;
+      window.scrollTo({top:targetY,behavior:'smooth'});
     }else{
       document.getElementById('experience').scrollIntoView({behavior:'smooth'});
     }

@@ -33,7 +33,8 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
 
     const firstMatch = document.querySelector('#experience .job:not(.filtered)') as HTMLElement | null;
     if (firstMatch) {
-      firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const targetY = firstMatch.getBoundingClientRect().top + window.scrollY - 10;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
   }, [activeTechs]);
 
