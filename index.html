@@ -462,7 +462,7 @@ function renderSkills(){
   document.getElementById('swrap').innerHTML = SKILLS.map(s=>{
     const show=activeCat==='all'||s.c===activeCat;
     const lit=activeTechs.some(t=>s.n.toLowerCase().includes(t.toLowerCase()));
-    return `<span class="stag${!show?' dim':''}${lit?' lit':''}">${s.n}</span>`;
+    return `<button class="stag${!show?' dim':''}${lit?' lit':''}" type="button" onclick="filterTech('${s.n.replace(/'/g, "\\'")}')">${s.n}</button>`;
   }).join('');
 }
 

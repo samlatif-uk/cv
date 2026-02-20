@@ -49,7 +49,12 @@ function App() {
       <Nav activeNav={activeNav} />
       <Overview />
       <TechSkills />
-      <StackTags activeCategory={activeCategory} activeTechs={activeTechs} onCategoryChange={setActiveCategory} />
+      <StackTags
+        activeCategory={activeCategory}
+        activeTechs={activeTechs}
+        onCategoryChange={setActiveCategory}
+        onTechClick={handleTechClick}
+      />
       <Experience activeTechs={activeTechs} onTechClick={handleTechClick} onClearTech={() => setActiveTechs([])} />
       <Education />
       <Footer />

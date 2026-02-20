@@ -4,6 +4,7 @@ interface StackTagsProps {
   activeCategory: string;
   activeTechs: string[];
   onCategoryChange: (category: string) => void;
+  onTechClick: (tech: string) => void;
 }
 
 const categories = ['all', 'core', 'state', 'testing', 'ui', 'tooling', 'cms'];
@@ -14,7 +15,7 @@ const getCategoryLabel = (category: string) => {
   return category[0].toUpperCase() + category.slice(1);
 };
 
-export const StackTags = ({ activeCategory, activeTechs, onCategoryChange }: StackTagsProps) => (
+export const StackTags = ({ activeCategory, activeTechs, onCategoryChange, onTechClick }: StackTagsProps) => (
   <section id="skills">
     <div className="container">
       <div className="shead">
@@ -43,9 +44,14 @@ export const StackTags = ({ activeCategory, activeTechs, onCategoryChange }: Sta
           const highlighted = activeTechs.some((activeTech) => skill.n.toLowerCase().includes(activeTech.toLowerCase()));
 
           return (
-            <span key={skill.n} className={`stag ${visible ? '' : 'dim'} ${highlighted ? 'lit' : ''}`}>
+            <button
+              key={skill.n}
+              className={`stag ${visible ? '' : 'dim'} ${highlighted ? 'lit' : ''}`}
+              onClick={() => onTechClick(skill.n)}
+              type="button"
+            >
               {skill.n}
-            </span>
+            </button>
           );
         })}
       </div>
