@@ -14,7 +14,7 @@ export const TECH_ROWS: TechRow[] = [
 ];
 
 export const SKILLS: Skill[] = [
-  { n: 'React', c: 'core' }, { n: 'React Native', c: 'core' }, { n: 'TypeScript', c: 'core' }, { n: 'JavaScript (ES6+)', c: 'core' },
+  { n: 'React', c: 'core' }, { n: 'React Native', c: 'core' }, { n: 'TypeScript', c: 'core' }, { n: 'JavaScript (ES6+)', c: 'core' }, { n: 'JavaScript (ES5)', c: 'core' },
   { n: 'HTML5', c: 'core' }, { n: 'CSS3 / SCSS / LESS', c: 'core' }, { n: 'Next.js', c: 'core' }, { n: 'Node.js', c: 'core' },
   { n: 'GraphQL', c: 'core' }, { n: 'RESTful APIs', c: 'core' },
   { n: 'Redux', c: 'state' }, { n: 'Redux Toolkit', c: 'state' }, { n: 'React Query', c: 'state' },

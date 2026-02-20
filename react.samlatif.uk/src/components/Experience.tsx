@@ -9,6 +9,15 @@ const shouldIncludeES6 = (date: string) => {
   return Number(years[0]) >= 2015;
 };
 
+const shouldIncludeES5 = (date: string) => {
+  const years = date.match(/\d{4}/g);
+  if (!years?.length) {
+    return false;
+  }
+
+  return Number(years[0]) < 2015;
+};
+
 interface ExperienceProps {
   activeTechs: string[];
   onTechClick: (tech: string) => void;
@@ -33,9 +42,13 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
-          const stackWithDefaults = shouldIncludeES6(job.date) && !job.stack.includes('JavaScript (ES6+)')
-            ? ['JavaScript (ES6+)', ...job.stack]
-            : job.stack;
+          let stackWithDefaults = job.stack;
+          if (shouldIncludeES6(job.date) && !stackWithDefaults.includes('JavaScript (ES6+)')) {
+            stackWithDefaults = ['JavaScript (ES6+)', ...stackWithDefaults];
+          }
+          if (shouldIncludeES5(job.date) && !stackWithDefaults.includes('JavaScript (ES5)')) {
+            stackWithDefaults = ['JavaScript (ES5)', ...stackWithDefaults];
+          }
           const matched = activeTechs.length
             ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
             : false;

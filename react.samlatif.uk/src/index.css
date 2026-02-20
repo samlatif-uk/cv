@@ -74,7 +74,8 @@
   .fbtn:hover{border-color:var(--accent);color:var(--accent)}
   .fbtn.on{border-color:var(--accent);color:var(--bg);background:var(--accent)}
   .swrap{display:flex;flex-wrap:wrap;gap:7px}
-  .stag{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);padding:5px 12px;font-size:12px;border-radius:4px;transition:all 0.2s}
+  .stag{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);padding:5px 12px;font-size:12px;border-radius:4px;transition:all 0.2s;cursor:pointer;font-family:'Inter',sans-serif}
+  .stag:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
   .stag.lit{border-color:var(--accent);color:var(--bg);background:var(--accent);transform:translateY(-1px);font-weight:600}
   .stag.dim{opacity:0.15}
 
@@ -93,7 +94,7 @@
   .jbuls li{font-size:13px;color:var(--text-dim);padding:3px 0 3px 18px;position:relative;line-height:1.6;font-family:'Inter',sans-serif}
   .jbuls li::before{content:'';position:absolute;left:4px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
   .jstack{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-  .jtag{font-size:11px;font-weight:500;color:var(--accent);padding:3px 9px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all 0.18s;background:transparent;font-family:'Inter',sans-serif}
+  .jtag{font-size:11px;font-weight:500;color:var(--accent);padding:3px 9px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all 0.18s;background:var(--bg2);font-family:'Inter',sans-serif}
   .jtag:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
   .job.filtered{opacity:0.08}
   .job.match .jco{color:var(--accent)}
