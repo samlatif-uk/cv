@@ -1,5 +1,14 @@
 import { JOBS } from '../data/cv';
 
+const shouldIncludeES6 = (date: string) => {
+  const years = date.match(/\d{4}/g);
+  if (!years?.length) {
+    return false;
+  }
+
+  return Number(years[0]) >= 2015;
+};
+
 interface ExperienceProps {
   activeTechs: string[];
   onTechClick: (tech: string) => void;
@@ -24,7 +33,9 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
-          const stackWithDefaults = job.stack.includes('JavaScript (ES6+)') ? job.stack : ['JavaScript (ES6+)', ...job.stack];
+          const stackWithDefaults = shouldIncludeES6(job.date) && !job.stack.includes('JavaScript (ES6+)')
+            ? ['JavaScript (ES6+)', ...job.stack]
+            : job.stack;
           const matched = activeTechs.length
             ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => tech.toLowerCase().includes(activeTech.toLowerCase())))
             : false;

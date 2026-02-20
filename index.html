@@ -475,7 +475,9 @@ document.querySelectorAll('.fbtn').forEach(b=>{
 
 function renderJobs(){
   document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
-    const stackWithDefaults=j.stack.includes('JavaScript (ES6+)')?j.stack:['JavaScript (ES6+)',...j.stack];
+    const years=(j.date.match(/\d{4}/g)||[]);
+    const includeES6=years.length&&Number(years[0])>=2015;
+    const stackWithDefaults=includeES6&&!j.stack.includes('JavaScript (ES6+)')?['JavaScript (ES6+)',...j.stack]:j.stack;
     const matched=activeTechs.length?activeTechs.some(a=>stackWithDefaults.some(t=>t.toLowerCase().includes(a.toLowerCase()))):false;
     const filtered=activeTechs.length&&!matched;
     return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">
