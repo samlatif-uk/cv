@@ -7,6 +7,9 @@ on:
       - react.samlatif.uk/**
       - index.html
       - shared/cv-data.json
+      - shared/filter-utils.js
+      - shared/site.css
+      - shared/ui-shared.css
       - favicon-96x96.png
       - favicon.ico
       - apple-touch-icon.png
@@ -89,6 +92,11 @@ jobs:
             "react.samlatif.uk/dist/" \
             "$USER@$HOST:$DEPLOY_PATH/"
 
+          rsync -az \
+            -e "ssh -p $PORT" \
+            shared/filter-utils.js shared/site.css shared/ui-shared.css \
+            "$USER@$HOST:$DEPLOY_PATH/"
+
       - name: Sync static site files to VPS
         run: |
           HOST="${{ secrets.VPS_HOST }}"
@@ -107,4 +115,9 @@ jobs:
           rsync -az \
             -e "ssh -p $PORT" \
             shared/cv-data.json \
+            "$USER@$HOST:$STATIC_DEPLOY_PATH/shared/"
+
+          rsync -az \
+            -e "ssh -p $PORT" \
+            shared/filter-utils.js shared/site.css shared/ui-shared.css \
             "$USER@$HOST:$STATIC_DEPLOY_PATH/shared/"
