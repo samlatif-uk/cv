@@ -1640,9 +1640,35 @@
         renderSkills();
         renderJobs();
         if (activeTechs.length) {
-          const firstMatch = document.querySelector(
-            "#experience .job:not(.filtered)",
+          const allJobElements = Array.from(
+            document.querySelectorAll("#experience .job"),
           );
+
+          let firstMatch = null;
+          if (activeTechs.length > 1) {
+            const strictMatchIndex = JOBS.findIndex((job) => {
+              const stackWithDefaults = withJobStackDefaults(
+                job.stack,
+                job.date,
+              );
+              return activeTechs.every((activeTech) =>
+                stackWithDefaults.some((stackTech) =>
+                  isSkillMatch(activeTech, stackTech),
+                ),
+              );
+            });
+
+            if (strictMatchIndex >= 0) {
+              firstMatch = allJobElements[strictMatchIndex] || null;
+            }
+          }
+
+          if (!firstMatch) {
+            firstMatch = document.querySelector(
+              "#experience .job:not(.filtered)",
+            );
+          }
+
           if (firstMatch) {
             const target = firstMatch.querySelector(".jhead") || firstMatch;
             const targetY =

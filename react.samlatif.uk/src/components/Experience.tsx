@@ -100,9 +100,30 @@ export const Experience = ({
       return;
     }
 
-    const firstMatch = document.querySelector(
-      "#experience .job:not(.filtered)",
-    ) as HTMLElement | null;
+    const allJobElements = Array.from(
+      document.querySelectorAll("#experience .job"),
+    ) as HTMLElement[];
+
+    let firstMatch: HTMLElement | null = null;
+    if (activeTechs.length > 1) {
+      const strictMatchIndex = JOBS.findIndex((job) => {
+        const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+        return activeTechs.every((activeTech) =>
+          stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)),
+        );
+      });
+
+      if (strictMatchIndex >= 0) {
+        firstMatch = allJobElements[strictMatchIndex] ?? null;
+      }
+    }
+
+    if (!firstMatch) {
+      firstMatch = document.querySelector(
+        "#experience .job:not(.filtered)",
+      ) as HTMLElement | null;
+    }
+
     if (firstMatch) {
       const target =
         (firstMatch.querySelector(".jhead") as HTMLElement | null) ??
