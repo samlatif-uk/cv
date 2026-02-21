@@ -49,12 +49,16 @@ function App() {
     );
   };
 
+  const handleAddTechFilters = (techs: string[]) => {
+    setActiveTechs((current) => Array.from(new Set([...current, ...techs])));
+  };
+
   return (
     <>
       <Header />
       <Nav activeNav={activeNav} />
       <Overview />
-      <TechSkills />
+      <TechSkills onAddTechFilters={handleAddTechFilters} />
       <StackTags
         activeCategory={activeCategory}
         activeTechs={activeTechs}

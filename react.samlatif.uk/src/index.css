@@ -261,6 +261,9 @@ h2 {
 .tech-table tr:hover td {
   background: #f5f3f0;
 }
+.tech-table tr.tech-filterable {
+  cursor: pointer;
+}
 .tech-table td {
   padding: 13px 16px;
   font-size: 13px;

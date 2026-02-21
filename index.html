@@ -285,6 +285,9 @@
       .tech-table tr:hover td {
         background: #f5f3f0;
       }
+      .tech-table tr.tech-filterable {
+        cursor: pointer;
+      }
       .tech-table td {
         padding: 13px 16px;
         font-size: 13px;
@@ -1491,10 +1494,12 @@
       }
 
       function renderTechTable() {
-        document.getElementById("techTable").innerHTML = TECH_ROWS.map((r) => {
-          const pct = Math.min(100, (parseInt(r.yrs) * 100) / 15);
-          return `<tr><td>${r.cat}</td><td><div>${r.items}<span class="yrs">${r.yrs} yrs</span></div><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:0" data-w="${pct}%"></div></div></div></td></tr>`;
-        }).join("");
+        document.getElementById("techTable").innerHTML = TECH_ROWS.map(
+          (r, index) => {
+            const pct = Math.min(100, (parseInt(r.yrs) * 100) / 15);
+            return `<tr class="tech-filterable" onclick="addFiltersFromTechRow(${index})"><td>${r.cat}</td><td><div>${r.items}<span class="yrs">${r.yrs} yrs</span></div><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:0" data-w="${pct}%"></div></div></div></td></tr>`;
+          },
+        ).join("");
         const io = new IntersectionObserver(
           (es, o) => {
             es.forEach((e) => {
@@ -1564,6 +1569,97 @@
           }
           return acc;
         }, stackWithGlobalDefaults);
+      }
+
+      function splitTechItems(items) {
+        const parts = [];
+        let current = "";
+        let depth = 0;
+
+        for (const ch of items) {
+          if (ch === "(") {
+            depth += 1;
+            current += ch;
+            continue;
+          }
+
+          if (ch === ")") {
+            depth = Math.max(0, depth - 1);
+            current += ch;
+            continue;
+          }
+
+          if (ch === "," && depth === 0) {
+            const token = current.trim();
+            if (token) {
+              parts.push(token);
+            }
+            current = "";
+            continue;
+          }
+
+          current += ch;
+        }
+
+        const last = current.trim();
+        if (last) {
+          parts.push(last);
+        }
+
+        return parts;
+      }
+
+      function normalizeTechToken(token) {
+        const aliasMap = {
+          "JS (OOP, Functional, FRP)": [
+            "JavaScript (ES6+)",
+            "JavaScript (ES5)",
+          ],
+          "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
+          "Magento/OSCommerce": ["Magento"],
+          "Canvas (FabricJS, PixiJS)": ["Canvas"],
+        };
+
+        return aliasMap[token] || [token];
+      }
+
+      function getFilterableTechSet() {
+        const techSet = new Set([
+          ...SKILLS.map((skill) => skill.n),
+          ...DATE_BASED_STACK_DEFAULTS.map((rule) => rule.skill),
+          ...GLOBAL_STACK_DEFAULTS,
+        ]);
+
+        JOBS.forEach((job) => {
+          withJobStackDefaults(job.stack, job.date).forEach((tech) =>
+            techSet.add(tech),
+          );
+        });
+
+        return techSet;
+      }
+
+      function addTechFilters(techs) {
+        activeTechs = Array.from(new Set([...activeTechs, ...techs]));
+        renderFilterBar();
+        renderSkills();
+        renderJobs();
+      }
+
+      function addFiltersFromTechRow(index) {
+        const row = TECH_ROWS[index];
+        if (!row) {
+          return;
+        }
+
+        const filterableTechSet = getFilterableTechSet();
+        const parsedTechs = splitTechItems(row.items)
+          .flatMap((token) => normalizeTechToken(token))
+          .filter((tech) => filterableTechSet.has(tech));
+
+        if (parsedTechs.length) {
+          addTechFilters(parsedTechs);
+        }
       }
 
       function renderSkills() {
