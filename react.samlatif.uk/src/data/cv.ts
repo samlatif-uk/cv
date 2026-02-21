@@ -33,7 +33,7 @@ export const DATE_BASED_STACK_DEFAULTS = [
   { skill: 'JavaScript (ES5)', maxStartYear: 2014 },
 ];
 
-export const GLOBAL_STACK_DEFAULTS = ['HTML5'];
+export const GLOBAL_STACK_DEFAULTS = ['HTML5', 'CSS3 / SCSS / LESS'];
 
 export const JOBS: Job[] = [
   {
