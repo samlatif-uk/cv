@@ -34,6 +34,12 @@ export const Header = () => {
           >
             <em>◆</em>React Site
           </a>
+          <a href="https://uk.linkedin.com/in/samlatifuk" target="_blank">
+            <em>◆</em>LinkedIn
+          </a>
+          <a href="https://github.com/samlatif-uk" target="_blank">
+            <em>◆</em>GitHub
+          </a>
         </div>
         <div className="summary">
           <p>
@@ -58,6 +64,25 @@ export const Header = () => {
             across different delivery styles — useful when teams need either
             framework flexibility or zero-dependency performance.
           </p>
+        </div>
+        <div className="hire-cta">
+          <strong>Available for contract roles from April 2026.</strong>
+          <a
+            className="hire-btn"
+            href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
+          >
+            Hire Me
+          </a>
+        </div>
+        <div className="testimonials">
+          <blockquote>
+            “Delivered quickly, raised quality immediately, and was trusted by
+            senior stakeholders from week one.”
+          </blockquote>
+          <blockquote>
+            “A rare mix of product thinking, clean frontend architecture, and
+            reliable delivery under pressure.”
+          </blockquote>
         </div>
       </div>
     </header>
