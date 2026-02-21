@@ -103,26 +103,41 @@ export const Experience = ({
     const allJobElements = Array.from(
       document.querySelectorAll("#experience .job"),
     ) as HTMLElement[];
+    const latestSelectedTech = activeTechs[activeTechs.length - 1];
 
-    let firstMatch: HTMLElement | null = null;
-    if (activeTechs.length > 1) {
-      const strictMatchIndex = JOBS.findIndex((job) => {
-        const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-        return activeTechs.every((activeTech) =>
-          stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)),
-        );
-      });
+    let bestMatchIndex = -1;
+    let bestMatchCount = -1;
+    let bestHasLatest = false;
 
-      if (strictMatchIndex >= 0) {
-        firstMatch = allJobElements[strictMatchIndex] ?? null;
+    JOBS.forEach((job, index) => {
+      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+      const matchCount = activeTechs.filter((activeTech) =>
+        stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)),
+      ).length;
+
+      if (matchCount === 0) {
+        return;
       }
-    }
 
-    if (!firstMatch) {
-      firstMatch = document.querySelector(
-        "#experience .job:not(.filtered)",
-      ) as HTMLElement | null;
-    }
+      const hasLatest = latestSelectedTech
+        ? stackWithDefaults.some((tech) =>
+            isSkillMatch(latestSelectedTech, tech),
+          )
+        : false;
+
+      const shouldReplaceBest =
+        matchCount > bestMatchCount ||
+        (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
+
+      if (shouldReplaceBest) {
+        bestMatchIndex = index;
+        bestMatchCount = matchCount;
+        bestHasLatest = hasLatest;
+      }
+    });
+
+    const firstMatch =
+      bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
 
     if (firstMatch) {
       const target =
