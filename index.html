@@ -1532,11 +1532,34 @@
           : "JavaScript (ES6+)";
       }
 
+      function splitSkillTokens(skill) {
+        return skill
+          .toLowerCase()
+          .split("/")
+          .map((token) => token.trim())
+          .filter(Boolean);
+      }
+
       function isSkillMatch(filterSkill, jobSkill) {
         if (filterSkill === "React") {
           return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
         }
-        return filterSkill === jobSkill;
+
+        if (filterSkill === jobSkill) {
+          return true;
+        }
+
+        const filterTokens = splitSkillTokens(filterSkill);
+        const jobTokens = splitSkillTokens(jobSkill);
+
+        return filterTokens.some((filterToken) =>
+          jobTokens.some(
+            (jobToken) =>
+              jobToken === filterToken ||
+              jobToken.includes(filterToken) ||
+              filterToken.includes(jobToken),
+          ),
+        );
       }
 
       function withJobStackDefaults(stack, date) {
@@ -1612,8 +1635,8 @@
       function normalizeTechToken(token) {
         const aliasMap = {
           "JS (OOP, Functional, FRP)": [
-            "JavaScript (ES6+)",
             "JavaScript (ES5)",
+            "JavaScript (ES6+)",
           ],
           "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
           "Magento/OSCommerce": ["Magento"],
