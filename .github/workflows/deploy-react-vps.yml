@@ -6,8 +6,13 @@ on:
     paths:
       - react.samlatif.uk/**
       - index.html
-      - favicon.png
+      - favicon-96x96.png
+      - favicon.ico
+      - apple-touch-icon.png
       - favicon.svg
+      - site.webmanifest
+      - web-app-manifest-192x192.png
+      - web-app-manifest-512x512.png
       - .github/workflows/deploy-react-vps.yml
   workflow_dispatch:
 
@@ -95,5 +100,5 @@ jobs:
           PORT="${PORT:-22}"
           rsync -az \
             -e "ssh -p $PORT" \
-            index.html favicon.png favicon.svg \
+            index.html favicon-96x96.png favicon.ico apple-touch-icon.png favicon.svg site.webmanifest web-app-manifest-192x192.png web-app-manifest-512x512.png \
             "$USER@$HOST:$STATIC_DEPLOY_PATH/"
