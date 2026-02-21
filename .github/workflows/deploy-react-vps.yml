@@ -7,6 +7,7 @@ on:
       - react.samlatif.uk/**
       - index.html
       - favicon.png
+      - favicon.svg
       - .github/workflows/deploy-react-vps.yml
   workflow_dispatch:
 
@@ -94,5 +95,5 @@ jobs:
           PORT="${PORT:-22}"
           rsync -az \
             -e "ssh -p $PORT" \
-            index.html favicon.png \
+            index.html favicon.png favicon.svg \
             "$USER@$HOST:$STATIC_DEPLOY_PATH/"
