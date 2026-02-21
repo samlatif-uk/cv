@@ -14,6 +14,14 @@ const getJavaScriptVersionedSkill = (startYear: number | null) => {
   return startYear !== null && startYear < 2015 ? 'JavaScript (ES5)' : 'JavaScript (ES6+)';
 };
 
+const isSkillMatch = (filterSkill: string, jobSkill: string) => {
+  if (filterSkill === 'React') {
+    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== 'React Native';
+  }
+
+  return filterSkill === jobSkill;
+};
+
 const withJobStackDefaults = (stack: string[], date: string) => {
   const startYear = getJobStartYear(date);
   const normalizedStack = stack.map((skill) => (skill === 'JavaScript' ? getJavaScriptVersionedSkill(startYear) : skill));
@@ -91,7 +99,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
         {JOBS.map((job, index) => {
           const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
           const matched = activeTechs.length
-            ? activeTechs.some((activeTech) => stackWithDefaults.includes(activeTech))
+            ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)))
             : false;
           const filtered = activeTechs.length > 0 && !matched;
 
@@ -121,7 +129,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
                   {stackWithDefaults.map((tech) => (
                     <button
                       key={`${job.co}-${tech}`}
-                      className={`jtag${activeTechs.includes(tech) ? ' lit' : ''}`}
+                      className={`jtag${activeTechs.some((activeTech) => isSkillMatch(activeTech, tech)) ? ' lit' : ''}`}
                       onClick={() => onTechClick(tech)}
                       type="button"
                     >
