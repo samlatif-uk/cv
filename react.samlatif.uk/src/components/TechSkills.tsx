@@ -50,7 +50,7 @@ const splitTechItems = (items: string) => {
 
 const normalizeTechToken = (token: string) => {
   const aliasMap: Record<string, string[]> = {
-    "JS (OOP, Functional, FRP)": ["JavaScript (ES6+)", "JavaScript (ES5)"],
+    "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
     "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
     "Magento/OSCommerce": ["Magento"],
     "Canvas (FabricJS, PixiJS)": ["Canvas"],
