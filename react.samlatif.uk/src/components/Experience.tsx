@@ -88,9 +88,14 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
         <div className="sline" />
       </div>
       <div className={`fbar ${activeTechs.length ? 'show' : ''}`}>
-        <span>
-          Filtering by: <strong>{activeTechs.join(', ')}</strong>
-        </span>
+        <span>Filtering by:</span>
+        <div className="fchips">
+          {activeTechs.map((tech) => (
+            <button key={tech} className="fchip" onClick={() => onTechClick(tech)} type="button">
+              {tech} ×
+            </button>
+          ))}
+        </div>
         <button className="fclear" onClick={onClearTech} type="button">
           Clear ×
         </button>
