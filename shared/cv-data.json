@@ -235,7 +235,7 @@
       "maxStartYear": 2014
     }
   ],
-  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS3 / SCSS / LESS", "Git"],
+  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS", "Git"],
   "JOBS": [
     {
       "co": "Bank of America",
@@ -249,7 +249,7 @@
         "Built an automated PowerPoint deck generator, replacing a manual process that previously took users weeks or even months to complete"
       ],
       "stack": [
-        "React",
+        "React 19",
         "TypeScript",
         "GraphQL",
         "Material-UI",
