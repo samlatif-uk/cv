@@ -1457,14 +1457,21 @@
 
       async function loadSharedCvData() {
         try {
-          const response = await fetch("./shared/cv-data.json", {
-            cache: "no-cache",
-          });
-          if (!response.ok) {
+          const candidates = ["./shared/cv-data.json", "./cv-data.json"];
+          let sharedData = null;
+
+          for (const candidate of candidates) {
+            const response = await fetch(candidate, { cache: "no-cache" });
+            if (response.ok) {
+              sharedData = await response.json();
+              break;
+            }
+          }
+
+          if (!sharedData) {
             return;
           }
 
-          const sharedData = await response.json();
           const syncArray = (target, source) => {
             if (!Array.isArray(target) || !Array.isArray(source)) {
               return;

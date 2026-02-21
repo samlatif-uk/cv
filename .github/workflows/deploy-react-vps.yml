@@ -72,7 +72,7 @@ jobs:
           STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
           PORT="${{ secrets.VPS_PORT }}"
           PORT="${PORT:-22}"
-          ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH'"
+          ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH' '$STATIC_DEPLOY_PATH/shared'"
 
       - name: Sync built files to VPS
         run: |
@@ -102,5 +102,9 @@ jobs:
           rsync -az \
             -e "ssh -p $PORT" \
             index.html favicon-96x96.png favicon.ico apple-touch-icon.png favicon.svg site.webmanifest web-app-manifest-192x192.png web-app-manifest-512x512.png \
-            shared/cv-data.json \
             "$USER@$HOST:$STATIC_DEPLOY_PATH/"
+
+          rsync -az \
+            -e "ssh -p $PORT" \
+            shared/cv-data.json \
+            "$USER@$HOST:$STATIC_DEPLOY_PATH/shared/"
