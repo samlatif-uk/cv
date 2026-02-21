@@ -6,6 +6,13 @@ import {
 } from "../data/cv";
 import { isSkillMatch } from "../utils/filterUtils";
 
+const toCompanyKey = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 const getJobStartYear = (date: string) => {
   const years = date.match(/\d{4}/g);
   if (!years?.length) {
@@ -187,6 +194,7 @@ export const Experience = ({
             return (
               <div
                 key={`${job.co}-${job.date}`}
+                data-job-company={toCompanyKey(job.co)}
                 className={`job vis ${matched ? "match" : ""} ${filtered ? "filtered" : ""}`}
                 style={{ transitionDelay: `${index * 0.03}s` }}
               >

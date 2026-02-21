@@ -241,7 +241,8 @@
       "by": "Mark Hollands",
       "role": "Quantitative Researcher at Citadel",
       "date": "2017-12-01",
-      "relationship": "Worked with Sam on the same team",
+      "jobCompany": "Goldman Sachs",
+      "relationship": "Worked with Sam on the same team at Goldman Sachs",
       "quote": "I worked with Sam at Goldman Sachs on a number of projects. He was very knowledgeable, supportive, and happy to guide others. He was enthusiastic, hard working, and a pleasure to work with.",
       "visibility": "public"
     },
@@ -249,7 +250,8 @@
       "by": "Diana Ionel",
       "role": "Corporate Controller at European Space Agency - ESA",
       "date": "2015-07-21",
-      "relationship": "Sam was senior to Diana",
+      "jobCompany": "InSitYou Software",
+      "relationship": "Sam was senior to Diana at InSitYou Software",
       "quote": "Sam was ambitious, decisive, and got up to speed quickly under heavy time pressure. He was an open-minded mentor and a dependable expert who solved problems on time.",
       "visibility": "public"
     },
@@ -257,23 +259,26 @@
       "by": "Christopher Stanley",
       "role": "Client partner",
       "date": "2014-05-16",
-      "relationship": "Managed Sam directly",
+      "jobCompany": "Redbox Digital",
+      "relationship": "Managed Sam directly at a Redbox Digital",
       "quote": "Sam was creative, talented, and highly collaborative. He brought strong frontend and Magento expertise, a positive attitude, and consistently sought the best possible solution.",
       "visibility": "public"
     },
     {
       "by": "Dan Murray",
       "role": "Co-Founder, Heights",
-      "date": "2013-11-22",
-      "relationship": "Sam's client",
-      "quote": "Sam consistently over-delivered with clear ownership of UI/UX and product challenges. He is among the most reliable and professional developers I have worked with.",
+      "date": "2013-11-18",
+      "jobCompany": "Grabble Ltd",
+      "relationship": "Sam's client at Grabble Ltd",
+      "quote": "Sam was instrumental in helping us ship quickly while keeping quality high. He communicated clearly, took ownership, and consistently delivered exactly what the product needed.",
       "visibility": "public"
     },
     {
       "by": "Joel Freeman",
       "role": "Co-Founder & CEO, Heights",
       "date": "2013-11-21",
-      "relationship": "Sam's client",
+      "jobCompany": "Grabble Ltd",
+      "relationship": "Sam's client at Grabble Ltd",
       "quote": "Sam was innovative and intelligent, quickly understood requirements, and delivered features fast. He contributed strongly to both product outcomes and team culture.",
       "visibility": "public"
     },
@@ -281,7 +286,8 @@
       "by": "Kyle Milnes",
       "role": "CTO / Principal Architect",
       "date": "2013-08-01",
-      "relationship": "Managed Sam directly",
+      "jobCompany": "Vaultigo",
+      "relationship": "Managed Sam directly at Vaultigo",
       "quote": "Sam was personable, highly capable, and stepped in across frontend and backend when needed. He handled pressure well and helped the team deliver its vision.",
       "visibility": "public"
     },
@@ -289,32 +295,27 @@
       "by": "Paul Clarke",
       "role": "Owner",
       "date": "2012-11-02",
-      "relationship": "Worked with Sam on the same team",
+      "jobCompany": "Redbox Digital",
+      "relationship": "Worked with Sam on the same team at Redbox Digital",
       "quote": "Sam was forward-thinking, multi-skilled, and consistently delivered under pressure. He brought energy, adaptability, and dependable execution to every project.",
-      "visibility": "public"
-    },
-    {
-      "by": "Michael O'Sullivan",
-      "role": "Chief Executive Officer at Bywire.News",
-      "date": "2012-05-19",
-      "relationship": "Sam's client",
-      "quote": "Sam was one of the most committed developers I worked with. He combined integrity, strong client focus, and delivery discipline in deadline-heavy projects.",
-      "visibility": "private"
-    },
-    {
-      "by": "Penda Tomlinson",
-      "role": "Mentoring the next generation of games designers",
-      "date": "2012-05-14",
-      "relationship": "Sam's teacher",
-      "quote": "Sam was a diligent and technically strong student, confident in programming and 3D work. His enthusiasm and willingness to learn new tools stood out.",
       "visibility": "public"
     },
     {
       "by": "Panos Armagos",
       "role": "Back End Developer",
       "date": "2012-05-04",
-      "relationship": "Studied together",
+      "jobCompany": "Goldsmiths, University of London",
+      "relationship": "Studied together at Goldsmiths, University of London",
       "quote": "Sam was passionate, open-minded, and deadline oriented. During university projects he was consistently proactive and dependable in getting things done.",
+      "visibility": "public"
+    },
+    {
+      "by": "Penda Tomlinson",
+      "role": "Mentoring the next generation of games designers",
+      "date": "2012-05-14",
+      "jobCompany": "Goldsmiths, University of London",
+      "relationship": "Sam's teacher at University of East London",
+      "quote": "Sam was a diligent and technically strong student, confident in programming and 3D work. His enthusiasm and willingness to learn new tools stood out.",
       "visibility": "public"
     }
   ],

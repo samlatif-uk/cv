@@ -107,7 +107,7 @@
           </p>
         </ul>
         <div class="hire-cta">
-          <strong>Available for contract roles from April 2026.</strong>
+          <strong>Available for contract roles from July 2026.</strong>
           <a
             class="hire-btn"
             href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
@@ -364,7 +364,7 @@
 
         const publicTestimonials = TESTIMONIALS.filter(
           (testimonial) => testimonial.visibility === "public",
-        ).slice(0, 3);
+        );
 
         if (!publicTestimonials.length) {
           testimonials.innerHTML =
@@ -375,9 +375,37 @@
         testimonials.innerHTML = publicTestimonials
           .map(
             (testimonial) =>
-              `<blockquote>“${testimonial.quote}” — ${testimonial.by}</blockquote>`,
+              `<blockquote class="testimonial-link" data-job-company="${toCompanyKey(testimonial.jobCompany || "")}">“${testimonial.quote}”<cite>${testimonial.by} · ${testimonial.role} · ${formatRelationship(testimonial)}</cite></blockquote>`,
           )
           .join("");
+
+        testimonials.querySelectorAll(".testimonial-link").forEach((item) => {
+          item.addEventListener("click", () => {
+            scrollToJobByCompany(item.getAttribute("data-job-company") || "");
+          });
+        });
+      }
+
+      function formatRelationship(testimonial) {
+        if (
+          testimonial.jobCompany &&
+          testimonial.relationship.includes(testimonial.jobCompany)
+        ) {
+          return testimonial.relationship.replace(
+            testimonial.jobCompany,
+            `<span class="rec-company">${testimonial.jobCompany}</span>`,
+          );
+        }
+
+        return testimonial.relationship;
+      }
+
+      function toCompanyKey(value) {
+        return value
+          .toLowerCase()
+          .replace(/&/g, " and ")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
       }
 
       function escapeForSingleQuotedInline(value) {
@@ -535,7 +563,7 @@
               )
             : false;
           const filtered = activeTechs.length && !matched;
-          return `<div class="job${matched ? " match" : ""}${filtered ? " filtered" : ""}" style="transition-delay:${i * 0.03}s">
+          return `<div class="job${matched ? " match" : ""}${filtered ? " filtered" : ""}" data-job-company="${toCompanyKey(j.co)}" style="transition-delay:${i * 0.03}s">
       <div class="jhead"><div class="jco">${j.co}</div><div class="jdate">${j.date}</div></div>
       <div class="jtitle">${j.title}</div>
       <div class="jdesc">${j.desc}</div>
@@ -639,6 +667,29 @@
             window.scrollTo({ top: targetY, behavior: "smooth" });
           }
         }
+      }
+
+      function scrollToJobByCompany(companyKey) {
+        const experience = document.getElementById("experience");
+        if (!experience) {
+          return;
+        }
+
+        if (!companyKey) {
+          experience.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+
+        const job = document.querySelector(
+          `#experience .job[data-job-company="${companyKey}"]`,
+        );
+        const target = job?.querySelector(".jhead") || job || experience;
+        const targetY =
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          (70 + getFilterBarHeight());
+
+        window.scrollTo({ top: targetY, behavior: "smooth" });
       }
 
       function filterTech(t) {

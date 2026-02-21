@@ -22,6 +22,7 @@ export interface Testimonial {
   by: string;
   role: string;
   date: string;
+  jobCompany?: string;
   relationship: string;
   quote: string;
   visibility: "public" | "private";

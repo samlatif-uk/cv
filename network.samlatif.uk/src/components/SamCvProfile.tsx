@@ -127,6 +127,13 @@ const getFilterBarHeight = () => {
   return filterBar.offsetHeight + marginBottom;
 };
 
+const toCompanyKey = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export function SamCvProfile({ data }: { data: CvData }) {
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>("all");
@@ -326,6 +333,33 @@ export function SamCvProfile({ data }: { data: CvData }) {
     if (parsedTechs.length) {
       handleAddTechFilters(parsedTechs);
     }
+  };
+
+  const scrollToCompanyJob = (jobCompany?: string) => {
+    const experienceSection = document.getElementById("experience");
+    if (!experienceSection) {
+      return;
+    }
+
+    if (!jobCompany) {
+      experienceSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    const companyKey = toCompanyKey(jobCompany);
+    const jobCard = document.querySelector(
+      `#experience [data-job-company="${companyKey}"]`,
+    ) as HTMLElement | null;
+    const target =
+      (jobCard?.querySelector('[data-jhead="true"]') as HTMLElement | null) ??
+      jobCard ??
+      experienceSection;
+    const targetY =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      (140 + getFilterBarHeight());
+
+    window.scrollTo({ top: targetY, behavior: "smooth" });
   };
 
   return (
@@ -587,6 +621,7 @@ export function SamCvProfile({ data }: { data: CvData }) {
                 <div
                   key={`${job.co}-${job.date}`}
                   data-job="true"
+                  data-job-company={toCompanyKey(job.co)}
                   className={`${styles.job} ${matched ? styles.match : ""} ${filtered ? styles.filtered : ""}`}
                 >
                   <div className={styles.jhead} data-jhead="true">
@@ -636,10 +671,40 @@ export function SamCvProfile({ data }: { data: CvData }) {
             {data.TESTIMONIALS.filter(
               (testimonial) => testimonial.visibility === "public",
             ).map((testimonial) => (
-              <blockquote key={`${testimonial.by}-${testimonial.date}`}>
+              <blockquote
+                key={`${testimonial.by}-${testimonial.date}`}
+                className={styles.testimonialLink}
+                role="button"
+                tabIndex={0}
+                onClick={() => scrollToCompanyJob(testimonial.jobCompany)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    scrollToCompanyJob(testimonial.jobCompany);
+                  }
+                }}
+              >
                 “{testimonial.quote}”
                 <cite>
-                  {testimonial.by} · {testimonial.role}
+                  {testimonial.by} · {testimonial.role} ·{" "}
+                  {testimonial.jobCompany &&
+                  testimonial.relationship.includes(testimonial.jobCompany) ? (
+                    <>
+                      {testimonial.relationship
+                        .split(testimonial.jobCompany)[0]
+                        .trimEnd()}{" "}
+                      <span className={styles.recCompany}>
+                        {testimonial.jobCompany}
+                      </span>
+                      {testimonial.relationship.slice(
+                        testimonial.relationship.indexOf(
+                          testimonial.jobCompany,
+                        ) + testimonial.jobCompany.length,
+                      )}
+                    </>
+                  ) : (
+                    testimonial.relationship
+                  )}
                 </cite>
               </blockquote>
             ))}
