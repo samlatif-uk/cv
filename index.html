@@ -115,9 +115,7 @@
           >
         </div>
         <div class="testimonials">
-          <blockquote>
-            Loading recommendations…
-          </blockquote>
+          <blockquote>Loading recommendations…</blockquote>
         </div>
       </div>
     </header>
@@ -354,7 +352,7 @@
         const testimonials = document.querySelector(".testimonials");
         if (testimonials) {
           testimonials.innerHTML =
-            '<blockquote>Recommendations are temporarily unavailable.</blockquote>';
+            "<blockquote>Recommendations are temporarily unavailable.</blockquote>";
         }
       }
 
@@ -370,7 +368,7 @@
 
         if (!publicTestimonials.length) {
           testimonials.innerHTML =
-            '<blockquote>No recommendations available yet.</blockquote>';
+            "<blockquote>No recommendations available yet.</blockquote>";
           return;
         }
 

@@ -77,7 +77,9 @@ export const Header = () => {
           </a>
         </div>
         <div className="testimonials">
-          {TESTIMONIALS.filter((testimonial) => testimonial.visibility === "public")
+          {TESTIMONIALS.filter(
+            (testimonial) => testimonial.visibility === "public",
+          )
             .slice(0, 3)
             .map((testimonial) => (
               <blockquote key={`${testimonial.by}-${testimonial.date}`}>
