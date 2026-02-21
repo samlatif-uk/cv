@@ -235,7 +235,7 @@
       "maxStartYear": 2014
     }
   ],
-  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS", "Git"],
+  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS3", "Git"],
   "JOBS": [
     {
       "co": "Bank of America",
