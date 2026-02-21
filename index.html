@@ -112,6 +112,7 @@
   .jbuls li::before{content:'';position:absolute;left:4px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
   .jstack{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
   .jtag{font-size:11px;font-weight:500;color:var(--accent);padding:3px 9px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all 0.18s;background:var(--bg2);font-family:'Inter',sans-serif}
+  .jtag.lit{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
   .jtag:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
   .job.filtered{opacity:0.08}
   .job.match .jco{color:var(--accent)}
@@ -527,7 +528,7 @@ function renderJobs(){
       <div class="jtitle">${j.title}</div>
       <div class="jdesc">${j.desc}</div>
       ${j.bullets.length?`<ul class="jbuls">${j.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`:''}
-      ${stackWithDefaults.length?`<div class="jstack">${stackWithDefaults.map(t=>`<button class="jtag" onclick="filterTech('${t}')">${t}</button>`).join('')}</div>`:''}
+      ${stackWithDefaults.length?`<div class="jstack">${stackWithDefaults.map(t=>`<button class="jtag${activeTechs.includes(t)?' lit':''}" onclick="filterTech('${t}')">${t}</button>`).join('')}</div>`:''}
     </div>`;
   }).join('');
   const io=new IntersectionObserver((es,o)=>{

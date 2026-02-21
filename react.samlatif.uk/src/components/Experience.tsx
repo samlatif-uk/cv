@@ -109,7 +109,12 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
               {stackWithDefaults.length > 0 && (
                 <div className="jstack">
                   {stackWithDefaults.map((tech) => (
-                    <button key={`${job.co}-${tech}`} className="jtag" onClick={() => onTechClick(tech)} type="button">
+                    <button
+                      key={`${job.co}-${tech}`}
+                      className={`jtag${activeTechs.includes(tech) ? ' lit' : ''}`}
+                      onClick={() => onTechClick(tech)}
+                      type="button"
+                    >
                       {tech}
                     </button>
                   ))}
