@@ -6,6 +6,8 @@ export const Footer = () => (
       <div className="finfo">
         <a href="mailto:hello@samlatif.uk">hello@samlatif.uk</a> &nbsp;·&nbsp;
         <a href="tel:07851885776">07851 885 776</a> &nbsp;·&nbsp;
+        <a href="https://samlatif.uk">Vanilla Site</a> &nbsp;·&nbsp;
+        <a href="https://react.samlatif.uk">React Site</a>
       </div>
     </div>
   </footer>
