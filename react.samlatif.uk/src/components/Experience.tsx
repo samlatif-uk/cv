@@ -110,7 +110,7 @@ export const Experience = ({
       const targetY =
         target.getBoundingClientRect().top +
         window.scrollY -
-        (50 + getFilterBarHeight());
+        (70 + getFilterBarHeight());
       window.scrollTo({ top: targetY, behavior: "smooth" });
     }
 
