@@ -32,6 +32,14 @@ export type CvData = {
   SKILLS: Skill[];
   DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[];
   GLOBAL_STACK_DEFAULTS: string[];
+  TESTIMONIALS: {
+    by: string;
+    role: string;
+    date: string;
+    relationship: string;
+    quote: string;
+    visibility: "public" | "private";
+  }[];
   JOBS: Job[];
 };
 

@@ -116,12 +116,7 @@
         </div>
         <div class="testimonials">
           <blockquote>
-            “Delivered quickly, raised quality immediately, and was trusted by
-            senior stakeholders from week one.”
-          </blockquote>
-          <blockquote>
-            “A rare mix of product thinking, clean frontend architecture, and
-            reliable delivery under pressure.”
+            Loading recommendations…
           </blockquote>
         </div>
       </div>
@@ -293,6 +288,7 @@
       const SKILLS = [];
       const DATE_BASED_STACK_DEFAULTS = [];
       const GLOBAL_STACK_DEFAULTS = [];
+      const TESTIMONIALS = [];
       const JOBS = [];
 
       async function loadSharedCvData() {
@@ -326,6 +322,7 @@
             sharedData.DATE_BASED_STACK_DEFAULTS,
           );
           syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
+          syncArray(TESTIMONIALS, sharedData.TESTIMONIALS);
           syncArray(JOBS, sharedData.JOBS);
           return true;
         } catch {
@@ -353,6 +350,36 @@
           timeline.innerHTML =
             '<div class="job vis"><div class="jdesc">CV data is temporarily unavailable. Please refresh later.</div></div>';
         }
+
+        const testimonials = document.querySelector(".testimonials");
+        if (testimonials) {
+          testimonials.innerHTML =
+            '<blockquote>Recommendations are temporarily unavailable.</blockquote>';
+        }
+      }
+
+      function renderTestimonials() {
+        const testimonials = document.querySelector(".testimonials");
+        if (!testimonials) {
+          return;
+        }
+
+        const publicTestimonials = TESTIMONIALS.filter(
+          (testimonial) => testimonial.visibility === "public",
+        ).slice(0, 3);
+
+        if (!publicTestimonials.length) {
+          testimonials.innerHTML =
+            '<blockquote>No recommendations available yet.</blockquote>';
+          return;
+        }
+
+        testimonials.innerHTML = publicTestimonials
+          .map(
+            (testimonial) =>
+              `<blockquote>“${testimonial.quote}” — ${testimonial.by}</blockquote>`,
+          )
+          .join("");
       }
 
       function escapeForSingleQuotedInline(value) {
@@ -684,6 +711,7 @@
         }
 
         renderTechTable();
+        renderTestimonials();
         renderSkills();
         renderFilterBar();
         renderJobs();

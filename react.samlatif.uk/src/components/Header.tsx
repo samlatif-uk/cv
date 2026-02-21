@@ -1,3 +1,5 @@
+import { TESTIMONIALS } from "../data/cv";
+
 export const Header = () => {
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "";
@@ -75,14 +77,13 @@ export const Header = () => {
           </a>
         </div>
         <div className="testimonials">
-          <blockquote>
-            “Delivered quickly, raised quality immediately, and was trusted by
-            senior stakeholders from week one.”
-          </blockquote>
-          <blockquote>
-            “A rare mix of product thinking, clean frontend architecture, and
-            reliable delivery under pressure.”
-          </blockquote>
+          {TESTIMONIALS.filter((testimonial) => testimonial.visibility === "public")
+            .slice(0, 3)
+            .map((testimonial) => (
+              <blockquote key={`${testimonial.by}-${testimonial.date}`}>
+                “{testimonial.quote}” — {testimonial.by}
+              </blockquote>
+            ))}
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 import sharedCvData from "../../../shared/cv-data.json";
-import type { Job, Skill, TechRow } from "../types";
+import type { Job, Skill, TechRow, Testimonial } from "../types";
 
 type DateBasedStackDefault = {
   skill: string;
@@ -12,6 +12,7 @@ type SharedCvData = {
   SKILLS: Skill[];
   DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[];
   GLOBAL_STACK_DEFAULTS: string[];
+  TESTIMONIALS: Testimonial[];
   JOBS: Job[];
 };
 
@@ -22,4 +23,5 @@ export const SKILLS: Skill[] = CV_DATA.SKILLS;
 export const DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[] =
   CV_DATA.DATE_BASED_STACK_DEFAULTS;
 export const GLOBAL_STACK_DEFAULTS: string[] = CV_DATA.GLOBAL_STACK_DEFAULTS;
+export const TESTIMONIALS: Testimonial[] = CV_DATA.TESTIMONIALS;
 export const JOBS: Job[] = CV_DATA.JOBS;

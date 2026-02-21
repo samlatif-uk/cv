@@ -17,3 +17,12 @@ export interface Job {
   bullets: string[];
   stack: string[];
 }
+
+export interface Testimonial {
+  by: string;
+  role: string;
+  date: string;
+  relationship: string;
+  quote: string;
+  visibility: "public" | "private";
+}

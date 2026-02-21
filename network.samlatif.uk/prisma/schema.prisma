@@ -32,6 +32,23 @@ model User {
   receivedConnections Connection[]         @relation("ReceivedConnections")
   messages            Message[]
   conversationMembers ConversationMember[]
+  recommendations     Recommendation[]
+}
+
+model Recommendation {
+  id                String   @id @default(cuid())
+  recipientId       String
+  recommenderName   String
+  recommenderRole   String
+  relationshipLabel String
+  recommendationAt  DateTime
+  content           String
+  isPublic          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  recipient         User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, recommendationAt])
 }
 
 model Post {

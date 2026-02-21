@@ -9,6 +9,7 @@ const SECTION_IDS = [
   "techskills",
   "skills",
   "experience",
+  "recommendations",
   "education",
 ];
 
@@ -421,6 +422,12 @@ export function SamCvProfile({ data }: { data: CvData }) {
               Experience
             </a>
             <a
+              href="#recommendations"
+              className={activeNav === "recommendations" ? styles.active : ""}
+            >
+              Recommendations
+            </a>
+            <a
               href="#education"
               className={activeNav === "education" ? styles.active : ""}
             >
@@ -618,10 +625,32 @@ export function SamCvProfile({ data }: { data: CvData }) {
         </div>
       </section>
 
-      <section id="education" className={styles.section}>
+      <section id="recommendations" className={styles.section}>
         <div className={styles.container}>
           <div className={styles.shead}>
             <span className={styles.snum}>04</span>
+            <h2>Recommendations</h2>
+            <div className={styles.sline} />
+          </div>
+          <div className={styles.testimonials}>
+            {data.TESTIMONIALS.filter(
+              (testimonial) => testimonial.visibility === "public",
+            ).map((testimonial) => (
+              <blockquote key={`${testimonial.by}-${testimonial.date}`}>
+                “{testimonial.quote}”
+                <cite>
+                  {testimonial.by} · {testimonial.role}
+                </cite>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="education" className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.shead}>
+            <span className={styles.snum}>05</span>
             <h2>Education</h2>
             <div className={styles.sline} />
           </div>
