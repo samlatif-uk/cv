@@ -494,7 +494,7 @@ h2 {
 .fbar {
   display: none;
   position: sticky;
-  top: 72px;
+  top: 50px;
   z-index: 15;
   align-items: center;
   gap: 12px;
