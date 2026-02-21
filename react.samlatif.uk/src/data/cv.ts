@@ -216,7 +216,7 @@ export const JOBS: Job[] = [
       'Visualised floor plans using D3, Canvas (FabricJS/PixiJS) and SVG',
       'Mentored a junior SQL developer through HTML, CSS, JS and full-stack Meteor development',
     ],
-    stack: ['JavaScript', 'Three.js', 'D3.js', 'Canvas', 'React', 'AngularJS', 'Meteor', 'MongoDB', 'Node.js', 'SCSS'],
+    stack: ['JavaScript (ES6+)', 'Three.js', 'D3.js', 'Canvas', 'React', 'AngularJS', 'Meteor', 'MongoDB', 'Node.js', 'SCSS'],
   },
   {
     co: 'Thought Machine',
@@ -243,7 +243,7 @@ export const JOBS: Job[] = [
     title: 'Contract JavaScript Developer',
     desc: 'Integrated front-end WordPress HTML templates to a CakePHP-driven backend using a bespoke JS MVC framework.',
     bullets: [],
-    stack: ['JavaScript', 'jQuery', 'WordPress', 'CakePHP', 'PHP'],
+    stack: ['JavaScript (ES5)', 'jQuery', 'WordPress', 'CakePHP', 'PHP'],
   },
   {
     co: 'Paper',
@@ -259,7 +259,7 @@ export const JOBS: Job[] = [
     title: 'Contract Frontend Developer',
     desc: 'Short-term engagement with a leading creative tech team on a project for Google.',
     bullets: [],
-    stack: ['Node.js', 'Three.js', 'HTML5 Canvas', 'JavaScript'],
+    stack: ['Node.js', 'Three.js', 'HTML5 Canvas', 'JavaScript (ES5)'],
   },
   {
     co: 'Quill Content',
@@ -278,7 +278,7 @@ export const JOBS: Job[] = [
     title: 'Contract Frontend Developer',
     desc: 'Delivered a responsive microsite (Millionaire Quiz) for The Sunday Times – The Rich List 2014.',
     bullets: [],
-    stack: ['Node.js', 'AngularJS', 'HTML5', 'SASS', 'JavaScript'],
+    stack: ['Node.js', 'AngularJS', 'HTML5', 'SASS', 'JavaScript (ES5)'],
   },
   {
     co: 'Fox Parrack Singapour',
@@ -289,7 +289,7 @@ export const JOBS: Job[] = [
       'Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables',
       'HTML5 Video full-page background changing by time of day',
     ],
-    stack: ['HTML5', 'SASS', 'JavaScript', 'jQuery'],
+    stack: ['HTML5', 'SASS', 'JavaScript (ES5)', 'jQuery'],
   },
   {
     co: 'Redbox Digital',

@@ -10,16 +10,21 @@ const getJobStartYear = (date: string) => {
   return Number(years[0]);
 };
 
+const getJavaScriptVersionedSkill = (startYear: number | null) => {
+  return startYear !== null && startYear < 2015 ? 'JavaScript (ES5)' : 'JavaScript (ES6+)';
+};
+
 const withJobStackDefaults = (stack: string[], date: string) => {
+  const startYear = getJobStartYear(date);
+  const normalizedStack = stack.map((skill) => (skill === 'JavaScript' ? getJavaScriptVersionedSkill(startYear) : skill));
   const stackWithGlobalDefaults = GLOBAL_STACK_DEFAULTS.reduce((nextStack, skill) => {
     if (!nextStack.includes(skill)) {
       return [skill, ...nextStack];
     }
 
     return nextStack;
-  }, [...stack]);
+  }, normalizedStack);
 
-  const startYear = getJobStartYear(date);
   if (startYear === null) {
     return stackWithGlobalDefaults;
   }

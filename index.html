@@ -407,7 +407,7 @@ const JOBS = [
   {co:'InSitYou Software', date:'Mar – Aug 2015', title:'Senior Fullstack Developer',
    desc:'Built in-house seat allocation and floor-plan visualisation software for architectural practices.',
    bullets:['Parsed large CSV datasets into a ranked-relationship seating algorithm','Visualised floor plans using D3, Canvas (FabricJS/PixiJS) and SVG','Mentored a junior SQL developer through HTML, CSS, JS and full-stack Meteor development'],
-   stack:['JavaScript','Three.js','D3.js','Canvas','React','AngularJS','Meteor','MongoDB','Node.js','SCSS']},
+  stack:['JavaScript (ES6+)','Three.js','D3.js','Canvas','React','AngularJS','Meteor','MongoDB','Node.js','SCSS']},
   {co:'Thought Machine', date:'Jan – Feb 2015', title:'Contract Creative Technologist',
    desc:'Developed rapid prototypes from UX research through to Axure/Balsamiq and Sketch to InVision.',
    bullets:[],stack:['Axure','Balsamiq','Sketch','InVision']},
@@ -417,25 +417,25 @@ const JOBS = [
    stack:['HTML5','CSS','jQuery','Adobe CQ5','Java Spring MVC','Gigya']},
   {co:'We3Collective', date:'Sep – Nov 2014', title:'Contract JavaScript Developer',
    desc:'Integrated front-end WordPress HTML templates to a CakePHP-driven backend using a bespoke JS MVC framework.',
-   bullets:[],stack:['JavaScript','jQuery','WordPress','CakePHP','PHP']},
+  bullets:[],stack:['JavaScript (ES5)','jQuery','WordPress','CakePHP','PHP']},
   {co:'Paper', date:'Aug – Sep 2014', title:'Contract Frontend Developer',
    desc:'Front-end work for a high-profile project for Macmillan Cancer Support on a .NET/Umbraco stack.',
    bullets:['Focused on highly modular and reusable design patterns'],
    stack:['HTML5','SCSS','jQuery','Umbraco']},
   {co:'RehabStudio', date:'Aug 2014', title:'Contract Frontend Developer',
    desc:'Short-term engagement with a leading creative tech team on a project for Google.',
-   bullets:[],stack:['Node.js','Three.js','HTML5 Canvas','JavaScript']},
+  bullets:[],stack:['Node.js','Three.js','HTML5 Canvas','JavaScript (ES5)']},
   {co:'Quill Content', date:'Jun – Aug 2014', title:'Contract Frontend Developer',
    desc:"Sole frontend developer parachuted in to help Quill Content hit delivery milestones.",
    bullets:['Full platform reskin based on a 3-page style guide and wireframes','Introduced SMACSS architecture and refactored SCSS for maintainability'],
    stack:['Ruby on Rails','HAML','SCSS','CoffeeScript','jQuery','D3.js']},
   {co:'The Social Partners', date:'May 2014', title:'Contract Frontend Developer',
    desc:"Delivered a responsive microsite (Millionaire Quiz) for The Sunday Times – The Rich List 2014.",
-   bullets:[],stack:['Node.js','AngularJS','HTML5','SASS','JavaScript']},
+  bullets:[],stack:['Node.js','AngularJS','HTML5','SASS','JavaScript (ES5)']},
   {co:'Fox Parrack Singapour', date:'Apr 2014', title:'Contract Frontend Developer',
    desc:"Delivered a responsive landing page for Cisco with three time-of-day visual themes and HTML5 Video background.",
    bullets:['Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables','HTML5 Video full-page background changing by time of day'],
-   stack:['HTML5','SASS','JavaScript','jQuery']},
+  stack:['HTML5','SASS','JavaScript (ES5)','jQuery']},
   {co:'Redbox Digital', date:'Nov 2013 – Apr 2014', title:'Contract Magento Developer',
    desc:'Hired for front-end and UX expertise; also covered SysAdmin/DevOps, MySQL, and Magento backend.',
    bullets:['Delivered fully responsive pages for Paperchase across five breakpoints','Extended Google Maps API to generate markers for six Paperchase store types'],
@@ -475,15 +475,20 @@ function getJobStartYear(date){
   return years.length?Number(years[0]):null;
 }
 
+function getJavaScriptVersionedSkill(startYear){
+  return startYear!==null&&startYear<2015?'JavaScript (ES5)':'JavaScript (ES6+)';
+}
+
 function withJobStackDefaults(stack, date){
+  const startYear=getJobStartYear(date);
+  const normalizedStack=stack.map(skill=>skill==='JavaScript'?getJavaScriptVersionedSkill(startYear):skill);
   const stackWithGlobalDefaults=GLOBAL_STACK_DEFAULTS.reduce((acc,skill)=>{
     if(!acc.includes(skill)){
       return [skill,...acc];
     }
     return acc;
-  }, [...stack]);
+  }, normalizedStack);
 
-  const startYear=getJobStartYear(date);
   if(startYear===null){
     return stackWithGlobalDefaults;
   }
