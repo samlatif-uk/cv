@@ -1,4 +1,4 @@
-import { TECH_ROWS } from '../data/cv';
+import { TECH_ROWS } from "../data/cv";
 
 export const TechSkills = () => (
   <section id="techskills">

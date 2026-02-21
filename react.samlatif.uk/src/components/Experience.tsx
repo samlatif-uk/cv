@@ -1,5 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { DATE_BASED_STACK_DEFAULTS, GLOBAL_STACK_DEFAULTS, JOBS } from '../data/cv';
+import { useEffect, useRef } from "react";
+import {
+  DATE_BASED_STACK_DEFAULTS,
+  GLOBAL_STACK_DEFAULTS,
+  JOBS,
+} from "../data/cv";
 
 const getJobStartYear = (date: string) => {
   const years = date.match(/\d{4}/g);
@@ -11,12 +15,14 @@ const getJobStartYear = (date: string) => {
 };
 
 const getJavaScriptVersionedSkill = (startYear: number | null) => {
-  return startYear !== null && startYear < 2015 ? 'JavaScript (ES5)' : 'JavaScript (ES6+)';
+  return startYear !== null && startYear < 2015
+    ? "JavaScript (ES5)"
+    : "JavaScript (ES6+)";
 };
 
 const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  if (filterSkill === 'React') {
-    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== 'React Native';
+  if (filterSkill === "React") {
+    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
   }
 
   return filterSkill === jobSkill;
@@ -24,22 +30,29 @@ const isSkillMatch = (filterSkill: string, jobSkill: string) => {
 
 const withJobStackDefaults = (stack: string[], date: string) => {
   const startYear = getJobStartYear(date);
-  const normalizedStack = stack.map((skill) => (skill === 'JavaScript' ? getJavaScriptVersionedSkill(startYear) : skill));
-  const stackWithGlobalDefaults = GLOBAL_STACK_DEFAULTS.reduce((nextStack, skill) => {
-    if (!nextStack.includes(skill)) {
-      return [skill, ...nextStack];
-    }
+  const normalizedStack = stack.map((skill) =>
+    skill === "JavaScript" ? getJavaScriptVersionedSkill(startYear) : skill,
+  );
+  const stackWithGlobalDefaults = GLOBAL_STACK_DEFAULTS.reduce(
+    (nextStack, skill) => {
+      if (!nextStack.includes(skill)) {
+        return [skill, ...nextStack];
+      }
 
-    return nextStack;
-  }, normalizedStack);
+      return nextStack;
+    },
+    normalizedStack,
+  );
 
   if (startYear === null) {
     return stackWithGlobalDefaults;
   }
 
   return DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
-    const aboveMin = rule.minStartYear === undefined || startYear >= rule.minStartYear;
-    const belowMax = rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
+    const aboveMin =
+      rule.minStartYear === undefined || startYear >= rule.minStartYear;
+    const belowMax =
+      rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
 
     if (aboveMin && belowMax && !nextStack.includes(rule.skill)) {
       return [rule.skill, ...nextStack];
@@ -55,99 +68,119 @@ interface ExperienceProps {
   onClearTech: () => void;
 }
 
-export const Experience = ({ activeTechs, onTechClick, onClearTech }: ExperienceProps) => {
+export const Experience = ({
+  activeTechs,
+  onTechClick,
+  onClearTech,
+}: ExperienceProps) => {
   const previousFilterCount = useRef(activeTechs.length);
 
   useEffect(() => {
     if (!activeTechs.length) {
       if (previousFilterCount.current > 0) {
-        const experienceSection = document.getElementById('experience');
-        experienceSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const experienceSection = document.getElementById("experience");
+        experienceSection?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
 
       previousFilterCount.current = 0;
       return;
     }
 
-    const firstMatch = document.querySelector('#experience .job:not(.filtered)') as HTMLElement | null;
+    const firstMatch = document.querySelector(
+      "#experience .job:not(.filtered)",
+    ) as HTMLElement | null;
     if (firstMatch) {
-      const target = (firstMatch.querySelector('.jhead') as HTMLElement | null) ?? firstMatch;
+      const target =
+        (firstMatch.querySelector(".jhead") as HTMLElement | null) ??
+        firstMatch;
       const targetY = target.getBoundingClientRect().top + window.scrollY - 50;
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      window.scrollTo({ top: targetY, behavior: "smooth" });
     }
 
     previousFilterCount.current = activeTechs.length;
   }, [activeTechs]);
 
   return (
-  <section id="experience">
-    <div className="container">
-      <div className="shead">
-        <span className="snum">03</span>
-        <h2>Experience</h2>
-        <div className="sline" />
-      </div>
-      <div className={`fbar ${activeTechs.length ? 'show' : ''}`}>
-        <span>Filtering by:</span>
-        <div className="fchips">
-          {activeTechs.map((tech) => (
-            <button key={tech} className="fchip" onClick={() => onTechClick(tech)} type="button">
-              {tech} ×
-            </button>
-          ))}
+    <section id="experience">
+      <div className="container">
+        <div className="shead">
+          <span className="snum">03</span>
+          <h2>Experience</h2>
+          <div className="sline" />
         </div>
-        <button className="fclear" onClick={onClearTech} type="button">
-          Clear ×
-        </button>
-      </div>
-      <div className="tl">
-        {JOBS.map((job, index) => {
-          const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-          const matched = activeTechs.length
-            ? activeTechs.some((activeTech) => stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)))
-            : false;
-          const filtered = activeTechs.length > 0 && !matched;
+        <div className={`fbar ${activeTechs.length ? "show" : ""}`}>
+          <span>Filtering by:</span>
+          <div className="fchips">
+            {activeTechs.map((tech) => (
+              <button
+                key={tech}
+                className="fchip"
+                onClick={() => onTechClick(tech)}
+                type="button"
+              >
+                {tech} ×
+              </button>
+            ))}
+          </div>
+          <button className="fclear" onClick={onClearTech} type="button">
+            Clear ×
+          </button>
+        </div>
+        <div className="tl">
+          {JOBS.map((job, index) => {
+            const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+            const matched = activeTechs.length
+              ? activeTechs.some((activeTech) =>
+                  stackWithDefaults.some((tech) =>
+                    isSkillMatch(activeTech, tech),
+                  ),
+                )
+              : false;
+            const filtered = activeTechs.length > 0 && !matched;
 
-          return (
-            <div
-              key={`${job.co}-${job.date}`}
-              className={`job vis ${matched ? 'match' : ''} ${filtered ? 'filtered' : ''}`}
-              style={{ transitionDelay: `${index * 0.03}s` }}
-            >
-              <div className="jhead">
-                <div className="jco">{job.co}</div>
-                <div className="jdate">{job.date}</div>
-              </div>
-              <div className="jtitle">{job.title}</div>
-              <div className="jdesc">{job.desc}</div>
-
-              {job.bullets.length > 0 && (
-                <ul className="jbuls">
-                  {job.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              )}
-
-              {stackWithDefaults.length > 0 && (
-                <div className="jstack">
-                  {stackWithDefaults.map((tech) => (
-                    <button
-                      key={`${job.co}-${tech}`}
-                      className={`jtag${activeTechs.some((activeTech) => isSkillMatch(activeTech, tech)) ? ' lit' : ''}`}
-                      onClick={() => onTechClick(tech)}
-                      type="button"
-                    >
-                      {tech}
-                    </button>
-                  ))}
+            return (
+              <div
+                key={`${job.co}-${job.date}`}
+                className={`job vis ${matched ? "match" : ""} ${filtered ? "filtered" : ""}`}
+                style={{ transitionDelay: `${index * 0.03}s` }}
+              >
+                <div className="jhead">
+                  <div className="jco">{job.co}</div>
+                  <div className="jdate">{job.date}</div>
                 </div>
-              )}
-            </div>
-          );
-        })}
+                <div className="jtitle">{job.title}</div>
+                <div className="jdesc">{job.desc}</div>
+
+                {job.bullets.length > 0 && (
+                  <ul className="jbuls">
+                    {job.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {stackWithDefaults.length > 0 && (
+                  <div className="jstack">
+                    {stackWithDefaults.map((tech) => (
+                      <button
+                        key={`${job.co}-${tech}`}
+                        className={`jtag${activeTechs.some((activeTech) => isSkillMatch(activeTech, tech)) ? " lit" : ""}`}
+                        onClick={() => onTechClick(tech)}
+                        type="button"
+                      >
+                        {tech}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };

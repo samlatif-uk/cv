@@ -1,603 +1,1624 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sam Latif — Senior Fullstack Consultant with 15+ years delivering high-performance web applications for blue-chip clients.">
-  <meta name="theme-color" content="#080808">
-  <title>Sam Latif — Senior Fullstack Consultant</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="SamLatif.uk" />
-  <link rel="manifest" href="/site.webmanifest" />
-  <style>
-  :root {
-    --bg: #080808;
-    --bg2: #0f0f0f;
-    --bg3: #161616;
-    --border: #2a2520;
-    --accent: #f0a500;
-    --accent-light: rgba(240,165,0,0.1);
-    --accent2: #b87d00;
-    --text: #f0e8d8;
-    --text-dim: #b8a98a;
-    --text-muted: #6b5f4a;
-    --white: #f4efe6;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.7;overflow-x:hidden}
-  ::-webkit-scrollbar{width:4px}
-  ::-webkit-scrollbar-track{background:var(--bg)}
-  ::-webkit-scrollbar-thumb{background:var(--border)}
-  .container{max-width:1100px;margin:0 auto;padding:0 40px}
-  @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sam Latif — Senior Fullstack Consultant with 15+ years delivering high-performance web applications for blue-chip clients."
+    />
+    <meta name="theme-color" content="#080808" />
+    <title>Sam Latif — Senior Fullstack Consultant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="SamLatif.uk" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <style>
+      :root {
+        --bg: #080808;
+        --bg2: #0f0f0f;
+        --bg3: #161616;
+        --border: #2a2520;
+        --accent: #f0a500;
+        --accent-light: rgba(240, 165, 0, 0.1);
+        --accent2: #b87d00;
+        --text: #f0e8d8;
+        --text-dim: #b8a98a;
+        --text-muted: #6b5f4a;
+        --white: #f4efe6;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        line-height: 1.7;
+        overflow-x: hidden;
+      }
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+      @keyframes up {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-  /* HEADER */
-  header{background:var(--bg);padding:64px 0 52px;border-bottom:2px solid var(--border)}
-  .eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600;opacity:0;animation:up 0.5s ease forwards 0.05s}
-  h1{font-family:'Inter',sans-serif;font-size:clamp(36px,6vw,72px);font-weight:700;line-height:1;letter-spacing:-0.03em;color:var(--text);opacity:0;animation:up 0.6s ease forwards 0.15s}
-  h1 .acc{color:var(--text-dim)}
-  .role{font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-top:16px;font-weight:500;opacity:0;animation:up 0.5s ease forwards 0.3s}
-  .hcontact{display:flex;flex-wrap:wrap;gap:24px;margin-top:24px;opacity:0;animation:up 0.5s ease forwards 0.4s}
-  .hcontact a{color:var(--text-dim);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:7px;transition:color 0.2s}
-  .hcontact a em{color:var(--accent);font-style:normal;font-size:10px}
-  .hcontact a:hover{color:var(--accent)}
-  .summary{margin-top:32px;padding:20px 24px;border-left:3px solid var(--accent);background:var(--accent-light);max-width:700px;border-radius:0 6px 6px 0;opacity:0;animation:up 0.5s ease forwards 0.55s}
-  .summary p{font-family:'Lora',serif;font-size:16px;line-height:1.8;color:var(--text-dim);font-style:italic;margin-bottom:6px}
+      /* HEADER */
+      header {
+        background: var(--bg);
+        padding: 64px 0 52px;
+        border-bottom: 2px solid var(--border);
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 12px;
+        font-weight: 600;
+        opacity: 0;
+        animation: up 0.5s ease forwards 0.05s;
+      }
+      h1 {
+        font-family: "Inter", sans-serif;
+        font-size: clamp(36px, 6vw, 72px);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+        opacity: 0;
+        animation: up 0.6s ease forwards 0.15s;
+      }
+      h1 .acc {
+        color: var(--text-dim);
+      }
+      .role {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 16px;
+        font-weight: 500;
+        opacity: 0;
+        animation: up 0.5s ease forwards 0.3s;
+      }
+      .hcontact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin-top: 24px;
+        opacity: 0;
+        animation: up 0.5s ease forwards 0.4s;
+      }
+      .hcontact a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: color 0.2s;
+      }
+      .hcontact a em {
+        color: var(--accent);
+        font-style: normal;
+        font-size: 10px;
+      }
+      .hcontact a:hover {
+        color: var(--accent);
+      }
+      .summary {
+        margin-top: 32px;
+        padding: 20px 24px;
+        border-left: 3px solid var(--accent);
+        background: var(--accent-light);
+        max-width: 700px;
+        border-radius: 0 6px 6px 0;
+        opacity: 0;
+        animation: up 0.5s ease forwards 0.55s;
+      }
+      .summary p {
+        font-family: "Lora", serif;
+        font-size: 16px;
+        line-height: 1.8;
+        color: var(--text-dim);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
 
-  /* NAV */
-  nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,0.95);border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,0.4);backdrop-filter:blur(16px)}
-  .nav-inner{display:flex;overflow-x:auto}
-  .nav-inner::-webkit-scrollbar{display:none}
-  nav a{color:var(--text-muted);text-decoration:none;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;padding:14px 22px;border-right:1px solid var(--border);transition:all 0.2s;white-space:nowrap}
-  nav a:hover{color:var(--accent);background:var(--accent-light)}
-  nav a.act{color:var(--accent);background:var(--accent-light);border-bottom:2px solid var(--accent)}
+      /* NAV */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(8, 8, 8, 0.95);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(16px);
+      }
+      .nav-inner {
+        display: flex;
+        overflow-x: auto;
+      }
+      .nav-inner::-webkit-scrollbar {
+        display: none;
+      }
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 14px 22px;
+        border-right: 1px solid var(--border);
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      nav a:hover {
+        color: var(--accent);
+        background: var(--accent-light);
+      }
+      nav a.act {
+        color: var(--accent);
+        background: var(--accent-light);
+        border-bottom: 2px solid var(--accent);
+      }
 
-  /* SECTION */
-  section{padding:60px 0;border-bottom:1px solid var(--border)}
-  .shead{display:flex;align-items:center;gap:14px;margin-bottom:40px}
-  .snum{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:0.15em;min-width:26px}
-  h2{font-family:'Inter',sans-serif;font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
-  .sline{flex:1;height:1px;background:var(--border)}
+      /* SECTION */
+      section {
+        padding: 60px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .shead {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 40px;
+      }
+      .snum {
+        font-size: 11px;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        min-width: 26px;
+      }
+      h2 {
+        font-family: "Inter", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .sline {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
 
-  /* STATS */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .stat{background:var(--bg2);border:1px solid var(--border);padding:28px 20px;text-align:center;border-radius:8px;transition:box-shadow 0.2s}
-  .stat:hover{box-shadow:0 4px 20px rgba(240,165,0,0.12)}
-  .sn{font-size:36px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-0.02em}
-  .sl{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:6px}
+      /* STATS */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .stat {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        padding: 28px 20px;
+        text-align: center;
+        border-radius: 8px;
+        transition: box-shadow 0.2s;
+      }
+      .stat:hover {
+        box-shadow: 0 4px 20px rgba(240, 165, 0, 0.12);
+      }
+      .sn {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .sl {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
 
-  /* TECH SKILLS TABLE */
-  .tech-table{width:100%;border-collapse:collapse}
-  .tech-table tr{border-bottom:1px solid var(--border)}
-  .tech-table tr:hover td{background:#f5f3f0}
-  .tech-table td{padding:13px 16px;font-size:13px;vertical-align:top}
-  .tech-table td:first-child{color:var(--accent);font-size:11px;font-weight:600;letter-spacing:0.1em;width:200px;text-transform:uppercase}
-  .tech-table td:last-child{color:var(--text-dim)}
-  .tech-table td span.yrs{color:var(--text-muted);font-size:11px;margin-left:10px}
-  .bar-wrap{display:flex;align-items:center;gap:10px;margin-top:5px}
-  .bar{height:3px;background:var(--border);flex:1;border-radius:2px}
-  .bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 1s ease}
+      /* TECH SKILLS TABLE */
+      .tech-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .tech-table tr {
+        border-bottom: 1px solid var(--border);
+      }
+      .tech-table tr:hover td {
+        background: #f5f3f0;
+      }
+      .tech-table td {
+        padding: 13px 16px;
+        font-size: 13px;
+        vertical-align: top;
+      }
+      .tech-table td:first-child {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        width: 200px;
+        text-transform: uppercase;
+      }
+      .tech-table td:last-child {
+        color: var(--text-dim);
+      }
+      .tech-table td span.yrs {
+        color: var(--text-muted);
+        font-size: 11px;
+        margin-left: 10px;
+      }
+      .bar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+      }
+      .bar {
+        height: 3px;
+        background: var(--border);
+        flex: 1;
+        border-radius: 2px;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 2px;
+        transition: width 1s ease;
+      }
 
-  /* FILTER BTNS */
-  .fbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
-  .fbtn{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);padding:6px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.05em;cursor:pointer;border-radius:20px;transition:all 0.18s}
-  .fbtn:hover{border-color:var(--accent);color:var(--accent)}
-  .fbtn.on{border-color:var(--accent);color:var(--bg);background:var(--accent)}
-  .swrap{display:flex;flex-wrap:wrap;gap:7px}
-  .stag{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);padding:5px 12px;font-size:12px;border-radius:4px;transition:all 0.2s;cursor:pointer;font-family:'Inter',sans-serif}
-  .stag:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
-  .stag.lit{border-color:var(--accent);color:var(--bg);background:var(--accent);transform:translateY(-1px);font-weight:600}
-  .stag.dim{opacity:0.15}
+      /* FILTER BTNS */
+      .fbtns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+      }
+      .fbtn {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 6px 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: all 0.18s;
+      }
+      .fbtn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .fbtn.on {
+        border-color: var(--accent);
+        color: var(--bg);
+        background: var(--accent);
+      }
+      .swrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+      .stag {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 5px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+      .stag:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-1px);
+      }
+      .stag.lit {
+        border-color: var(--accent);
+        color: var(--bg);
+        background: var(--accent);
+        transform: translateY(-1px);
+        font-weight: 600;
+      }
+      .stag.dim {
+        opacity: 0.15;
+      }
 
-  /* TIMELINE */
-  .tl{position:relative}
-  .tl::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent) 0%,var(--border) 100%);border-radius:2px}
-  .job{padding:0 0 40px 32px;position:relative;transition:opacity 0.4s,transform 0.4s;opacity:0;transform:translateY(12px)}
-  .job.vis{opacity:1;transform:translateY(0)}
-  .job::before{content:'';position:absolute;left:-5px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 10px rgba(240,165,0,0.5)}
-  .jhead{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:4px}
-  .jco{font-size:17px;font-weight:700;color:var(--white);transition:color 0.2s}
-  .jdate{font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--bg);background:var(--accent);padding:3px 10px;border-radius:20px;flex-shrink:0}
-  .jtitle{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
-  .jdesc{font-family:'Inter',sans-serif;font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:10px}
-  .jbuls{list-style:none;margin-bottom:12px}
-  .jbuls li{font-size:13px;color:var(--text-dim);padding:3px 0 3px 18px;position:relative;line-height:1.6;font-family:'Inter',sans-serif}
-  .jbuls li::before{content:'';position:absolute;left:4px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
-  .jstack{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-  .jtag{font-size:11px;font-weight:500;color:var(--accent);padding:3px 9px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all 0.18s;background:var(--bg2);font-family:'Inter',sans-serif}
-  .jtag.lit{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
-  .jtag:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-  .job.filtered{opacity:0.08}
-  .job.match .jco{color:var(--accent)}
+      /* TIMELINE */
+      .tl {
+        position: relative;
+      }
+      .tl::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(
+          to bottom,
+          var(--accent) 0%,
+          var(--border) 100%
+        );
+        border-radius: 2px;
+      }
+      .job {
+        padding: 0 0 40px 32px;
+        position: relative;
+        transition:
+          opacity 0.4s,
+          transform 0.4s;
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      .job.vis {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .job::before {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: 8px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--bg);
+        box-shadow: 0 0 10px rgba(240, 165, 0, 0.5);
+      }
+      .jhead {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .jco {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--white);
+        transition: color 0.2s;
+      }
+      .jdate {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--bg);
+        background: var(--accent);
+        padding: 3px 10px;
+        border-radius: 20px;
+        flex-shrink: 0;
+      }
+      .jtitle {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+      }
+      .jdesc {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .jbuls {
+        list-style: none;
+        margin-bottom: 12px;
+      }
+      .jbuls li {
+        font-size: 13px;
+        color: var(--text-dim);
+        padding: 3px 0 3px 18px;
+        position: relative;
+        line-height: 1.6;
+        font-family: "Inter", sans-serif;
+      }
+      .jbuls li::before {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 10px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .jstack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+      .jtag {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--accent);
+        padding: 3px 9px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.18s;
+        background: var(--bg2);
+        font-family: "Inter", sans-serif;
+      }
+      .jtag.lit {
+        border-color: var(--accent);
+        color: var(--bg);
+        background: var(--accent);
+        font-weight: 600;
+      }
+      .jtag:hover {
+        background: var(--accent);
+        color: var(--bg);
+        border-color: var(--accent);
+      }
+      .job.filtered {
+        opacity: 0.08;
+      }
+      .job.match .jco {
+        color: var(--accent);
+      }
 
-  /* FILTER BAR */
-  .fbar{display:none;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding:10px 16px;background:var(--accent-light);border:1px solid var(--accent);border-radius:6px;font-size:12px;color:var(--accent);font-weight:500}
-  .fbar.show{display:flex}
-  .fchips{display:flex;flex-wrap:wrap;gap:6px}
-  .fchip{background:var(--bg2);border:1px solid var(--accent);color:var(--accent);padding:3px 10px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;transition:all 0.18s}
-  .fchip:hover{background:var(--accent);color:var(--bg)}
-  .fclear{background:none;border:none;color:var(--accent);cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;margin-left:auto;font-weight:600;text-decoration:underline}
+      /* FILTER BAR */
+      .fbar {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        padding: 10px 16px;
+        background: var(--accent-light);
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .fbar.show {
+        display: flex;
+      }
+      .fchips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .fchip {
+        background: var(--bg2);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        padding: 3px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.18s;
+      }
+      .fchip:hover {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .fclear {
+        background: none;
+        border: none;
+        color: var(--accent);
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        margin-left: auto;
+        font-weight: 600;
+        text-decoration: underline;
+      }
 
-  /* EDUCATION */
-  .edugrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .educard{background:var(--white);border:1px solid var(--border);padding:28px;border-radius:8px;transition:box-shadow 0.2s}
-  .educard:hover{box-shadow:0 4px 16px rgba(26,86,160,0.08)}
-  .edudeg{font-size:15px;font-weight:700;color:var(--text-dim);margin-bottom:8px;line-height:1.4}
-  .eduuni{font-size:12px;font-weight:600;letter-spacing:0.05em;color:var(--accent);margin-bottom:4px}
-  .edumeta{font-size:11px;color:var(--text-muted);letter-spacing:0.08em;margin-bottom:10px}
-  .edugrade{display:inline-block;padding:3px 10px;background:var(--accent-light);border-radius:20px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.08em}
-  .edunote{margin-top:12px;font-family:'Lora',serif;font-size:12.5px;color:var(--text-muted);font-style:italic;line-height:1.65}
+      /* EDUCATION */
+      .edugrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .educard {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 28px;
+        border-radius: 8px;
+        transition: box-shadow 0.2s;
+      }
+      .educard:hover {
+        box-shadow: 0 4px 16px rgba(26, 86, 160, 0.08);
+      }
+      .edudeg {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+      .eduuni {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      .edumeta {
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+      }
+      .edugrade {
+        display: inline-block;
+        padding: 3px 10px;
+        background: var(--accent-light);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+      }
+      .edunote {
+        margin-top: 12px;
+        font-family: "Lora", serif;
+        font-size: 12.5px;
+        color: var(--text-muted);
+        font-style: italic;
+        line-height: 1.65;
+      }
 
-  /* FOOTER */
-  footer{padding:40px 0;text-align:center;background:var(--white);border-top:1px solid var(--border)}
-  .fname{font-size:15px;font-weight:700;color:var(--text-dim);letter-spacing:-0.01em}
-  .fline{width:40px;height:2px;background:var(--accent);margin:12px auto;border-radius:2px}
-  .finfo{font-size:12px;color:var(--text-muted)}
-  .finfo a{color:var(--accent);text-decoration:none}
-  .finfo a:hover{text-decoration:underline}
+      /* FOOTER */
+      footer {
+        padding: 40px 0;
+        text-align: center;
+        background: var(--white);
+        border-top: 1px solid var(--border);
+      }
+      .fname {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-dim);
+        letter-spacing: -0.01em;
+      }
+      .fline {
+        width: 40px;
+        height: 2px;
+        background: var(--accent);
+        margin: 12px auto;
+        border-radius: 2px;
+      }
+      .finfo {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .finfo a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .finfo a:hover {
+        text-decoration: underline;
+      }
 
-  @media(max-width:900px){.edugrid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
-  @media(max-width:720px){
-    .container{padding:0 20px}
-    header{padding:44px 0 36px}
-    .stats{grid-template-columns:1fr 1fr}
-    .edugrid{grid-template-columns:1fr}
-    .tech-table td:first-child{width:130px}
-  }
-</style>
-</head>
-<body>
+      @media (max-width: 900px) {
+        .edugrid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 720px) {
+        .container {
+          padding: 0 20px;
+        }
+        header {
+          padding: 44px 0 36px;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+        .edugrid {
+          grid-template-columns: 1fr;
+        }
+        .tech-table td:first-child {
+          width: 130px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="eyebrow">
+          Senior Fullstack Consultant &nbsp;·&nbsp; West London, UK
+        </div>
+        <h1>Sam <span class="acc">Latif</span></h1>
+        <div class="role">Frontend / UX Specialist &nbsp;·&nbsp; 15+ Years</div>
+        <div class="hcontact">
+          <a href="tel:07851885776"><em>◆</em>07851 885 776</a>
+          <a href="mailto:hello@samlatif.uk"><em>◆</em>hello@samlatif.uk</a>
+          <a href="https://samlatif.uk"><em>◆</em>Vanilla Site</a>
+          <a href="https://react.samlatif.uk"><em>◆</em>React Site</a>
+          <!-- <a href="https://uk.linkedin.com/in/samlatifuk" target="_blank"><em>◆</em>uk.linkedin.com/in/samlatifuk</a> -->
+        </div>
+        <ul class="summary">
+          <p>
+            A senior fullstack consultant with 15+ years delivering
+            high-performance, scalable web applications for blue-chip clients —
+            from Goldman Sachs and Bank of America to Visa and Deutsche Bank.
+          </p>
 
-<header>
-  <div class="container">
-    <div class="eyebrow">Senior Fullstack Consultant &nbsp;·&nbsp; West London, UK</div>
-    <h1>Sam <span class="acc">Latif</span></h1>
-    <div class="role">Frontend / UX Specialist &nbsp;·&nbsp; 15+ Years</div>
-    <div class="hcontact">
-      <a href="tel:07851885776"><em>◆</em>07851 885 776</a>
-      <a href="mailto:hello@samlatif.uk"><em>◆</em>hello@samlatif.uk</a>
-      <a href="https://samlatif.uk"><em>◆</em>Vanilla Site</a>
-      <a href="https://react.samlatif.uk"><em>◆</em>React Site</a>
-      <!-- <a href="https://uk.linkedin.com/in/samlatifuk" target="_blank"><em>◆</em>uk.linkedin.com/in/samlatifuk</a> -->
-    </div>
-    <ul class="summary">
-      <p>A senior fullstack consultant with 15+ years delivering high-performance, scalable web applications for blue-chip clients — from Goldman Sachs and Bank of America to Visa and Deutsche Bank.</p>
+          <p>
+            An early adopter of React, with deep expertise spanning every major
+            version from 0.13 to 18, and a track record of bringing it into
+            organisations before it became mainstream.
+          </p>
 
-      <p>An early adopter of React, with deep expertise spanning every major version from 0.13 to 18, and a track record of bringing it into organisations before it became mainstream.</p>
+          <p>
+            This CV is intentionally published as both Vanilla JS and React
+            versions to demonstrate the same product thinking and UX decisions
+            across different delivery styles — useful when teams need either
+            framework flexibility or zero-dependency performance.
+          </p>
 
-      <p>This CV is intentionally published as both Vanilla JS and React versions to demonstrate the same product thinking and UX decisions across different delivery styles — useful when teams need either framework flexibility or zero-dependency performance.</p>
-
-      <p>Strong eye for design and UX, with a habit of dogfooding work personally — features are QA'd before they ship, eliminating the "chuck it over the fence" bottleneck and getting polished, production-ready work into users' hands faster.</p>
-    </ul>
-  </div>
-</header>
-
-<nav>
-  <div class="container">
-    <div class="nav-inner">
-      <a href="#overview" class="">Overview</a>
-      <a href="#techskills" class="act">Tech Skills</a>
-      <a href="#skills" class="">Stack Tags</a>
-      <a href="#experience" class="">Experience</a>
-      <a href="#education" class="">Education</a>
-    </div>
-  </div>
-</nav>
-
-<section id="overview">
-  <div class="container">
-    <div class="stats">
-      <div class="stat">
-        <div class="sn">15+</div>
-        <div class="sl">Years Experience</div>
+          <p>
+            Strong eye for design and UX, with a habit of dogfooding work
+            personally — features are QA'd before they ship, eliminating the
+            "chuck it over the fence" bottleneck and getting polished,
+            production-ready work into users' hands faster.
+          </p>
+        </ul>
       </div>
-      <div class="stat">
-        <div class="sn">25+</div>
-        <div class="sl">Client Engagements</div>
+    </header>
+
+    <nav>
+      <div class="container">
+        <div class="nav-inner">
+          <a href="#overview" class="">Overview</a>
+          <a href="#techskills" class="act">Tech Skills</a>
+          <a href="#skills" class="">Stack Tags</a>
+          <a href="#experience" class="">Experience</a>
+          <a href="#education" class="">Education</a>
+        </div>
       </div>
-      <div class="stat">
-        <div class="sn">5</div>
-        <div class="sl">Finance Institutions</div>
+    </nav>
+
+    <section id="overview">
+      <div class="container">
+        <div class="stats">
+          <div class="stat">
+            <div class="sn">15+</div>
+            <div class="sl">Years Experience</div>
+          </div>
+          <div class="stat">
+            <div class="sn">25+</div>
+            <div class="sl">Client Engagements</div>
+          </div>
+          <div class="stat">
+            <div class="sn">5</div>
+            <div class="sl">Finance Institutions</div>
+          </div>
+          <div class="stat">
+            <div class="sn">MSc</div>
+            <div class="sl">1st Class BSc</div>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <div class="sn">MSc</div>
-        <div class="sl">1st Class BSc</div>
+    </section>
+
+    <section id="techskills">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">01</span>
+          <h2>Technical Skills</h2>
+          <div class="sline"></div>
+        </div>
+        <table class="tech-table" id="techTable">
+          <tbody></tbody>
+        </table>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section id="techskills">
-  <div class="container">
-    <div class="shead">
-      <span class="snum">01</span>
-      <h2>Technical Skills</h2>
-      <div class="sline"></div>
-    </div>
-    <table class="tech-table" id="techTable">
-      <tbody></tbody>
-    </table>
-  </div>
-</section>
-
-<section id="skills">
-  <div class="container">
-    <div class="shead">
-      <span class="snum">02</span>
-      <h2>Stack at a Glance</h2>
-      <div class="sline"></div>
-    </div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:18px">
-      Filter by category — or click any tech tag in the timeline to highlight matching roles.
-    </p>
-    <div class="fbtns">
-      <button class="fbtn on" data-cat="all">All</button>
-      <button class="fbtn" data-cat="core">Core</button>
-      <button class="fbtn" data-cat="state">State</button>
-      <button class="fbtn" data-cat="testing">Testing</button>
-      <button class="fbtn" data-cat="ui">UI &amp; Design</button>
-      <button class="fbtn" data-cat="tooling">Tooling</button>
-      <button class="fbtn" data-cat="cms">CMS / Other</button>
-    </div>
-    <div class="swrap" id="swrap"></div>
-  </div>
-</section>
-
-<section id="experience">
-  <div class="container">
-    <div class="shead">
-      <span class="snum">03</span>
-      <h2>Experience</h2>
-      <div class="sline"></div>
-    </div>
-    <div class="fbar" id="fbar">
-      <span>Filtering by:</span>
-      <div class="fchips" id="fchips"></div>
-      <button class="fclear" onclick="clearF()">Clear ×</button>
-    </div>
-    <div class="tl" id="tl"></div>
-  </div>
-</section>
-
-<section id="education">
-  <div class="container">
-    <div class="shead">
-      <span class="snum">04</span>
-      <h2>Education</h2>
-      <div class="sline"></div>
-    </div>
-    <div class="edugrid">
-      <div class="educard">
-        <div class="edudeg">MSc Computer Games &amp; Entertainment</div>
-        <div class="eduuni">Goldsmiths, University of London</div>
-        <div class="edumeta">2011 – 2012</div>
-        <div class="edugrade">Merit · 67%</div>
-        <div class="edunote">Final project deferred to maintain quality of concurrent client commitments.</div>
+    <section id="skills">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">02</span>
+          <h2>Stack at a Glance</h2>
+          <div class="sline"></div>
+        </div>
+        <p
+          style="font-size: 12px; color: var(--text-muted); margin-bottom: 18px"
+        >
+          Filter by category — or click any tech tag in the timeline to
+          highlight matching roles.
+        </p>
+        <div class="fbtns">
+          <button class="fbtn on" data-cat="all">All</button>
+          <button class="fbtn" data-cat="core">Core</button>
+          <button class="fbtn" data-cat="state">State</button>
+          <button class="fbtn" data-cat="testing">Testing</button>
+          <button class="fbtn" data-cat="ui">UI &amp; Design</button>
+          <button class="fbtn" data-cat="tooling">Tooling</button>
+          <button class="fbtn" data-cat="cms">CMS / Other</button>
+        </div>
+        <div class="swrap" id="swrap"></div>
       </div>
-      <div class="educard">
-        <div class="edudeg">BSc Computer Games Technologies</div>
-        <div class="eduuni">University of East London</div>
-        <div class="edumeta">2007 – 2010</div>
-        <div class="edugrade">1st Class Honours</div>
-        <div class="edunote">Modules: Games Programming, 3D Graphics, Virtual Environments, Network Gaming, Advanced Animation, Project Management.</div>
+    </section>
+
+    <section id="experience">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">03</span>
+          <h2>Experience</h2>
+          <div class="sline"></div>
+        </div>
+        <div class="fbar" id="fbar">
+          <span>Filtering by:</span>
+          <div class="fchips" id="fchips"></div>
+          <button class="fclear" onclick="clearF()">Clear ×</button>
+        </div>
+        <div class="tl" id="tl"></div>
       </div>
-      <div class="educard">
-        <div class="edudeg">BSc Cognitive Science <span style="font-size:12px;font-weight:400;font-style:italic">(1st year attended)</span></div>
-        <div class="eduuni">University of Leeds</div>
-        <div class="edumeta">2005 – 2006</div>
-        <div class="edugrade">Year 1 Completed</div>
-        <div class="edunote">Foundations in HCI, UX design, human behaviour and logic — directly relevant to frontend and UX work. Transferred to pursue a CS-focused degree.</div>
+    </section>
+
+    <section id="education">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">04</span>
+          <h2>Education</h2>
+          <div class="sline"></div>
+        </div>
+        <div class="edugrid">
+          <div class="educard">
+            <div class="edudeg">MSc Computer Games &amp; Entertainment</div>
+            <div class="eduuni">Goldsmiths, University of London</div>
+            <div class="edumeta">2011 – 2012</div>
+            <div class="edugrade">Merit · 67%</div>
+            <div class="edunote">
+              Final project deferred to maintain quality of concurrent client
+              commitments.
+            </div>
+          </div>
+          <div class="educard">
+            <div class="edudeg">BSc Computer Games Technologies</div>
+            <div class="eduuni">University of East London</div>
+            <div class="edumeta">2007 – 2010</div>
+            <div class="edugrade">1st Class Honours</div>
+            <div class="edunote">
+              Modules: Games Programming, 3D Graphics, Virtual Environments,
+              Network Gaming, Advanced Animation, Project Management.
+            </div>
+          </div>
+          <div class="educard">
+            <div class="edudeg">
+              BSc Cognitive Science
+              <span
+                style="font-size: 12px; font-weight: 400; font-style: italic"
+                >(1st year attended)</span
+              >
+            </div>
+            <div class="eduuni">University of Leeds</div>
+            <div class="edumeta">2005 – 2006</div>
+            <div class="edugrade">Year 1 Completed</div>
+            <div class="edunote">
+              Foundations in HCI, UX design, human behaviour and logic —
+              directly relevant to frontend and UX work. Transferred to pursue a
+              CS-focused degree.
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<footer>
-  <div class="container">
-    <div class="fname">Sam Latif</div>
-    <div class="fline"></div>
-    <div class="finfo">
-      <a href="mailto:hello@samlatif.uk">hello@samlatif.uk</a> &nbsp;·&nbsp;
-      <a href="tel:07851885776">07851 885 776</a> &nbsp;·&nbsp;
-      <a href="https://samlatif.uk">Vanilla Site</a> &nbsp;·&nbsp;
-      <a href="https://react.samlatif.uk">React Site</a>
-    </div>
-  </div>
-</footer>
+    <footer>
+      <div class="container">
+        <div class="fname">Sam Latif</div>
+        <div class="fline"></div>
+        <div class="finfo">
+          <a href="mailto:hello@samlatif.uk">hello@samlatif.uk</a> &nbsp;·&nbsp;
+          <a href="tel:07851885776">07851 885 776</a> &nbsp;·&nbsp;
+          <a href="https://samlatif.uk">Vanilla Site</a> &nbsp;·&nbsp;
+          <a href="https://react.samlatif.uk">React Site</a>
+        </div>
+      </div>
+    </footer>
 
-<script>
-const TECH_ROWS = [
-  {cat:'Front End',   items:'HTML5, CSS / SCSS / SASS / LESS, JS (OOP, Functional, FRP)', yrs:'15+'},
-  {cat:'Design Tools',items:'Photoshop, Sketch, Figma', yrs:'15+'},
-  {cat:'JS Frameworks',items:'React, React Native, Redux, TypeScript, Next.js', yrs:'13+'},
-  {cat:'Testing',     items:'React Testing Library, Cypress, Jest, Enzyme, Mocha, Karma, Istanbul', yrs:'13+'},
-  {cat:'Wireframing', items:'Axure, Balsamiq, FluidUI, Sketch, Pen & Paper', yrs:'13+'},
-  {cat:'CMS / Ecomm', items:'WordPress, Magento/OSCommerce, Umbraco, Adobe CQ5', yrs:'10+'},
-  {cat:'Version Control',items:'Git, Mercurial, SVN', yrs:'15+'},
-  {cat:'State Mgmt',  items:'Redux, Redux Toolkit, Context API, Zustand, React Query, TRPC', yrs:'12+'},
-  {cat:'Backend / DB',items:'Node.js, MongoDB, MySQL, PHP, GraphQL', yrs:'11+'},
-  {cat:'Visualisation',items:'D3.js, Three.js, Highcharts, Canvas (FabricJS, PixiJS)', yrs:'10+'},
-];
+    <script>
+      const TECH_ROWS = [
+        {
+          cat: "Front End",
+          items: "HTML5, CSS / SCSS / SASS / LESS, JS (OOP, Functional, FRP)",
+          yrs: "15+",
+        },
+        { cat: "Design Tools", items: "Photoshop, Sketch, Figma", yrs: "15+" },
+        {
+          cat: "JS Frameworks",
+          items: "React, React Native, Redux, TypeScript, Next.js",
+          yrs: "13+",
+        },
+        {
+          cat: "Testing",
+          items:
+            "React Testing Library, Cypress, Jest, Enzyme, Mocha, Karma, Istanbul",
+          yrs: "13+",
+        },
+        {
+          cat: "Wireframing",
+          items: "Axure, Balsamiq, FluidUI, Sketch, Pen & Paper",
+          yrs: "13+",
+        },
+        {
+          cat: "CMS / Ecomm",
+          items: "WordPress, Magento/OSCommerce, Umbraco, Adobe CQ5",
+          yrs: "10+",
+        },
+        { cat: "Version Control", items: "Git, Mercurial, SVN", yrs: "15+" },
+        {
+          cat: "State Mgmt",
+          items:
+            "Redux, Redux Toolkit, Context API, Zustand, React Query, TRPC",
+          yrs: "12+",
+        },
+        {
+          cat: "Backend / DB",
+          items: "Node.js, MongoDB, MySQL, PHP, GraphQL",
+          yrs: "11+",
+        },
+        {
+          cat: "Visualisation",
+          items: "D3.js, Three.js, Highcharts, Canvas (FabricJS, PixiJS)",
+          yrs: "10+",
+        },
+      ];
 
-const SKILLS = [
-  {n:'React',c:'core'},{n:'React Native',c:'core'},{n:'TypeScript',c:'core'},{n:'JavaScript (ES6+)',c:'core'},{n:'JavaScript (ES5)',c:'core'},
-  {n:'HTML5',c:'core'},{n:'CSS3 / SCSS / LESS',c:'core'},{n:'Next.js',c:'core'},{n:'Node.js',c:'core'},
-  {n:'GraphQL',c:'core'},{n:'RESTful APIs',c:'core'},
-  {n:'Redux',c:'state'},{n:'Redux Toolkit',c:'state'},{n:'React Query',c:'state'},
-  {n:'TRPC',c:'state'},{n:'Zustand',c:'state'},{n:'Context API',c:'state'},
-  {n:'Jest',c:'testing'},{n:'React Testing Library',c:'testing'},{n:'Cypress',c:'testing'},
-  {n:'Enzyme',c:'testing'},{n:'Mocha',c:'testing'},{n:'Karma',c:'testing'},
-  {n:'Figma',c:'ui'},{n:'Sketch',c:'ui'},{n:'Chakra UI',c:'ui'},{n:'Mantine UI',c:'ui'},
-  {n:'Material-UI',c:'ui'},{n:'styled-components',c:'ui'},{n:'Storybook',c:'ui'},
-  {n:'Ag-grid',c:'ui'},{n:'Highcharts',c:'ui'},{n:'D3.js',c:'ui'},{n:'Three.js',c:'ui'},
-  {n:'Webpack',c:'tooling'},{n:'Babel',c:'tooling'},{n:'Git',c:'tooling'},{n:'Rollup',c:'tooling'},{n:'Gulp',c:'tooling'},
-  {n:'WordPress',c:'cms'},{n:'Magento',c:'cms'},{n:'Umbraco',c:'cms'},{n:'Adobe CQ5',c:'cms'},
-];
+      const SKILLS = [
+        { n: "React", c: "core" },
+        { n: "React Native", c: "core" },
+        { n: "TypeScript", c: "core" },
+        { n: "JavaScript (ES6+)", c: "core" },
+        { n: "JavaScript (ES5)", c: "core" },
+        { n: "HTML5", c: "core" },
+        { n: "CSS3 / SCSS / LESS", c: "core" },
+        { n: "Next.js", c: "core" },
+        { n: "Node.js", c: "core" },
+        { n: "GraphQL", c: "core" },
+        { n: "RESTful APIs", c: "core" },
+        { n: "Redux", c: "state" },
+        { n: "Redux Toolkit", c: "state" },
+        { n: "React Query", c: "state" },
+        { n: "TRPC", c: "state" },
+        { n: "Zustand", c: "state" },
+        { n: "Context API", c: "state" },
+        { n: "Jest", c: "testing" },
+        { n: "React Testing Library", c: "testing" },
+        { n: "Cypress", c: "testing" },
+        { n: "Enzyme", c: "testing" },
+        { n: "Mocha", c: "testing" },
+        { n: "Karma", c: "testing" },
+        { n: "Figma", c: "ui" },
+        { n: "Sketch", c: "ui" },
+        { n: "Chakra UI", c: "ui" },
+        { n: "Mantine UI", c: "ui" },
+        { n: "Material-UI", c: "ui" },
+        { n: "styled-components", c: "ui" },
+        { n: "Storybook", c: "ui" },
+        { n: "Ag-grid", c: "ui" },
+        { n: "Highcharts", c: "ui" },
+        { n: "D3.js", c: "ui" },
+        { n: "Three.js", c: "ui" },
+        { n: "Webpack", c: "tooling" },
+        { n: "Babel", c: "tooling" },
+        { n: "Git", c: "tooling" },
+        { n: "Rollup", c: "tooling" },
+        { n: "Gulp", c: "tooling" },
+        { n: "WordPress", c: "cms" },
+        { n: "Magento", c: "cms" },
+        { n: "Umbraco", c: "cms" },
+        { n: "Adobe CQ5", c: "cms" },
+      ];
 
-const DATE_BASED_STACK_DEFAULTS = [
-  {skill:'JavaScript (ES6+)', minStartYear:2015},
-  {skill:'JavaScript (ES5)', maxStartYear:2014},
-];
+      const DATE_BASED_STACK_DEFAULTS = [
+        { skill: "JavaScript (ES6+)", minStartYear: 2015 },
+        { skill: "JavaScript (ES5)", maxStartYear: 2014 },
+      ];
 
-const GLOBAL_STACK_DEFAULTS = ['HTML5','CSS3 / SCSS / LESS','Git'];
+      const GLOBAL_STACK_DEFAULTS = ["HTML5", "CSS3 / SCSS / LESS", "Git"];
 
-const JOBS = [
-  {co:'Bank of America', date:'Nov 2024 – Present', title:'Senior Fullstack JS Engineer',
-   desc:'Ongoing engagement delivering new features and resolving legacy code and bugs for an internal portal.',
-   bullets:[
-     'Developed and shipped new features for a business-critical internal portal used across the organisation',
-     'Identified and resolved long-standing bugs in legacy code, improving stability and user experience',
-     'Maintained high code quality with Jest and React Testing Library throughout',
-     'Built an automated PowerPoint deck generator, replacing a manual process that previously took users weeks or even months to complete',
-   ],
-   stack:['React','TypeScript','GraphQL','Material-UI','Jest','React Testing Library']},
-  {co:'Anmut Consulting', date:'Dec 2022 – Apr 2024', title:'Fullstack Engineer',
-   desc:'Greenfield project with multiple critical release milestones, fast-growing team, high autonomy.',
-   bullets:['Translated complex Figma designs into a reusable React component library with pixel-perfect fidelity','Developed and maintained a comprehensive component library using Next.js and React 18','Implemented state management using TRPC and React Query, optimising data flow and performance'],
-   stack:['Next.js','React 18','TRPC','Mantine UI','React Query']},
-  {co:'Bank of America', date:'Feb – Aug 2022', title:'Contract Senior React Developer',
-   desc:'FX Options Risk trading team — optimising rendering speeds of large financial datasets.',
-   bullets:['Reduced rendering times from seconds to milliseconds, dramatically improving trader workflow efficiency','Built a production-grade RFQ instrument editor in React 18, TypeScript and Redux','Applied virtualisation and memoisation techniques to handle large-scale data at speed'],
-   stack:['React 18','ReactGrid','TypeScript','Redux','Jest']},
-  {co:'ITRIOM', date:'Sep – Dec 2021', title:'Contract Senior React Developer',
-   desc:'Delivered a high-fidelity rapid prototype for a confidential client, showcasing product features and user flows.',
-   bullets:['Built a fully functional prototype within tight deadlines for key stakeholder review and testing','Utilised Chakra UI for a consistent and responsive design system','Implemented complex animations using react-spring to enhance user engagement'],
-   stack:['TypeScript','React','Chakra UI','react-router-dom','react-spring']},
-  {co:'Visa', date:'Jun – Sep 2021', title:'Contract Senior React Developer',
-   desc:'Joined an overdue project to resolve critical bugs and implement new features, ensuring timely delivery.',
-   bullets:['Refactored legacy code, reducing bug reports by 40%','Implemented new UI components using styled-components and GSAP animations','Collaborated with QA to establish comprehensive test coverage'],
-   stack:['React','react-router-dom','styled-components','Zustand','GSAP']},
-  {co:'CompareTheMarket.com', date:'Jan – Mar 2021', title:'Contract Senior React Developer',
-   desc:'Delivered a high-fidelity rapid prototype for a new product offering, working tightly with UX and product stakeholders.',
-   bullets:['Developed a fully interactive prototype enabling stakeholders to test and refine the user journey','Created a responsive and accessible interface using Chakra UI','Implemented complex form logic and validation using Formik and Yup'],
-   stack:['React','Chakra UI','react-router-dom','Formik','Yup']},
-  {co:'Deutsche Bank', date:'May – Dec 2020', title:'Contract Senior React Developer',
-   desc:'Led migration of components from a legacy Angular application to a new React-based system.',
-   bullets:['Successfully migrated critical components with full feature parity and improved performance','Implemented robust state management with Redux and Redux Toolkit','Achieved 90%+ code coverage with Jest and React Testing Library'],
-   stack:['TypeScript','React','Redux','Redux Toolkit','styled-components','Jest','React Testing Library']},
-  {co:'Deloitte Digital', date:'Feb – Mar 2020', title:'Contract Senior React Developer',
-   desc:'Brought in as a specialist resource to fix critical issues on an outsourced project.',
-   bullets:[],stack:['React','SCSS','Formik','Reach Router']},
-  {co:'GotU (77Agency)', date:'Nov 2019 – Jan 2020', title:'Contract Senior React Developer',
-   desc:'Delivered a full platform rebuild for the tech unit of 77Agency under very tight deadlines.',
-   bullets:['Delivered an entire platform rebuild, meeting aggressive project milestones'],
-   stack:['React','TypeScript','GraphQL','Apollo Client','Material-UI','React Testing Library']},
-  {co:'UBS', date:'Nov 2018 – Nov 2019', title:'Contract Senior React Developer',
-   desc:'Developed a React-based UI component library for the UBS Financial Reporting department.',
-   bullets:['Built a comprehensive, reusable component library using React 16 and Storybook','Integrated Ag-grid and Highcharts for complex financial data visualisation'],
-   stack:['React 16','Storybook','React Testing Library','Jest','Ag-grid','Highcharts','LESS','CSS Modules']},
-  {co:'The Stars Group', date:'Feb – Nov 2018', title:'Contract Senior React Developer',
-   desc:"Cross-timezone agile team — delivered business-critical features for BetStars' CMS web application.",
-   bullets:['Delivered business-critical features across a full agile team: FE/BE devs, QA, BA, PM, Scrum master','Extensive pair-programming and tight code reviews to maintain high standards'],
-   stack:['React 15/16','TypeScript','GraphQL','Redux','Redux-Form','SCSS','Webpack','Babel','React Testing Library','Enzyme','Mocha']},
-  {co:'RehabStudio', date:'Jan – Feb 2018', title:'Contract Frontend Developer',
-   desc:"Developed the front end for Facebook's Startup Garage — delivered in 10 days, fully responsive, English and French.",
-   bullets:["Built startupgarage.fb.com in 10 days — both English and French versions, fully responsive"],
-   stack:['WordPress','HTML','jQuery','SCSS','Rollup','Bootstrap 3']},
-  {co:'Goldman Sachs', date:'Jan – Oct 2017', title:'Contract Senior React Developer — SPACE',
-   desc:'Designed and built SPACE — a highly scalable web platform for the retail client base within the Securities division.',
-   bullets:['Shaped client experience, creating new technology-driven businesses','Externalised core analytics and data to both existing clients and new markets','Platform supported the full trading lifecycle: idea generation, price discovery, primary/secondary trading'],
-   stack:['HTML5','CSS3','React','Redux','Redux-Saga','Reselect','Redux Form','Material-UI','Webpack','Karma','Mocha','Enzyme']},
-  {co:'Carillion PLC (via Headlines)', date:'Nov – Dec 2016', title:'Contract React Native Developer',
-   desc:'Built a cross-platform iOS and Android app ("Carillion Pulse") using React Native, replacing a bug-ridden legacy version.',
-   bullets:[],stack:['React Native','Ignite']},
-  {co:'Future Platforms', date:'Feb – Oct 2016', title:'Contract Senior Frontend Developer',
-   desc:"Domino's Pizza and Ralph Lauren projects including two micro-sites under 3 and 5 week deadlines.",
-   bullets:["Built a Domino's Pizza Android app for store managers","Delivered two Ralph Lauren micro-sites under very tight deadlines"],
-   stack:['React Native','React 0.15','Redux','Babel','Webpack','SASS','PostCSS','jQuery','Azure/.NET']},
-  {co:'RMA Consulting / HSBC', date:'Aug 2015 – Jan 2016', title:'Creative Technologist',
-   desc:'Developed a high-fidelity prototype for HSBCnet.',bullets:[],
-   stack:['React 0.13/14','Redux','Node.js','Webpack','Babel','React Router']},
-  {co:'InSitYou Software', date:'Mar – Aug 2015', title:'Senior Fullstack Developer',
-   desc:'Built in-house seat allocation and floor-plan visualisation software for architectural practices.',
-   bullets:['Parsed large CSV datasets into a ranked-relationship seating algorithm','Visualised floor plans using D3, Canvas (FabricJS/PixiJS) and SVG','Mentored a junior SQL developer through HTML, CSS, JS and full-stack Meteor development'],
-  stack:['JavaScript (ES6+)','Three.js','D3.js','Canvas','React','AngularJS','Meteor','MongoDB','Node.js','SCSS']},
-  {co:'Thought Machine', date:'Jan – Feb 2015', title:'Contract Creative Technologist',
-   desc:'Developed rapid prototypes from UX research through to Axure/Balsamiq and Sketch to InVision.',
-   bullets:[],stack:['Axure','Balsamiq','Sketch','InVision']},
-  {co:'CACI / Chelsea FC', date:'Oct – Dec 2014', title:'Contract Frontend Developer',
-   desc:'Sole front-end/UX resource to deliver an overdue gamification project for Chelsea FC.',
-   bullets:['Delivered a gamification platform using Adobe CQ5 on the back end','Implemented social and gamification integration via Gigya'],
-   stack:['HTML5','CSS','jQuery','Adobe CQ5','Java Spring MVC','Gigya']},
-  {co:'We3Collective', date:'Sep – Nov 2014', title:'Contract JavaScript Developer',
-   desc:'Integrated front-end WordPress HTML templates to a CakePHP-driven backend using a bespoke JS MVC framework.',
-  bullets:[],stack:['JavaScript (ES5)','jQuery','WordPress','CakePHP','PHP']},
-  {co:'Paper', date:'Aug – Sep 2014', title:'Contract Frontend Developer',
-   desc:'Front-end work for a high-profile project for Macmillan Cancer Support on a .NET/Umbraco stack.',
-   bullets:['Focused on highly modular and reusable design patterns'],
-   stack:['HTML5','SCSS','jQuery','Umbraco']},
-  {co:'RehabStudio', date:'Aug 2014', title:'Contract Frontend Developer',
-   desc:'Short-term engagement with a leading creative tech team on a project for Google.',
-  bullets:[],stack:['Node.js','Three.js','HTML5 Canvas','JavaScript (ES5)']},
-  {co:'Quill Content', date:'Jun – Aug 2014', title:'Contract Frontend Developer',
-   desc:"Sole frontend developer parachuted in to help Quill Content hit delivery milestones.",
-   bullets:['Full platform reskin based on a 3-page style guide and wireframes','Introduced SMACSS architecture and refactored SCSS for maintainability'],
-   stack:['Ruby on Rails','HAML','SCSS','CoffeeScript','jQuery','D3.js']},
-  {co:'The Social Partners', date:'May 2014', title:'Contract Frontend Developer',
-   desc:"Delivered a responsive microsite (Millionaire Quiz) for The Sunday Times – The Rich List 2014.",
-  bullets:[],stack:['Node.js','AngularJS','HTML5','SASS','JavaScript (ES5)']},
-  {co:'Fox Parrack Singapour', date:'Apr 2014', title:'Contract Frontend Developer',
-   desc:"Delivered a responsive landing page for Cisco with three time-of-day visual themes and HTML5 Video background.",
-   bullets:['Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables','HTML5 Video full-page background changing by time of day'],
-  stack:['HTML5','SASS','JavaScript (ES5)','jQuery']},
-  {co:'Redbox Digital', date:'Nov 2013 – Apr 2014', title:'Contract Magento Developer',
-   desc:'Hired for front-end and UX expertise; also covered SysAdmin/DevOps, MySQL, and Magento backend.',
-   bullets:['Delivered fully responsive pages for Paperchase across five breakpoints','Extended Google Maps API to generate markers for six Paperchase store types'],
-   stack:['Magento','PHP','MySQL','HTML5','CSS','jQuery','Google Maps API']},
-  {co:'Grabble Ltd', date:'Jul – Nov 2013', title:'Contract Frontend Developer',
-   desc:'Implemented new responsive designs and features on an inherited, poorly-maintained codebase.',
-   bullets:['Rewrote significant portions of the inherited codebase for long-term maintainability','New features prototyped from hand-drawn wireframes to working code within a day'],
-   stack:['PHP (Zend)','Bootstrap','HTML5','CSS3','jQuery']},
-  {co:'HeathWallace / HSBC', date:'Jul 2013', title:'Contract PHP/MySQL Developer',
-   desc:'Updated HSBCnet Expat Explorer with new yearly statistics. Completed 4-week contract in 2.5 weeks.',
-   bullets:['Parsed large dataset and updated the site using CakePHP/MySQL','Wrote unit tests for each criterion dataset, matched against raw YouGov data'],
-   stack:['PHP','MySQL','CakePHP']},
-  {co:'Vaultigo', date:'Jan – Jun 2013', title:'Contract Frontend Developer',
-   desc:'Built on a LAMP/Symfony2 stack. Spearheaded adoption of HAML/SCSS for maintainable, modular code.',
-   bullets:[],stack:['PHP','Symfony2','HAML','SCSS','jQuery','Highcharts']},
-  {co:'Goldsmiths, University of London', date:'Jan – Jun 2012', title:'Postgraduate Teaching Assistant',
-   desc:'Supported practical lab sessions for large groups (60+ students). Graded first-year undergraduate coursework.',
-   bullets:['Communicated technical concepts to a diverse group in an accessible, clear manner'],
-   stack:[]},
-];
+      const JOBS = [
+        {
+          co: "Bank of America",
+          date: "Nov 2024 – Present",
+          title: "Senior Fullstack JS Engineer",
+          desc: "Ongoing engagement delivering new features and resolving legacy code and bugs for an internal portal.",
+          bullets: [
+            "Developed and shipped new features for a business-critical internal portal used across the organisation",
+            "Identified and resolved long-standing bugs in legacy code, improving stability and user experience",
+            "Maintained high code quality with Jest and React Testing Library throughout",
+            "Built an automated PowerPoint deck generator, replacing a manual process that previously took users weeks or even months to complete",
+          ],
+          stack: [
+            "React",
+            "TypeScript",
+            "GraphQL",
+            "Material-UI",
+            "Jest",
+            "React Testing Library",
+          ],
+        },
+        {
+          co: "Anmut Consulting",
+          date: "Dec 2022 – Apr 2024",
+          title: "Fullstack Engineer",
+          desc: "Greenfield project with multiple critical release milestones, fast-growing team, high autonomy.",
+          bullets: [
+            "Translated complex Figma designs into a reusable React component library with pixel-perfect fidelity",
+            "Developed and maintained a comprehensive component library using Next.js and React 18",
+            "Implemented state management using TRPC and React Query, optimising data flow and performance",
+          ],
+          stack: ["Next.js", "React 18", "TRPC", "Mantine UI", "React Query"],
+        },
+        {
+          co: "Bank of America",
+          date: "Feb – Aug 2022",
+          title: "Contract Senior React Developer",
+          desc: "FX Options Risk trading team — optimising rendering speeds of large financial datasets.",
+          bullets: [
+            "Reduced rendering times from seconds to milliseconds, dramatically improving trader workflow efficiency",
+            "Built a production-grade RFQ instrument editor in React 18, TypeScript and Redux",
+            "Applied virtualisation and memoisation techniques to handle large-scale data at speed",
+          ],
+          stack: ["React 18", "ReactGrid", "TypeScript", "Redux", "Jest"],
+        },
+        {
+          co: "ITRIOM",
+          date: "Sep – Dec 2021",
+          title: "Contract Senior React Developer",
+          desc: "Delivered a high-fidelity rapid prototype for a confidential client, showcasing product features and user flows.",
+          bullets: [
+            "Built a fully functional prototype within tight deadlines for key stakeholder review and testing",
+            "Utilised Chakra UI for a consistent and responsive design system",
+            "Implemented complex animations using react-spring to enhance user engagement",
+          ],
+          stack: [
+            "TypeScript",
+            "React",
+            "Chakra UI",
+            "react-router-dom",
+            "react-spring",
+          ],
+        },
+        {
+          co: "Visa",
+          date: "Jun – Sep 2021",
+          title: "Contract Senior React Developer",
+          desc: "Joined an overdue project to resolve critical bugs and implement new features, ensuring timely delivery.",
+          bullets: [
+            "Refactored legacy code, reducing bug reports by 40%",
+            "Implemented new UI components using styled-components and GSAP animations",
+            "Collaborated with QA to establish comprehensive test coverage",
+          ],
+          stack: [
+            "React",
+            "react-router-dom",
+            "styled-components",
+            "Zustand",
+            "GSAP",
+          ],
+        },
+        {
+          co: "CompareTheMarket.com",
+          date: "Jan – Mar 2021",
+          title: "Contract Senior React Developer",
+          desc: "Delivered a high-fidelity rapid prototype for a new product offering, working tightly with UX and product stakeholders.",
+          bullets: [
+            "Developed a fully interactive prototype enabling stakeholders to test and refine the user journey",
+            "Created a responsive and accessible interface using Chakra UI",
+            "Implemented complex form logic and validation using Formik and Yup",
+          ],
+          stack: ["React", "Chakra UI", "react-router-dom", "Formik", "Yup"],
+        },
+        {
+          co: "Deutsche Bank",
+          date: "May – Dec 2020",
+          title: "Contract Senior React Developer",
+          desc: "Led migration of components from a legacy Angular application to a new React-based system.",
+          bullets: [
+            "Successfully migrated critical components with full feature parity and improved performance",
+            "Implemented robust state management with Redux and Redux Toolkit",
+            "Achieved 90%+ code coverage with Jest and React Testing Library",
+          ],
+          stack: [
+            "TypeScript",
+            "React",
+            "Redux",
+            "Redux Toolkit",
+            "styled-components",
+            "Jest",
+            "React Testing Library",
+          ],
+        },
+        {
+          co: "Deloitte Digital",
+          date: "Feb – Mar 2020",
+          title: "Contract Senior React Developer",
+          desc: "Brought in as a specialist resource to fix critical issues on an outsourced project.",
+          bullets: [],
+          stack: ["React", "SCSS", "Formik", "Reach Router"],
+        },
+        {
+          co: "GotU (77Agency)",
+          date: "Nov 2019 – Jan 2020",
+          title: "Contract Senior React Developer",
+          desc: "Delivered a full platform rebuild for the tech unit of 77Agency under very tight deadlines.",
+          bullets: [
+            "Delivered an entire platform rebuild, meeting aggressive project milestones",
+          ],
+          stack: [
+            "React",
+            "TypeScript",
+            "GraphQL",
+            "Apollo Client",
+            "Material-UI",
+            "React Testing Library",
+          ],
+        },
+        {
+          co: "UBS",
+          date: "Nov 2018 – Nov 2019",
+          title: "Contract Senior React Developer",
+          desc: "Developed a React-based UI component library for the UBS Financial Reporting department.",
+          bullets: [
+            "Built a comprehensive, reusable component library using React 16 and Storybook",
+            "Integrated Ag-grid and Highcharts for complex financial data visualisation",
+          ],
+          stack: [
+            "React 16",
+            "Storybook",
+            "React Testing Library",
+            "Jest",
+            "Ag-grid",
+            "Highcharts",
+            "LESS",
+            "CSS Modules",
+          ],
+        },
+        {
+          co: "The Stars Group",
+          date: "Feb – Nov 2018",
+          title: "Contract Senior React Developer",
+          desc: "Cross-timezone agile team — delivered business-critical features for BetStars' CMS web application.",
+          bullets: [
+            "Delivered business-critical features across a full agile team: FE/BE devs, QA, BA, PM, Scrum master",
+            "Extensive pair-programming and tight code reviews to maintain high standards",
+          ],
+          stack: [
+            "React 15/16",
+            "TypeScript",
+            "GraphQL",
+            "Redux",
+            "Redux-Form",
+            "SCSS",
+            "Webpack",
+            "Babel",
+            "React Testing Library",
+            "Enzyme",
+            "Mocha",
+          ],
+        },
+        {
+          co: "RehabStudio",
+          date: "Jan – Feb 2018",
+          title: "Contract Frontend Developer",
+          desc: "Developed the front end for Facebook's Startup Garage — delivered in 10 days, fully responsive, English and French.",
+          bullets: [
+            "Built startupgarage.fb.com in 10 days — both English and French versions, fully responsive",
+          ],
+          stack: [
+            "WordPress",
+            "HTML",
+            "jQuery",
+            "SCSS",
+            "Rollup",
+            "Bootstrap 3",
+          ],
+        },
+        {
+          co: "Goldman Sachs",
+          date: "Jan – Oct 2017",
+          title: "Contract Senior React Developer — SPACE",
+          desc: "Designed and built SPACE — a highly scalable web platform for the retail client base within the Securities division.",
+          bullets: [
+            "Shaped client experience, creating new technology-driven businesses",
+            "Externalised core analytics and data to both existing clients and new markets",
+            "Platform supported the full trading lifecycle: idea generation, price discovery, primary/secondary trading",
+          ],
+          stack: [
+            "HTML5",
+            "CSS3",
+            "React",
+            "Redux",
+            "Redux-Saga",
+            "Reselect",
+            "Redux Form",
+            "Material-UI",
+            "Webpack",
+            "Karma",
+            "Mocha",
+            "Enzyme",
+          ],
+        },
+        {
+          co: "Carillion PLC (via Headlines)",
+          date: "Nov – Dec 2016",
+          title: "Contract React Native Developer",
+          desc: 'Built a cross-platform iOS and Android app ("Carillion Pulse") using React Native, replacing a bug-ridden legacy version.',
+          bullets: [],
+          stack: ["React Native", "Ignite"],
+        },
+        {
+          co: "Future Platforms",
+          date: "Feb – Oct 2016",
+          title: "Contract Senior Frontend Developer",
+          desc: "Domino's Pizza and Ralph Lauren projects including two micro-sites under 3 and 5 week deadlines.",
+          bullets: [
+            "Built a Domino's Pizza Android app for store managers",
+            "Delivered two Ralph Lauren micro-sites under very tight deadlines",
+          ],
+          stack: [
+            "React Native",
+            "React 0.15",
+            "Redux",
+            "Babel",
+            "Webpack",
+            "SASS",
+            "PostCSS",
+            "jQuery",
+            "Azure/.NET",
+          ],
+        },
+        {
+          co: "RMA Consulting / HSBC",
+          date: "Aug 2015 – Jan 2016",
+          title: "Creative Technologist",
+          desc: "Developed a high-fidelity prototype for HSBCnet.",
+          bullets: [],
+          stack: [
+            "React 0.13/14",
+            "Redux",
+            "Node.js",
+            "Webpack",
+            "Babel",
+            "React Router",
+          ],
+        },
+        {
+          co: "InSitYou Software",
+          date: "Mar – Aug 2015",
+          title: "Senior Fullstack Developer",
+          desc: "Built in-house seat allocation and floor-plan visualisation software for architectural practices.",
+          bullets: [
+            "Parsed large CSV datasets into a ranked-relationship seating algorithm",
+            "Visualised floor plans using D3, Canvas (FabricJS/PixiJS) and SVG",
+            "Mentored a junior SQL developer through HTML, CSS, JS and full-stack Meteor development",
+          ],
+          stack: [
+            "JavaScript (ES6+)",
+            "Three.js",
+            "D3.js",
+            "Canvas",
+            "React",
+            "AngularJS",
+            "Meteor",
+            "MongoDB",
+            "Node.js",
+            "SCSS",
+          ],
+        },
+        {
+          co: "Thought Machine",
+          date: "Jan – Feb 2015",
+          title: "Contract Creative Technologist",
+          desc: "Developed rapid prototypes from UX research through to Axure/Balsamiq and Sketch to InVision.",
+          bullets: [],
+          stack: ["Axure", "Balsamiq", "Sketch", "InVision"],
+        },
+        {
+          co: "CACI / Chelsea FC",
+          date: "Oct – Dec 2014",
+          title: "Contract Frontend Developer",
+          desc: "Sole front-end/UX resource to deliver an overdue gamification project for Chelsea FC.",
+          bullets: [
+            "Delivered a gamification platform using Adobe CQ5 on the back end",
+            "Implemented social and gamification integration via Gigya",
+          ],
+          stack: [
+            "HTML5",
+            "CSS",
+            "jQuery",
+            "Adobe CQ5",
+            "Java Spring MVC",
+            "Gigya",
+          ],
+        },
+        {
+          co: "We3Collective",
+          date: "Sep – Nov 2014",
+          title: "Contract JavaScript Developer",
+          desc: "Integrated front-end WordPress HTML templates to a CakePHP-driven backend using a bespoke JS MVC framework.",
+          bullets: [],
+          stack: ["JavaScript (ES5)", "jQuery", "WordPress", "CakePHP", "PHP"],
+        },
+        {
+          co: "Paper",
+          date: "Aug – Sep 2014",
+          title: "Contract Frontend Developer",
+          desc: "Front-end work for a high-profile project for Macmillan Cancer Support on a .NET/Umbraco stack.",
+          bullets: ["Focused on highly modular and reusable design patterns"],
+          stack: ["HTML5", "SCSS", "jQuery", "Umbraco"],
+        },
+        {
+          co: "RehabStudio",
+          date: "Aug 2014",
+          title: "Contract Frontend Developer",
+          desc: "Short-term engagement with a leading creative tech team on a project for Google.",
+          bullets: [],
+          stack: ["Node.js", "Three.js", "HTML5 Canvas", "JavaScript (ES5)"],
+        },
+        {
+          co: "Quill Content",
+          date: "Jun – Aug 2014",
+          title: "Contract Frontend Developer",
+          desc: "Sole frontend developer parachuted in to help Quill Content hit delivery milestones.",
+          bullets: [
+            "Full platform reskin based on a 3-page style guide and wireframes",
+            "Introduced SMACSS architecture and refactored SCSS for maintainability",
+          ],
+          stack: [
+            "Ruby on Rails",
+            "HAML",
+            "SCSS",
+            "CoffeeScript",
+            "jQuery",
+            "D3.js",
+          ],
+        },
+        {
+          co: "The Social Partners",
+          date: "May 2014",
+          title: "Contract Frontend Developer",
+          desc: "Delivered a responsive microsite (Millionaire Quiz) for The Sunday Times – The Rich List 2014.",
+          bullets: [],
+          stack: ["Node.js", "AngularJS", "HTML5", "SASS", "JavaScript (ES5)"],
+        },
+        {
+          co: "Fox Parrack Singapour",
+          date: "Apr 2014",
+          title: "Contract Frontend Developer",
+          desc: "Delivered a responsive landing page for Cisco with three time-of-day visual themes and HTML5 Video background.",
+          bullets: [
+            "Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables",
+            "HTML5 Video full-page background changing by time of day",
+          ],
+          stack: ["HTML5", "SASS", "JavaScript (ES5)", "jQuery"],
+        },
+        {
+          co: "Redbox Digital",
+          date: "Nov 2013 – Apr 2014",
+          title: "Contract Magento Developer",
+          desc: "Hired for front-end and UX expertise; also covered SysAdmin/DevOps, MySQL, and Magento backend.",
+          bullets: [
+            "Delivered fully responsive pages for Paperchase across five breakpoints",
+            "Extended Google Maps API to generate markers for six Paperchase store types",
+          ],
+          stack: [
+            "Magento",
+            "PHP",
+            "MySQL",
+            "HTML5",
+            "CSS",
+            "jQuery",
+            "Google Maps API",
+          ],
+        },
+        {
+          co: "Grabble Ltd",
+          date: "Jul – Nov 2013",
+          title: "Contract Frontend Developer",
+          desc: "Implemented new responsive designs and features on an inherited, poorly-maintained codebase.",
+          bullets: [
+            "Rewrote significant portions of the inherited codebase for long-term maintainability",
+            "New features prototyped from hand-drawn wireframes to working code within a day",
+          ],
+          stack: ["PHP (Zend)", "Bootstrap", "HTML5", "CSS3", "jQuery"],
+        },
+        {
+          co: "HeathWallace / HSBC",
+          date: "Jul 2013",
+          title: "Contract PHP/MySQL Developer",
+          desc: "Updated HSBCnet Expat Explorer with new yearly statistics. Completed 4-week contract in 2.5 weeks.",
+          bullets: [
+            "Parsed large dataset and updated the site using CakePHP/MySQL",
+            "Wrote unit tests for each criterion dataset, matched against raw YouGov data",
+          ],
+          stack: ["PHP", "MySQL", "CakePHP"],
+        },
+        {
+          co: "Vaultigo",
+          date: "Jan – Jun 2013",
+          title: "Contract Frontend Developer",
+          desc: "Built on a LAMP/Symfony2 stack. Spearheaded adoption of HAML/SCSS for maintainable, modular code.",
+          bullets: [],
+          stack: ["PHP", "Symfony2", "HAML", "SCSS", "jQuery", "Highcharts"],
+        },
+        {
+          co: "Goldsmiths, University of London",
+          date: "Jan – Jun 2012",
+          title: "Postgraduate Teaching Assistant",
+          desc: "Supported practical lab sessions for large groups (60+ students). Graded first-year undergraduate coursework.",
+          bullets: [
+            "Communicated technical concepts to a diverse group in an accessible, clear manner",
+          ],
+          stack: [],
+        },
+      ];
 
-function renderTechTable(){
-  document.getElementById('techTable').innerHTML = TECH_ROWS.map(r=>{
-    const pct = Math.min(100, parseInt(r.yrs) * 100 / 15);
-    return `<tr><td>${r.cat}</td><td><div>${r.items}<span class="yrs">${r.yrs} yrs</span></div><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:0" data-w="${pct}%"></div></div></div></td></tr>`;
-  }).join('');
-  const io = new IntersectionObserver((es,o)=>{
-    es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w});o.unobserve(e.target)}});
-  },{threshold:0.2});
-  document.querySelectorAll('#techTable tr').forEach(r=>io.observe(r));
-}
+      function renderTechTable() {
+        document.getElementById("techTable").innerHTML = TECH_ROWS.map((r) => {
+          const pct = Math.min(100, (parseInt(r.yrs) * 100) / 15);
+          return `<tr><td>${r.cat}</td><td><div>${r.items}<span class="yrs">${r.yrs} yrs</span></div><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:0" data-w="${pct}%"></div></div></div></td></tr>`;
+        }).join("");
+        const io = new IntersectionObserver(
+          (es, o) => {
+            es.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.querySelectorAll(".bar-fill").forEach((b) => {
+                  b.style.width = b.dataset.w;
+                });
+                o.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.2 },
+        );
+        document
+          .querySelectorAll("#techTable tr")
+          .forEach((r) => io.observe(r));
+      }
 
-let activeCat='all', activeTechs=[];
+      let activeCat = "all",
+        activeTechs = [];
 
-function getJobStartYear(date){
-  const years=(date.match(/\d{4}/g)||[]);
-  return years.length?Number(years[0]):null;
-}
+      function getJobStartYear(date) {
+        const years = date.match(/\d{4}/g) || [];
+        return years.length ? Number(years[0]) : null;
+      }
 
-function getJavaScriptVersionedSkill(startYear){
-  return startYear!==null&&startYear<2015?'JavaScript (ES5)':'JavaScript (ES6+)';
-}
+      function getJavaScriptVersionedSkill(startYear) {
+        return startYear !== null && startYear < 2015
+          ? "JavaScript (ES5)"
+          : "JavaScript (ES6+)";
+      }
 
-function isSkillMatch(filterSkill, jobSkill){
-  if(filterSkill==='React'){
-    return /^React(?:\s|$)/.test(jobSkill) && jobSkill!=='React Native';
-  }
-  return filterSkill===jobSkill;
-}
+      function isSkillMatch(filterSkill, jobSkill) {
+        if (filterSkill === "React") {
+          return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
+        }
+        return filterSkill === jobSkill;
+      }
 
-function withJobStackDefaults(stack, date){
-  const startYear=getJobStartYear(date);
-  const normalizedStack=stack.map(skill=>skill==='JavaScript'?getJavaScriptVersionedSkill(startYear):skill);
-  const stackWithGlobalDefaults=GLOBAL_STACK_DEFAULTS.reduce((acc,skill)=>{
-    if(!acc.includes(skill)){
-      return [skill,...acc];
-    }
-    return acc;
-  }, normalizedStack);
+      function withJobStackDefaults(stack, date) {
+        const startYear = getJobStartYear(date);
+        const normalizedStack = stack.map((skill) =>
+          skill === "JavaScript"
+            ? getJavaScriptVersionedSkill(startYear)
+            : skill,
+        );
+        const stackWithGlobalDefaults = GLOBAL_STACK_DEFAULTS.reduce(
+          (acc, skill) => {
+            if (!acc.includes(skill)) {
+              return [skill, ...acc];
+            }
+            return acc;
+          },
+          normalizedStack,
+        );
 
-  if(startYear===null){
-    return stackWithGlobalDefaults;
-  }
-  return DATE_BASED_STACK_DEFAULTS.reduce((acc,rule)=>{
-    const aboveMin=rule.minStartYear===undefined||startYear>=rule.minStartYear;
-    const belowMax=rule.maxStartYear===undefined||startYear<=rule.maxStartYear;
-    if(aboveMin&&belowMax&&!acc.includes(rule.skill)){
-      return [rule.skill,...acc];
-    }
-    return acc;
-  }, stackWithGlobalDefaults);
-}
+        if (startYear === null) {
+          return stackWithGlobalDefaults;
+        }
+        return DATE_BASED_STACK_DEFAULTS.reduce((acc, rule) => {
+          const aboveMin =
+            rule.minStartYear === undefined || startYear >= rule.minStartYear;
+          const belowMax =
+            rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
+          if (aboveMin && belowMax && !acc.includes(rule.skill)) {
+            return [rule.skill, ...acc];
+          }
+          return acc;
+        }, stackWithGlobalDefaults);
+      }
 
-function renderSkills(){
-  document.getElementById('swrap').innerHTML = SKILLS.map(s=>{
-    const show=activeCat==='all'||s.c===activeCat;
-    const lit=activeTechs.includes(s.n);
-    return `<button class="stag${!show?' dim':''}${lit?' lit':''}" type="button" onclick="filterTech('${s.n.replace(/'/g, "\\'")}')">${s.n}</button>`;
-  }).join('');
-}
+      function renderSkills() {
+        document.getElementById("swrap").innerHTML = SKILLS.map((s) => {
+          const show = activeCat === "all" || s.c === activeCat;
+          const lit = activeTechs.includes(s.n);
+          return `<button class="stag${!show ? " dim" : ""}${lit ? " lit" : ""}" type="button" onclick="filterTech('${s.n.replace(/'/g, "\\'")}')">${s.n}</button>`;
+        }).join("");
+      }
 
-document.querySelectorAll('.fbtn').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); activeCat=b.dataset.cat; renderSkills();
-  });
-});
+      document.querySelectorAll(".fbtn").forEach((b) => {
+        b.addEventListener("click", () => {
+          document
+            .querySelectorAll(".fbtn")
+            .forEach((x) => x.classList.remove("on"));
+          b.classList.add("on");
+          activeCat = b.dataset.cat;
+          renderSkills();
+        });
+      });
 
-function renderJobs(){
-  document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
-    const stackWithDefaults=withJobStackDefaults(j.stack, j.date);
-    const matched=activeTechs.length?activeTechs.some(a=>stackWithDefaults.some(t=>isSkillMatch(a,t))):false;
-    const filtered=activeTechs.length&&!matched;
-    return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">
+      function renderJobs() {
+        document.getElementById("tl").innerHTML = JOBS.map((j, i) => {
+          const stackWithDefaults = withJobStackDefaults(j.stack, j.date);
+          const matched = activeTechs.length
+            ? activeTechs.some((a) =>
+                stackWithDefaults.some((t) => isSkillMatch(a, t)),
+              )
+            : false;
+          const filtered = activeTechs.length && !matched;
+          return `<div class="job${matched ? " match" : ""}${filtered ? " filtered" : ""}" style="transition-delay:${i * 0.03}s">
       <div class="jhead"><div class="jco">${j.co}</div><div class="jdate">${j.date}</div></div>
       <div class="jtitle">${j.title}</div>
       <div class="jdesc">${j.desc}</div>
-      ${j.bullets.length?`<ul class="jbuls">${j.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`:''}
-      ${stackWithDefaults.length?`<div class="jstack">${stackWithDefaults.map(t=>`<button class="jtag${activeTechs.some(a=>isSkillMatch(a,t))?' lit':''}" onclick="filterTech('${t}')">${t}</button>`).join('')}</div>`:''}
+      ${j.bullets.length ? `<ul class="jbuls">${j.bullets.map((b) => `<li>${b}</li>`).join("")}</ul>` : ""}
+      ${stackWithDefaults.length ? `<div class="jstack">${stackWithDefaults.map((t) => `<button class="jtag${activeTechs.some((a) => isSkillMatch(a, t)) ? " lit" : ""}" onclick="filterTech('${t}')">${t}</button>`).join("")}</div>` : ""}
     </div>`;
-  }).join('');
-  const io=new IntersectionObserver((es,o)=>{
-    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');o.unobserve(e.target)}});
-  },{threshold:0.05});
-  document.querySelectorAll('.job').forEach(el=>io.observe(el));
-}
+        }).join("");
+        const io = new IntersectionObserver(
+          (es, o) => {
+            es.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("vis");
+                o.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.05 },
+        );
+        document.querySelectorAll(".job").forEach((el) => io.observe(el));
+      }
 
-function renderFilterBar(){
-  document.getElementById('fbar').classList.toggle('show',activeTechs.length>0);
-  document.getElementById('fchips').innerHTML=activeTechs.map(t=>`<button class="fchip" type="button" onclick="filterTech('${t.replace(/'/g, "\\'")}')">${t} ×</button>`).join('');
-}
+      function renderFilterBar() {
+        document
+          .getElementById("fbar")
+          .classList.toggle("show", activeTechs.length > 0);
+        document.getElementById("fchips").innerHTML = activeTechs
+          .map(
+            (t) =>
+              `<button class="fchip" type="button" onclick="filterTech('${t.replace(/'/g, "\\'")}')">${t} ×</button>`,
+          )
+          .join("");
+      }
 
-function filterTech(t){
-  activeTechs=activeTechs.includes(t)?activeTechs.filter(x=>x!==t):[...activeTechs,t];
-  renderFilterBar();
-  renderSkills();
-  renderJobs();
-  if(activeTechs.length){
-    const firstMatch=document.querySelector('#experience .job:not(.filtered)');
-    if(firstMatch){
-      const target=firstMatch.querySelector('.jhead')||firstMatch;
-      const targetY=target.getBoundingClientRect().top+window.scrollY-50;
-      window.scrollTo({top:targetY,behavior:'smooth'});
-    }else{
-      document.getElementById('experience').scrollIntoView({behavior:'smooth'});
-    }
-  }else{
-    document.getElementById('experience').scrollIntoView({behavior:'smooth',block:'start'});
-  }
-}
+      function filterTech(t) {
+        activeTechs = activeTechs.includes(t)
+          ? activeTechs.filter((x) => x !== t)
+          : [...activeTechs, t];
+        renderFilterBar();
+        renderSkills();
+        renderJobs();
+        if (activeTechs.length) {
+          const firstMatch = document.querySelector(
+            "#experience .job:not(.filtered)",
+          );
+          if (firstMatch) {
+            const target = firstMatch.querySelector(".jhead") || firstMatch;
+            const targetY =
+              target.getBoundingClientRect().top + window.scrollY - 50;
+            window.scrollTo({ top: targetY, behavior: "smooth" });
+          } else {
+            document
+              .getElementById("experience")
+              .scrollIntoView({ behavior: "smooth" });
+          }
+        } else {
+          document
+            .getElementById("experience")
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
 
-function clearF(){
-  activeTechs=[];
-  renderFilterBar();
-  renderSkills();
-  renderJobs();
-  document.getElementById('experience').scrollIntoView({behavior:'smooth',block:'start'});
-}
+      function clearF() {
+        activeTechs = [];
+        renderFilterBar();
+        renderSkills();
+        renderJobs();
+        document
+          .getElementById("experience")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
 
-const SIDS=['overview','techskills','skills','experience','education'];
-window.addEventListener('scroll',()=>{
-  let cur='';
-  SIDS.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-80)cur=id;});
-  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
-});
+      const SIDS = [
+        "overview",
+        "techskills",
+        "skills",
+        "experience",
+        "education",
+      ];
+      window.addEventListener("scroll", () => {
+        let cur = "";
+        SIDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el && window.scrollY >= el.offsetTop - 80) cur = id;
+        });
+        document
+          .querySelectorAll("nav a")
+          .forEach((a) =>
+            a.classList.toggle("act", a.getAttribute("href") === "#" + cur),
+          );
+      });
 
-renderTechTable();
-renderSkills();
-renderFilterBar();
-renderJobs();
-</script>
-
-
-</body></html>
+      renderTechTable();
+      renderSkills();
+      renderFilterBar();
+      renderJobs();
+    </script>
+  </body>
+</html>
