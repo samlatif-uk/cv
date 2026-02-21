@@ -539,7 +539,7 @@
         flex-wrap: wrap;
         margin-bottom: 20px;
         padding: 10px 16px;
-        background: var(--accent-light);
+        background: var(--bg);
         border: 1px solid var(--accent);
         border-radius: 6px;
         font-size: 12px;
@@ -1621,6 +1621,15 @@
           .join("");
       }
 
+      function getFilterBarHeight() {
+        const filterBar = document.getElementById("fbar");
+        if (!filterBar || !filterBar.classList.contains("show")) {
+          return 0;
+        }
+
+        return filterBar.offsetHeight;
+      }
+
       function filterTech(t) {
         activeTechs = activeTechs.includes(t)
           ? activeTechs.filter((x) => x !== t)
@@ -1635,12 +1644,19 @@
           if (firstMatch) {
             const target = firstMatch.querySelector(".jhead") || firstMatch;
             const targetY =
-              target.getBoundingClientRect().top + window.scrollY - 50;
+              target.getBoundingClientRect().top +
+              window.scrollY -
+              (50 + getFilterBarHeight());
             window.scrollTo({ top: targetY, behavior: "smooth" });
           } else {
-            document
-              .getElementById("experience")
-              .scrollIntoView({ behavior: "smooth" });
+            const experience = document.getElementById("experience");
+            if (experience) {
+              const targetY =
+                experience.getBoundingClientRect().top +
+                window.scrollY -
+                getFilterBarHeight();
+              window.scrollTo({ top: targetY, behavior: "smooth" });
+            }
           }
         } else {
           document

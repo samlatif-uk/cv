@@ -68,6 +68,15 @@ interface ExperienceProps {
   onClearTech: () => void;
 }
 
+const getFilterBarHeight = () => {
+  const filterBar = document.getElementById("fbar");
+  if (!filterBar || !filterBar.classList.contains("show")) {
+    return 0;
+  }
+
+  return filterBar.offsetHeight;
+};
+
 export const Experience = ({
   activeTechs,
   onTechClick,
@@ -96,7 +105,10 @@ export const Experience = ({
       const target =
         (firstMatch.querySelector(".jhead") as HTMLElement | null) ??
         firstMatch;
-      const targetY = target.getBoundingClientRect().top + window.scrollY - 50;
+      const targetY =
+        target.getBoundingClientRect().top +
+        window.scrollY -
+        (50 + getFilterBarHeight());
       window.scrollTo({ top: targetY, behavior: "smooth" });
     }
 
