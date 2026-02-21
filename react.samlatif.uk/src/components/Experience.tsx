@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DATE_BASED_STACK_DEFAULTS, JOBS } from '../data/cv';
+import { DATE_BASED_STACK_DEFAULTS, GLOBAL_STACK_DEFAULTS, JOBS } from '../data/cv';
 
 const getJobStartYear = (date: string) => {
   const years = date.match(/\d{4}/g);
@@ -10,10 +10,18 @@ const getJobStartYear = (date: string) => {
   return Number(years[0]);
 };
 
-const withDateBasedDefaults = (stack: string[], date: string) => {
+const withJobStackDefaults = (stack: string[], date: string) => {
+  const stackWithGlobalDefaults = GLOBAL_STACK_DEFAULTS.reduce((nextStack, skill) => {
+    if (!nextStack.includes(skill)) {
+      return [skill, ...nextStack];
+    }
+
+    return nextStack;
+  }, [...stack]);
+
   const startYear = getJobStartYear(date);
   if (startYear === null) {
-    return stack;
+    return stackWithGlobalDefaults;
   }
 
   return DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
@@ -25,7 +33,7 @@ const withDateBasedDefaults = (stack: string[], date: string) => {
     }
 
     return nextStack;
-  }, [...stack]);
+  }, stackWithGlobalDefaults);
 };
 
 interface ExperienceProps {
@@ -66,7 +74,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
-          const stackWithDefaults = withDateBasedDefaults(job.stack, job.date);
+          const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
           const matched = activeTechs.length
             ? activeTechs.every((activeTech) => stackWithDefaults.includes(activeTech))
             : false;
