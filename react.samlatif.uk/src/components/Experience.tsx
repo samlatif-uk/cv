@@ -20,35 +20,8 @@ const getJavaScriptVersionedSkill = (startYear: number | null) => {
     : "JavaScript (ES6+)";
 };
 
-const splitSkillTokens = (skill: string) => {
-  return skill
-    .toLowerCase()
-    .split("/")
-    .map((token) => token.trim())
-    .filter(Boolean);
-};
-
-const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  if (filterSkill === "React") {
-    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
-  }
-
-  if (filterSkill === jobSkill) {
-    return true;
-  }
-
-  const filterTokens = splitSkillTokens(filterSkill);
-  const jobTokens = splitSkillTokens(jobSkill);
-
-  return filterTokens.some((filterToken) =>
-    jobTokens.some(
-      (jobToken) =>
-        jobToken === filterToken ||
-        jobToken.includes(filterToken) ||
-        filterToken.includes(jobToken),
-    ),
-  );
-};
+const isSkillMatch = (filterSkill: string, jobSkill: string) =>
+  window.CVFilterUtils.isSkillMatch(filterSkill, jobSkill);
 
 const withJobStackDefaults = (stack: string[], date: string) => {
   const startYear = getJobStartYear(date);

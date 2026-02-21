@@ -118,16 +118,6 @@ h1 .acc {
 .hcontact a:hover {
   color: var(--accent);
 }
-.hcontact a.site-link.active {
-  color: var(--bg);
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  padding: 3px 10px;
-}
-.hcontact a.site-link.active em {
-  color: var(--bg);
-}
 .summary {
   margin-top: 32px;
   padding: 20px 24px;
@@ -260,9 +250,6 @@ h2 {
 }
 .tech-table tr:hover td {
   background: #f5f3f0;
-}
-.tech-table tr.tech-filterable {
-  cursor: pointer;
 }
 .tech-table td {
   padding: 13px 16px;
@@ -642,14 +629,6 @@ footer {
 }
 .finfo a:hover {
   text-decoration: underline;
-}
-.finfo a.site-link.active {
-  color: var(--bg);
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  padding: 3px 10px;
-  text-decoration: none;
 }
 
 @media (max-width: 900px) {

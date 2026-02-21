@@ -10,54 +10,11 @@ interface TechSkillsProps {
   onAddTechFilters: (techs: string[]) => void;
 }
 
-const splitTechItems = (items: string) => {
-  const parts: string[] = [];
-  let current = "";
-  let depth = 0;
+const splitTechItems = (items: string) =>
+  window.CVFilterUtils.splitTechItems(items);
 
-  for (const char of items) {
-    if (char === "(") {
-      depth += 1;
-      current += char;
-      continue;
-    }
-
-    if (char === ")") {
-      depth = Math.max(0, depth - 1);
-      current += char;
-      continue;
-    }
-
-    if (char === "," && depth === 0) {
-      const token = current.trim();
-      if (token) {
-        parts.push(token);
-      }
-      current = "";
-      continue;
-    }
-
-    current += char;
-  }
-
-  const last = current.trim();
-  if (last) {
-    parts.push(last);
-  }
-
-  return parts;
-};
-
-const normalizeTechToken = (token: string) => {
-  const aliasMap: Record<string, string[]> = {
-    "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
-    "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
-    "Magento/OSCommerce": ["Magento"],
-    "Canvas (FabricJS, PixiJS)": ["Canvas"],
-  };
-
-  return aliasMap[token] ?? [token];
-};
+const normalizeTechToken = (token: string) =>
+  window.CVFilterUtils.normalizeTechToken(token);
 
 const getFilterableTechSet = () => {
   const techSet = new Set<string>([
