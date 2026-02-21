@@ -1627,7 +1627,9 @@
           return 0;
         }
 
-        return filterBar.offsetHeight;
+        const styles = window.getComputedStyle(filterBar);
+        const marginBottom = parseFloat(styles.marginBottom) || 0;
+        return filterBar.offsetHeight + marginBottom;
       }
 
       function filterTech(t) {

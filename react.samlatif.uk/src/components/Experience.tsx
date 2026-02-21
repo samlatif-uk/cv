@@ -74,7 +74,9 @@ const getFilterBarHeight = () => {
     return 0;
   }
 
-  return filterBar.offsetHeight;
+  const styles = window.getComputedStyle(filterBar);
+  const marginBottom = parseFloat(styles.marginBottom) || 0;
+  return filterBar.offsetHeight + marginBottom;
 };
 
 export const Experience = ({
