@@ -1419,6 +1419,34 @@
         },
       ];
 
+      async function loadSharedCvData() {
+        try {
+          const response = await fetch("./shared/cv-data.json", {
+            cache: "no-cache",
+          });
+          if (!response.ok) {
+            return;
+          }
+
+          const sharedData = await response.json();
+          const syncArray = (target, source) => {
+            if (!Array.isArray(target) || !Array.isArray(source)) {
+              return;
+            }
+            target.splice(0, target.length, ...source);
+          };
+
+          syncArray(TECH_ROWS, sharedData.TECH_ROWS);
+          syncArray(SKILLS, sharedData.SKILLS);
+          syncArray(
+            DATE_BASED_STACK_DEFAULTS,
+            sharedData.DATE_BASED_STACK_DEFAULTS,
+          );
+          syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
+          syncArray(JOBS, sharedData.JOBS);
+        } catch {}
+      }
+
       function renderTechTable() {
         document.getElementById("techTable").innerHTML = TECH_ROWS.map((r) => {
           const pct = Math.min(100, (parseInt(r.yrs) * 100) / 15);
@@ -1615,10 +1643,12 @@
           );
       });
 
-      renderTechTable();
-      renderSkills();
-      renderFilterBar();
-      renderJobs();
+      loadSharedCvData().finally(() => {
+        renderTechTable();
+        renderSkills();
+        renderFilterBar();
+        renderJobs();
+      });
     </script>
   </body>
 </html>
