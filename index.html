@@ -552,6 +552,8 @@ function filterTech(t){
     }else{
       document.getElementById('experience').scrollIntoView({behavior:'smooth'});
     }
+  }else{
+    document.getElementById('experience').scrollIntoView({behavior:'smooth',block:'start'});
   }
 }
 
@@ -561,6 +563,7 @@ function clearF(){
   document.getElementById('fbar').classList.remove('show');
   renderSkills();
   renderJobs();
+  document.getElementById('experience').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 const SIDS=['overview','techskills','skills','experience','education'];

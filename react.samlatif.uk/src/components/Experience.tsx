@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { DATE_BASED_STACK_DEFAULTS, GLOBAL_STACK_DEFAULTS, JOBS } from '../data/cv';
 
 const getJobStartYear = (date: string) => {
@@ -48,8 +48,16 @@ interface ExperienceProps {
 }
 
 export const Experience = ({ activeTechs, onTechClick, onClearTech }: ExperienceProps) => {
+  const previousFilterCount = useRef(activeTechs.length);
+
   useEffect(() => {
     if (!activeTechs.length) {
+      if (previousFilterCount.current > 0) {
+        const experienceSection = document.getElementById('experience');
+        experienceSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      previousFilterCount.current = 0;
       return;
     }
 
@@ -59,6 +67,8 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       const targetY = target.getBoundingClientRect().top + window.scrollY - 50;
       window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
+
+    previousFilterCount.current = activeTechs.length;
   }, [activeTechs]);
 
   return (
