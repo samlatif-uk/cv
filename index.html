@@ -258,7 +258,7 @@
           }
 
           if (!sharedData) {
-            return;
+            return false;
           }
 
           const syncArray = (target, source) => {
@@ -276,9 +276,36 @@
           );
           syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
           syncArray(JOBS, sharedData.JOBS);
+          return true;
         } catch {
           console.warn("Unable to load shared CV data.");
+          return false;
         }
+      }
+
+      function renderDataUnavailableNotice() {
+        const techTable = document.getElementById("techTable");
+        const skillsWrap = document.getElementById("swrap");
+        const timeline = document.getElementById("tl");
+
+        if (techTable) {
+          techTable.innerHTML =
+            '<tr><td colspan="2">CV data is temporarily unavailable.</td></tr>';
+        }
+
+        if (skillsWrap) {
+          skillsWrap.innerHTML =
+            '<span class="stag">Data unavailable — please refresh later.</span>';
+        }
+
+        if (timeline) {
+          timeline.innerHTML =
+            '<div class="job vis"><div class="jdesc">CV data is temporarily unavailable. Please refresh later.</div></div>';
+        }
+      }
+
+      function escapeForSingleQuotedInline(value) {
+        return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
       }
 
       function renderTechTable() {
@@ -437,7 +464,7 @@
       <div class="jtitle">${j.title}</div>
       <div class="jdesc">${j.desc}</div>
       ${j.bullets.length ? `<ul class="jbuls">${j.bullets.map((b) => `<li>${b}</li>`).join("")}</ul>` : ""}
-      ${stackWithDefaults.length ? `<div class="jstack">${stackWithDefaults.map((t) => `<button class="jtag${activeTechs.some((a) => isSkillMatch(a, t)) ? " lit" : ""}" onclick="filterTech('${t}')">${t}</button>`).join("")}</div>` : ""}
+      ${stackWithDefaults.length ? `<div class="jstack">${stackWithDefaults.map((t) => `<button class="jtag${activeTechs.some((a) => isSkillMatch(a, t)) ? " lit" : ""}" onclick="filterTech('${escapeForSingleQuotedInline(t)}')">${t}</button>`).join("")}</div>` : ""}
     </div>`;
         }).join("");
         const io = new IntersectionObserver(
@@ -597,8 +624,14 @@
         });
       }
 
-      loadSharedCvData().finally(() => {
+      loadSharedCvData().then((loaded) => {
         setActiveSiteLink();
+
+        if (!loaded) {
+          renderDataUnavailableNotice();
+          return;
+        }
+
         renderTechTable();
         renderSkills();
         renderFilterBar();

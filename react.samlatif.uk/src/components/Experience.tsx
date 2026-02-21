@@ -4,6 +4,7 @@ import {
   GLOBAL_STACK_DEFAULTS,
   JOBS,
 } from "../data/cv";
+import { isSkillMatch } from "../utils/filterUtils";
 
 const getJobStartYear = (date: string) => {
   const years = date.match(/\d{4}/g);
@@ -19,9 +20,6 @@ const getJavaScriptVersionedSkill = (startYear: number | null) => {
     ? "JavaScript (ES5)"
     : "JavaScript (ES6+)";
 };
-
-const isSkillMatch = (filterSkill: string, jobSkill: string) =>
-  window.CVFilterUtils.isSkillMatch(filterSkill, jobSkill);
 
 const withJobStackDefaults = (stack: string[], date: string) => {
   const startYear = getJobStartYear(date);

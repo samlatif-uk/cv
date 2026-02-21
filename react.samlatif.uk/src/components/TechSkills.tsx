@@ -5,16 +5,11 @@ import {
   SKILLS,
   TECH_ROWS,
 } from "../data/cv";
+import { normalizeTechToken, splitTechItems } from "../utils/filterUtils";
 
 interface TechSkillsProps {
   onAddTechFilters: (techs: string[]) => void;
 }
-
-const splitTechItems = (items: string) =>
-  window.CVFilterUtils.splitTechItems(items);
-
-const normalizeTechToken = (token: string) =>
-  window.CVFilterUtils.normalizeTechToken(token);
 
 const getFilterableTechSet = () => {
   const techSet = new Set<string>([

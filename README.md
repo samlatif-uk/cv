@@ -31,7 +31,7 @@ A minimal personal CV / portfolio website for Sam Latif.
 
 ### React VPS Auto Deploy (GitHub Actions)
 - Workflow file: `.github/workflows/deploy-react-vps.yml`
-- Trigger: push to `main` when files in `react.samlatif.uk/` change
+- Trigger: push to `main` when React, static site, shared data/assets, or workflow files change
 - Required GitHub repository secrets:
   - `VPS_HOST` (example: `79.99.45.146`)
   - `VPS_USER` (example: `root`)

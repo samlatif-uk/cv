@@ -8,5 +8,5 @@ interface CVFilterUtilsApi {
 }
 
 interface Window {
-  CVFilterUtils: CVFilterUtilsApi;
+  CVFilterUtils?: CVFilterUtilsApi;
 }

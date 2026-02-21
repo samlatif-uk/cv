@@ -20,6 +20,10 @@ on:
       - .github/workflows/deploy-react-vps.yml
   workflow_dispatch:
 
+concurrency:
+  group: deploy-sites-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
