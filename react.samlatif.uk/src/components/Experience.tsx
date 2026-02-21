@@ -91,7 +91,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
         {JOBS.map((job, index) => {
           const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
           const matched = activeTechs.length
-            ? activeTechs.every((activeTech) => stackWithDefaults.includes(activeTech))
+            ? activeTechs.some((activeTech) => stackWithDefaults.includes(activeTech))
             : false;
           const filtered = activeTechs.length > 0 && !matched;
 

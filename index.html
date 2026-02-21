@@ -527,7 +527,7 @@ document.querySelectorAll('.fbtn').forEach(b=>{
 function renderJobs(){
   document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
     const stackWithDefaults=withJobStackDefaults(j.stack, j.date);
-    const matched=activeTechs.length?activeTechs.every(a=>stackWithDefaults.includes(a)):false;
+    const matched=activeTechs.length?activeTechs.some(a=>stackWithDefaults.includes(a)):false;
     const filtered=activeTechs.length&&!matched;
     return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">
       <div class="jhead"><div class="jco">${j.co}</div><div class="jdate">${j.date}</div></div>
