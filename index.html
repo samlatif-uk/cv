@@ -330,6 +330,11 @@ const SKILLS = [
   {n:'WordPress',c:'cms'},{n:'Magento',c:'cms'},{n:'Umbraco',c:'cms'},{n:'Adobe CQ5',c:'cms'},
 ];
 
+const DATE_BASED_STACK_DEFAULTS = [
+  {skill:'JavaScript (ES6+)', minStartYear:2015},
+  {skill:'JavaScript (ES5)', maxStartYear:2014},
+];
+
 const JOBS = [
   {co:'Bank of America', date:'Nov 2024 – Present', title:'Senior Fullstack JS Engineer',
    desc:'Ongoing engagement delivering new features and resolving legacy code and bugs for an internal portal.',
@@ -463,6 +468,26 @@ function renderTechTable(){
 
 let activeCat='all', activeTechs=[];
 
+function getJobStartYear(date){
+  const years=(date.match(/\d{4}/g)||[]);
+  return years.length?Number(years[0]):null;
+}
+
+function withDateBasedDefaults(stack, date){
+  const startYear=getJobStartYear(date);
+  if(startYear===null){
+    return stack;
+  }
+  return DATE_BASED_STACK_DEFAULTS.reduce((acc,rule)=>{
+    const aboveMin=rule.minStartYear===undefined||startYear>=rule.minStartYear;
+    const belowMax=rule.maxStartYear===undefined||startYear<=rule.maxStartYear;
+    if(aboveMin&&belowMax&&!acc.includes(rule.skill)){
+      return [rule.skill,...acc];
+    }
+    return acc;
+  }, [...stack]);
+}
+
 function renderSkills(){
   document.getElementById('swrap').innerHTML = SKILLS.map(s=>{
     const show=activeCat==='all'||s.c===activeCat;
@@ -480,11 +505,7 @@ document.querySelectorAll('.fbtn').forEach(b=>{
 
 function renderJobs(){
   document.getElementById('tl').innerHTML = JOBS.map((j,i)=>{
-    const years=(j.date.match(/\d{4}/g)||[]);
-    const includeES6=years.length&&Number(years[0])>=2015;
-    const includeES5=years.length&&Number(years[0])<2015;
-    let stackWithDefaults=includeES6&&!j.stack.includes('JavaScript (ES6+)')?['JavaScript (ES6+)',...j.stack]:j.stack;
-    stackWithDefaults=includeES5&&!stackWithDefaults.includes('JavaScript (ES5)')?['JavaScript (ES5)',...stackWithDefaults]:stackWithDefaults;
+    const stackWithDefaults=withDateBasedDefaults(j.stack, j.date);
     const matched=activeTechs.length?activeTechs.every(a=>stackWithDefaults.includes(a)):false;
     const filtered=activeTechs.length&&!matched;
     return `<div class="job${matched?' match':''}${filtered?' filtered':''}" style="transition-delay:${i*0.03}s">

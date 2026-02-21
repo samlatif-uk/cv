@@ -1,22 +1,31 @@
 import { useEffect } from 'react';
-import { JOBS } from '../data/cv';
+import { DATE_BASED_STACK_DEFAULTS, JOBS } from '../data/cv';
 
-const shouldIncludeES6 = (date: string) => {
+const getJobStartYear = (date: string) => {
   const years = date.match(/\d{4}/g);
   if (!years?.length) {
-    return false;
+    return null;
   }
 
-  return Number(years[0]) >= 2015;
+  return Number(years[0]);
 };
 
-const shouldIncludeES5 = (date: string) => {
-  const years = date.match(/\d{4}/g);
-  if (!years?.length) {
-    return false;
+const withDateBasedDefaults = (stack: string[], date: string) => {
+  const startYear = getJobStartYear(date);
+  if (startYear === null) {
+    return stack;
   }
 
-  return Number(years[0]) < 2015;
+  return DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
+    const aboveMin = rule.minStartYear === undefined || startYear >= rule.minStartYear;
+    const belowMax = rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
+
+    if (aboveMin && belowMax && !nextStack.includes(rule.skill)) {
+      return [rule.skill, ...nextStack];
+    }
+
+    return nextStack;
+  }, [...stack]);
 };
 
 interface ExperienceProps {
@@ -57,13 +66,7 @@ export const Experience = ({ activeTechs, onTechClick, onClearTech }: Experience
       </div>
       <div className="tl">
         {JOBS.map((job, index) => {
-          let stackWithDefaults = job.stack;
-          if (shouldIncludeES6(job.date) && !stackWithDefaults.includes('JavaScript (ES6+)')) {
-            stackWithDefaults = ['JavaScript (ES6+)', ...stackWithDefaults];
-          }
-          if (shouldIncludeES5(job.date) && !stackWithDefaults.includes('JavaScript (ES5)')) {
-            stackWithDefaults = ['JavaScript (ES5)', ...stackWithDefaults];
-          }
+          const stackWithDefaults = withDateBasedDefaults(job.stack, job.date);
           const matched = activeTechs.length
             ? activeTechs.every((activeTech) => stackWithDefaults.includes(activeTech))
             : false;

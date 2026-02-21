@@ -28,6 +28,11 @@ export const SKILLS: Skill[] = [
   { n: 'WordPress', c: 'cms' }, { n: 'Magento', c: 'cms' }, { n: 'Umbraco', c: 'cms' }, { n: 'Adobe CQ5', c: 'cms' },
 ];
 
+export const DATE_BASED_STACK_DEFAULTS = [
+  { skill: 'JavaScript (ES6+)', minStartYear: 2015 },
+  { skill: 'JavaScript (ES5)', maxStartYear: 2014 },
+];
+
 export const JOBS: Job[] = [
   {
     co: 'Bank of America',
