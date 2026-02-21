@@ -1644,6 +1644,10 @@
         renderFilterBar();
         renderSkills();
         renderJobs();
+
+        if (activeTechs.length) {
+          scrollToBestMatchingJob();
+        }
       }
 
       function addFiltersFromTechRow(index) {
@@ -1735,6 +1739,67 @@
         return filterBar.offsetHeight + marginBottom;
       }
 
+      function scrollToBestMatchingJob() {
+        const allJobElements = Array.from(
+          document.querySelectorAll("#experience .job"),
+        );
+        const latestSelectedTech = activeTechs[activeTechs.length - 1];
+
+        let bestMatchIndex = -1;
+        let bestMatchCount = -1;
+        let bestHasLatest = false;
+
+        JOBS.forEach((job, index) => {
+          const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+          const matchCount = activeTechs.filter((activeTech) =>
+            stackWithDefaults.some((stackTech) =>
+              isSkillMatch(activeTech, stackTech),
+            ),
+          ).length;
+
+          if (matchCount === 0) {
+            return;
+          }
+
+          const hasLatest = latestSelectedTech
+            ? stackWithDefaults.some((stackTech) =>
+                isSkillMatch(latestSelectedTech, stackTech),
+              )
+            : false;
+
+          const shouldReplaceBest =
+            matchCount > bestMatchCount ||
+            (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
+
+          if (shouldReplaceBest) {
+            bestMatchIndex = index;
+            bestMatchCount = matchCount;
+            bestHasLatest = hasLatest;
+          }
+        });
+
+        const firstMatch =
+          bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
+
+        if (firstMatch) {
+          const target = firstMatch.querySelector(".jhead") || firstMatch;
+          const targetY =
+            target.getBoundingClientRect().top +
+            window.scrollY -
+            (70 + getFilterBarHeight());
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        } else {
+          const experience = document.getElementById("experience");
+          if (experience) {
+            const targetY =
+              experience.getBoundingClientRect().top +
+              window.scrollY -
+              getFilterBarHeight();
+            window.scrollTo({ top: targetY, behavior: "smooth" });
+          }
+        }
+      }
+
       function filterTech(t) {
         activeTechs = activeTechs.includes(t)
           ? activeTechs.filter((x) => x !== t)
@@ -1743,64 +1808,7 @@
         renderSkills();
         renderJobs();
         if (activeTechs.length) {
-          const allJobElements = Array.from(
-            document.querySelectorAll("#experience .job"),
-          );
-          const latestSelectedTech = activeTechs[activeTechs.length - 1];
-
-          let bestMatchIndex = -1;
-          let bestMatchCount = -1;
-          let bestHasLatest = false;
-
-          JOBS.forEach((job, index) => {
-            const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-            const matchCount = activeTechs.filter((activeTech) =>
-              stackWithDefaults.some((stackTech) =>
-                isSkillMatch(activeTech, stackTech),
-              ),
-            ).length;
-
-            if (matchCount === 0) {
-              return;
-            }
-
-            const hasLatest = latestSelectedTech
-              ? stackWithDefaults.some((stackTech) =>
-                  isSkillMatch(latestSelectedTech, stackTech),
-                )
-              : false;
-
-            const shouldReplaceBest =
-              matchCount > bestMatchCount ||
-              (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
-
-            if (shouldReplaceBest) {
-              bestMatchIndex = index;
-              bestMatchCount = matchCount;
-              bestHasLatest = hasLatest;
-            }
-          });
-
-          const firstMatch =
-            bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
-
-          if (firstMatch) {
-            const target = firstMatch.querySelector(".jhead") || firstMatch;
-            const targetY =
-              target.getBoundingClientRect().top +
-              window.scrollY -
-              (70 + getFilterBarHeight());
-            window.scrollTo({ top: targetY, behavior: "smooth" });
-          } else {
-            const experience = document.getElementById("experience");
-            if (experience) {
-              const targetY =
-                experience.getBoundingClientRect().top +
-                window.scrollY -
-                getFilterBarHeight();
-              window.scrollTo({ top: targetY, behavior: "smooth" });
-            }
-          }
+          scrollToBestMatchingJob();
         } else {
           document
             .getElementById("experience")
