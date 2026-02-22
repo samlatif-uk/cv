@@ -144,7 +144,7 @@ type ProfileIdentity = {
   summary: string[];
 };
 
-export function SamCvProfile({
+export function ProfileCv({
   data,
   profile,
 }: {
@@ -153,7 +153,6 @@ export function SamCvProfile({
 }) {
   const [firstName, ...restNameParts] = profile.name.split(" ");
   const lastName = restNameParts.join(" ");
-  const isSam = profile.username === "samlatif";
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [activeNav, setActiveNav] = useState("techskills");
@@ -425,49 +424,12 @@ export function SamCvProfile({
             {firstName}
             {lastName ? <span className={styles.acc}> {lastName}</span> : null}
           </h1>
-          <div className={styles.role}>
-            {isSam
-              ? "Frontend / UX Specialist · 15+ Years"
-              : `@${profile.username}`}
-          </div>
+          <div className={styles.role}>@{profile.username}</div>
           <div className={styles.hcontact}>
-            {isSam ? (
-              <a href="tel:07851885776">
-                <em>◆</em>07851 885 776
-              </a>
-            ) : null}
             <a href={`mailto:${profile.email}`}>
               <em>◆</em>
               {profile.email}
             </a>
-            {isSam ? (
-              <>
-                <a href="https://samlatif.uk" target="_blank" rel="noreferrer">
-                  <em>◆</em>Vanilla Site
-                </a>
-                <a
-                  href="https://react.samlatif.uk"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <em>◆</em>React Site
-                </a>
-                <a
-                  href="https://uk.linkedin.com/in/samlatifuk"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <em>◆</em>LinkedIn
-                </a>
-                <a
-                  href="https://github.com/samlatif-uk"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <em>◆</em>GitHub
-                </a>
-              </>
-            ) : null}
           </div>
           <ul className={styles.summary}>
             {(profile.summary.length ? profile.summary : [profile.bio]).map(
@@ -476,17 +438,6 @@ export function SamCvProfile({
               ),
             )}
           </ul>
-          {isSam ? (
-            <div className={styles.hireCta}>
-              <strong>Available for contract roles from July 2026.</strong>
-              <a
-                className={styles.hireBtn}
-                href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
-              >
-                Hire Me
-              </a>
-            </div>
-          ) : null}
         </div>
       </header>
 
@@ -765,44 +716,18 @@ export function SamCvProfile({
             <div className={styles.sline} />
           </div>
           <div className={styles.edugrid}>
-            <div className={styles.educard}>
-              <div className={styles.edudeg}>
-                MSc Computer Games &amp; Entertainment
+            {(data.EDUCATION ?? []).map((education, educationIndex) => (
+              <div
+                key={`${education.degree}-${education.institution}-${educationIndex}`}
+                className={styles.educard}
+              >
+                <div className={styles.edudeg}>{education.degree}</div>
+                <div className={styles.eduuni}>{education.institution}</div>
+                <div className={styles.edumeta}>{education.period}</div>
+                <div className={styles.edugrade}>{education.grade}</div>
+                <div className={styles.edunote}>{education.note}</div>
               </div>
-              <div className={styles.eduuni}>
-                Goldsmiths, University of London
-              </div>
-              <div className={styles.edumeta}>2011 – 2012</div>
-              <div className={styles.edugrade}>Merit · 67%</div>
-              <div className={styles.edunote}>
-                Final project deferred to maintain quality of concurrent client
-                commitments.
-              </div>
-            </div>
-            <div className={styles.educard}>
-              <div className={styles.edudeg}>
-                BSc Computer Games Technologies
-              </div>
-              <div className={styles.eduuni}>University of East London</div>
-              <div className={styles.edumeta}>2007 – 2010</div>
-              <div className={styles.edugrade}>1st Class Honours</div>
-              <div className={styles.edunote}>
-                Modules: Games Programming, 3D Graphics, Virtual Environments,
-                Network Gaming, Advanced Animation, Project Management.
-              </div>
-            </div>
-            <div className={styles.educard}>
-              <div className={styles.edudeg}>
-                BSc Cognitive Science (1st year attended)
-              </div>
-              <div className={styles.eduuni}>University of Leeds</div>
-              <div className={styles.edumeta}>2005 – 2006</div>
-              <div className={styles.edugrade}>Year 1 Completed</div>
-              <div className={styles.edunote}>
-                Foundations in HCI, UX design, human behaviour and logic —
-                directly relevant to frontend and UX work.
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

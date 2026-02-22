@@ -38,6 +38,23 @@ model User {
   cvTechRows          CvTechRow[]
   cvSkills            CvSkill[]
   cvJobs              CvJob[]
+  cvEducation         CvEducation[]
+}
+
+model CvEducation {
+  id          String   @id @default(cuid())
+  userId      String
+  degree      String
+  institution String
+  period      String
+  grade       String
+  note        String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sortOrder])
 }
 
 model CvOverviewStat {

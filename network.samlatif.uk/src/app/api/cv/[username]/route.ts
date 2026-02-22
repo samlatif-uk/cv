@@ -55,6 +55,7 @@ export async function GET(
         avatarUrl: payload.profile.avatarUrl,
       },
       OVERVIEW_STATS: payload.data.OVERVIEW_STATS,
+      EDUCATION: payload.data.EDUCATION,
       TECH_ROWS: payload.data.TECH_ROWS,
       SKILLS: payload.data.SKILLS,
       DATE_BASED_STACK_DEFAULTS: payload.data.DATE_BASED_STACK_DEFAULTS,

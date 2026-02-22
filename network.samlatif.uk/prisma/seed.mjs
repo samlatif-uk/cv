@@ -5,6 +5,30 @@ const { PrismaClient, ConnectionStatus } = pkg;
 
 const prisma = new PrismaClient();
 
+const defaultEducation = [
+  {
+    degree: "MSc Computer Games & Entertainment",
+    institution: "Goldsmiths, University of London",
+    period: "2011 – 2012",
+    grade: "Merit · 67%",
+    note: "Final project deferred to maintain quality of concurrent client commitments.",
+  },
+  {
+    degree: "BSc Computer Games Technologies",
+    institution: "University of East London",
+    period: "2007 – 2010",
+    grade: "1st Class Honours",
+    note: "Modules: Games Programming, 3D Graphics, Virtual Environments, Network Gaming, Advanced Animation, Project Management.",
+  },
+  {
+    degree: "BSc Cognitive Science (1st year attended)",
+    institution: "University of Leeds",
+    period: "2005 – 2006",
+    grade: "Year 1 Completed",
+    note: "Foundations in HCI, UX design, human behaviour and logic — directly relevant to frontend and UX work.",
+  },
+];
+
 async function seedCvProfile(userId, profile) {
   if (Array.isArray(profile.overviewStats) && profile.overviewStats.length) {
     await prisma.cvOverviewStat.createMany({
@@ -35,6 +59,20 @@ async function seedCvProfile(userId, profile) {
       sortOrder: index,
     })),
   });
+
+  if (Array.isArray(profile.education) && profile.education.length) {
+    await prisma.cvEducation.createMany({
+      data: profile.education.map((entry, index) => ({
+        userId,
+        degree: entry.degree,
+        institution: entry.institution,
+        period: entry.period,
+        grade: entry.grade,
+        note: entry.note,
+        sortOrder: index,
+      })),
+    });
+  }
 
   for (const [jobIndex, job] of profile.jobs.entries()) {
     await prisma.cvJob.create({
@@ -76,6 +114,7 @@ async function main() {
   await prisma.cvSkill.deleteMany();
   await prisma.cvTechRow.deleteMany();
   await prisma.cvOverviewStat.deleteMany();
+  await prisma.cvEducation.deleteMany();
   await prisma.message.deleteMany();
   await prisma.conversationMember.deleteMany();
   await prisma.conversation.deleteMany();
@@ -160,6 +199,7 @@ async function main() {
     techRows: sharedCvData.TECH_ROWS,
     skills: sharedCvData.SKILLS,
     jobs: sharedCvData.JOBS,
+    education: sharedCvData.EDUCATION ?? defaultEducation,
   });
 
   await seedCvProfile(emma.id, {
@@ -198,6 +238,15 @@ async function main() {
         stack: ["React", "Next.js", "Figma", "Storybook"],
       },
     ],
+    education: [
+      {
+        degree: "MSc Product Strategy",
+        institution: "University of Bristol",
+        period: "2013 – 2014",
+        grade: "Distinction",
+        note: "Focused on experimentation frameworks, product analytics, and growth strategy.",
+      },
+    ],
   });
 
   await seedCvProfile(daniel.id, {
@@ -232,6 +281,15 @@ async function main() {
           "Improved accessibility conformance across key transaction screens.",
         ],
         stack: ["React", "TypeScript", "Redux", "Cypress"],
+      },
+    ],
+    education: [
+      {
+        degree: "BSc Computer Science",
+        institution: "University of Manchester",
+        period: "2011 – 2014",
+        grade: "First Class Honours",
+        note: "Specialised in frontend architecture and human-computer interaction.",
       },
     ],
   });
@@ -287,6 +345,15 @@ async function main() {
         stack: ["Node.js", "GraphQL", "Git"],
       },
     ],
+    education: [
+      {
+        degree: "BEng Software Engineering",
+        institution: "University of Birmingham",
+        period: "2009 – 2013",
+        grade: "First Class Honours",
+        note: "Built distributed systems and reliability-focused backend services.",
+      },
+    ],
   });
 
   await seedCvProfile(luca.id, {
@@ -329,6 +396,15 @@ async function main() {
         stack: ["Figma", "Storybook", "React", "TypeScript"],
       },
     ],
+    education: [
+      {
+        degree: "MA Interaction Design",
+        institution: "Politecnico di Milano",
+        period: "2012 – 2014",
+        grade: "Distinction",
+        note: "Focused on enterprise UX patterns, accessibility, and design systems.",
+      },
+    ],
   });
 
   await seedCvProfile(priya.id, {
@@ -364,6 +440,15 @@ async function main() {
           "Built observability standards for pipeline SLAs and lineage.",
         ],
         stack: ["TypeScript", "Node.js", "RESTful APIs", "Git"],
+      },
+    ],
+    education: [
+      {
+        degree: "MSc Data Science",
+        institution: "University of Leeds",
+        period: "2012 – 2013",
+        grade: "Distinction",
+        note: "Specialised in data pipelines, distributed processing, and analytics engineering.",
       },
     ],
   });

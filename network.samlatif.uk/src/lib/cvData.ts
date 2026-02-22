@@ -32,8 +32,17 @@ export type OverviewStat = {
   label: string;
 };
 
+export type EducationEntry = {
+  degree: string;
+  institution: string;
+  period: string;
+  grade: string;
+  note: string;
+};
+
 export type CvData = {
   OVERVIEW_STATS?: OverviewStat[];
+  EDUCATION?: EducationEntry[];
   TECH_ROWS: TechRow[];
   SKILLS: Skill[];
   DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[];

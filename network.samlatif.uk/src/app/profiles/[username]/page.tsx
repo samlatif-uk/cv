@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
+import { EducationEditorForm } from "@/components/EducationEditorForm";
 import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
+import { ProfileCv } from "@/components/SamCvProfile";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
-import { SamCvProfile } from "@/components/SamCvProfile";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import { getCurrentUsername } from "@/lib/auth";
 import { getCvProfilePayload } from "@/lib/cvProfileData";
@@ -26,7 +27,7 @@ export default async function ProfilePage({
 
   return (
     <>
-      <SamCvProfile
+      <ProfileCv
         data={payload.data}
         profile={{
           username: payload.profile.username,
@@ -88,6 +89,20 @@ export default async function ProfilePage({
             <OverviewStatsEditorForm
               username={payload.profile.username}
               initialOverviewStats={payload.data.OVERVIEW_STATS ?? []}
+            />
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+                09
+              </span>
+              <h2 className="cv-title text-xl font-semibold">Edit Education</h2>
+              <div className="h-px flex-1 bg-[var(--border)]" />
+            </div>
+            <EducationEditorForm
+              username={payload.profile.username}
+              initialEducation={payload.data.EDUCATION ?? []}
             />
           </section>
         </main>

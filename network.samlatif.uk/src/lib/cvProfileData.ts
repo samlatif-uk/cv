@@ -35,18 +35,36 @@ type CvJobStackRecord = {
   label: string;
 };
 
-const SAM_PROFILE_SUMMARY = [
-  "A senior fullstack consultant with 15+ years delivering high-performance, scalable web applications for blue-chip clients — from Goldman Sachs and Bank of America to Visa and Deutsche Bank.",
-  "An early adopter of React, with deep expertise spanning every major version from 0.13 to 18, and a track record of bringing it into organisations before it became mainstream.",
-  "Strong eye for design and UX, with a habit of dogfooding work personally — features are QA'd before they ship, eliminating the \"chuck it over the fence\" bottleneck and getting polished, production-ready work into users' hands faster.",
-  "This CV is intentionally published as both Vanilla JS and React versions to demonstrate the same product thinking and UX decisions across different delivery styles — useful when teams need either framework flexibility or zero-dependency performance.",
-];
+type CvEducationRecord = {
+  degree: string;
+  institution: string;
+  period: string;
+  grade: string;
+  note: string;
+};
 
-const DEFAULT_OVERVIEW_STATS = [
-  { value: "15+", label: "Years Experience" },
-  { value: "25+", label: "Client Engagements" },
-  { value: "5", label: "Finance Institutions" },
-  { value: "MSc", label: "1st Class BSc" },
+const DEFAULT_EDUCATION = [
+  {
+    degree: "MSc Computer Games & Entertainment",
+    institution: "Goldsmiths, University of London",
+    period: "2011 – 2012",
+    grade: "Merit · 67%",
+    note: "Final project deferred to maintain quality of concurrent client commitments.",
+  },
+  {
+    degree: "BSc Computer Games Technologies",
+    institution: "University of East London",
+    period: "2007 – 2010",
+    grade: "1st Class Honours",
+    note: "Modules: Games Programming, 3D Graphics, Virtual Environments, Network Gaming, Advanced Animation, Project Management.",
+  },
+  {
+    degree: "BSc Cognitive Science (1st year attended)",
+    institution: "University of Leeds",
+    period: "2005 – 2006",
+    grade: "Year 1 Completed",
+    note: "Foundations in HCI, UX design, human behaviour and logic — directly relevant to frontend and UX work.",
+  },
 ];
 
 const toNumeric = (value: string) => {
@@ -113,49 +131,63 @@ export async function getCvProfilePayload(
   let dbJobs: CvJobRecord[] = [];
   let dbJobBullets: CvJobBulletRecord[] = [];
   let dbJobStacks: CvJobStackRecord[] = [];
+  let dbEducation: CvEducationRecord[] = [];
 
   try {
-    [dbTechRows, dbOverviewStats, dbSkills, dbJobs, dbJobBullets, dbJobStacks] =
-      await Promise.all([
-        prisma.$queryRaw<CvTechRowRecord[]>`
+    [
+      dbTechRows,
+      dbOverviewStats,
+      dbSkills,
+      dbJobs,
+      dbJobBullets,
+      dbJobStacks,
+      dbEducation,
+    ] = await Promise.all([
+      prisma.$queryRaw<CvTechRowRecord[]>`
           SELECT category, items, years
           FROM "CvTechRow"
           WHERE "userId" = ${profile.id}
           ORDER BY "sortOrder" ASC
         `,
-        prisma.$queryRaw<CvOverviewStatRecord[]>`
+      prisma.$queryRaw<CvOverviewStatRecord[]>`
           SELECT value, label
           FROM "CvOverviewStat"
           WHERE "userId" = ${profile.id}
           ORDER BY "sortOrder" ASC
         `,
-        prisma.$queryRaw<CvSkillRecord[]>`
+      prisma.$queryRaw<CvSkillRecord[]>`
           SELECT name, category
           FROM "CvSkill"
           WHERE "userId" = ${profile.id}
           ORDER BY "sortOrder" ASC
         `,
-        prisma.$queryRaw<CvJobRecord[]>`
+      prisma.$queryRaw<CvJobRecord[]>`
           SELECT id, company, date, title, description
           FROM "CvJob"
           WHERE "userId" = ${profile.id}
           ORDER BY "sortOrder" ASC
         `,
-        prisma.$queryRaw<CvJobBulletRecord[]>`
+      prisma.$queryRaw<CvJobBulletRecord[]>`
           SELECT b."jobId" as "jobId", b.content as content
           FROM "CvJobBullet" b
           INNER JOIN "CvJob" j ON j.id = b."jobId"
           WHERE j."userId" = ${profile.id}
           ORDER BY b."sortOrder" ASC
         `,
-        prisma.$queryRaw<CvJobStackRecord[]>`
+      prisma.$queryRaw<CvJobStackRecord[]>`
           SELECT s."jobId" as "jobId", s.label as label
           FROM "CvJobStackItem" s
           INNER JOIN "CvJob" j ON j.id = s."jobId"
           WHERE j."userId" = ${profile.id}
           ORDER BY s."sortOrder" ASC
         `,
-      ]);
+      prisma.$queryRaw<CvEducationRecord[]>`
+          SELECT degree, institution, period, grade, note
+          FROM "CvEducation"
+          WHERE "userId" = ${profile.id}
+          ORDER BY "sortOrder" ASC
+        `,
+    ]);
   } catch {
     dbTechRows = [];
     dbOverviewStats = [];
@@ -163,6 +195,7 @@ export async function getCvProfilePayload(
     dbJobs = [];
     dbJobBullets = [];
     dbJobStacks = [];
+    dbEducation = [];
   }
 
   const techRows =
@@ -217,23 +250,20 @@ export async function getCvProfilePayload(
     return knownCompanies.find((company) => haystack.includes(company));
   };
 
-  const testimonials =
-    profile.username === "samlatif"
-      ? sharedCvData.TESTIMONIALS
-      : recommendations.map((recommendation) => ({
-          by: recommendation.recommenderName,
-          role: recommendation.recommenderRole,
-          date: recommendation.recommendationAt.toISOString().slice(0, 10),
-          jobCompany: resolveJobCompany(
-            recommendation.relationshipLabel,
-            recommendation.content,
-          ),
-          relationship: recommendation.relationshipLabel,
-          quote: recommendation.content,
-          visibility: recommendation.isPublic
-            ? ("public" as const)
-            : ("private" as const),
-        }));
+  const testimonials = recommendations.map((recommendation) => ({
+    by: recommendation.recommenderName,
+    role: recommendation.recommenderRole,
+    date: recommendation.recommendationAt.toISOString().slice(0, 10),
+    jobCompany: resolveJobCompany(
+      recommendation.relationshipLabel,
+      recommendation.content,
+    ),
+    relationship: recommendation.relationshipLabel,
+    quote: recommendation.content,
+    visibility: recommendation.isPublic
+      ? ("public" as const)
+      : ("private" as const),
+  }));
 
   const inferredYears = techRows.reduce((maxYears, row) => {
     const years = toNumeric(row.yrs);
@@ -259,11 +289,14 @@ export async function getCvProfilePayload(
           value: item.value,
           label: item.label,
         }))
-      : profile.username === "samlatif"
-        ? sharedCvData.OVERVIEW_STATS && sharedCvData.OVERVIEW_STATS.length
-          ? sharedCvData.OVERVIEW_STATS
-          : DEFAULT_OVERVIEW_STATS
-        : inferredOverviewStats;
+      : inferredOverviewStats;
+
+  const education =
+    dbEducation.length > 0
+      ? dbEducation
+      : sharedCvData.EDUCATION && sharedCvData.EDUCATION.length
+        ? sharedCvData.EDUCATION
+        : DEFAULT_EDUCATION;
 
   return {
     profile: {
@@ -274,12 +307,12 @@ export async function getCvProfilePayload(
       headline: profile.headline,
       location: profile.location,
       bio: profile.bio,
-      summary:
-        profile.username === "samlatif" ? SAM_PROFILE_SUMMARY : [profile.bio],
+      summary: [profile.bio],
       avatarUrl: profile.avatarUrl,
     },
     data: {
       OVERVIEW_STATS: overviewStats,
+      EDUCATION: education,
       TECH_ROWS: techRows,
       SKILLS: skills,
       DATE_BASED_STACK_DEFAULTS: sharedCvData.DATE_BASED_STACK_DEFAULTS,
