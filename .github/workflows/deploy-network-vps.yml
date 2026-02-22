@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: network.samlatif.uk/package-lock.json
 
@@ -34,6 +34,10 @@ jobs:
       - name: Build
         working-directory: network.samlatif.uk
         run: npm run build
+
+      - name: Prune to production dependencies
+        working-directory: network.samlatif.uk
+        run: npm prune --omit=dev
 
       - name: Validate required secrets
         run: |
@@ -105,19 +109,23 @@ jobs:
 
           rsync -az --delete \
             --exclude='node_modules' \
-            --exclude='.next' \
             --exclude='dev.db' \
             --exclude='prisma/dev.db' \
             -e "ssh -p $PORT" \
             "network.samlatif.uk/" \
             "$USER@$HOST:$APP_PATH/"
 
+          rsync -az --delete \
+            -e "ssh -p $PORT" \
+            "network.samlatif.uk/node_modules/" \
+            "$USER@$HOST:$APP_PATH/node_modules/"
+
           rsync -az \
             -e "ssh -p $PORT" \
             "shared/cv-data.json" \
             "$USER@$HOST:$SHARED_PATH/"
 
-      - name: Install, migrate, restart service, and reload nginx
+      - name: Migrate, restart service, and reload nginx
         run: |
           HOST="${{ secrets.VPS_HOST }}"
           HOST="${HOST:-79.99.45.146}"
@@ -140,27 +148,34 @@ jobs:
           ssh -p "$PORT" "$USER@$HOST" "
             set -e
             cd '$APP_PATH'
-            npm ci
 
             export DATABASE_URL='file:$DATA_PATH/dev.db'
-            npx prisma migrate deploy
-            npm run build
+            ./node_modules/.bin/prisma migrate deploy
 
-            if ! command -v pm2 >/dev/null 2>&1; then
-              npm install -g pm2
-            fi
+            cat > /etc/systemd/system/$SERVICE_NAME.service <<SERVICECONF
+            [Unit]
+            Description=$SERVICE_NAME Next.js app
+            After=network.target
 
-            export NODE_ENV='production'
-            export PORT='$APP_PORT'
+            [Service]
+            Type=simple
+            WorkingDirectory=$APP_PATH
+            Environment=NODE_ENV=production
+            Environment=PORT=$APP_PORT
+            ExecStart=$APP_PATH/node_modules/.bin/next start --port $APP_PORT
+            Restart=always
+            RestartSec=5
+            User=root
 
-            if pm2 describe '$SERVICE_NAME' >/dev/null 2>&1; then
-              pm2 restart '$SERVICE_NAME' --update-env
-            else
-              pm2 start npm --name '$SERVICE_NAME' -- start -- --port '$APP_PORT'
-            fi
-            pm2 save
+            [Install]
+            WantedBy=multi-user.target
+SERVICECONF
 
-            cat > /etc/nginx/sites-available/$DOMAIN <<'NGINXCONF'
+            systemctl daemon-reload
+            systemctl enable --now $SERVICE_NAME
+            systemctl restart $SERVICE_NAME
+
+            cat > /etc/nginx/sites-available/$DOMAIN <<NGINXCONF
             server {
               listen 80;
               server_name $DOMAIN;

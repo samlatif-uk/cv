@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: react.samlatif.uk/package-lock.json
 
@@ -52,6 +52,40 @@ jobs:
             echo "Missing required secret: VPS_SSH_KEY"
             exit 1
           fi
+
+      - name: Validate DNS record exists
+        run: |
+          DOMAIN="${{ secrets.REACT_DOMAIN }}"
+          DOMAIN="${DOMAIN:-react.samlatif.uk}"
+
+          RESOLVED_IP="$(dig +short A "$DOMAIN" | tail -n 1)"
+
+          if [ -z "$RESOLVED_IP" ]; then
+            echo "DNS check failed: $DOMAIN does not resolve to an A record yet."
+            echo "Create DNS first, then re-run deploy."
+            exit 1
+          fi
+
+          echo "DNS check passed: $DOMAIN -> $RESOLVED_IP"
+
+      - name: Validate apex DNS record exists (optional)
+        run: |
+          APEX_DOMAIN="${{ secrets.APEX_DOMAIN }}"
+
+          if [ -z "$APEX_DOMAIN" ]; then
+            echo "Apex DNS check skipped: secret APEX_DOMAIN is not set."
+            exit 0
+          fi
+
+          RESOLVED_IP="$(dig +short A "$APEX_DOMAIN" | tail -n 1)"
+
+          if [ -z "$RESOLVED_IP" ]; then
+            echo "DNS check failed: $APEX_DOMAIN does not resolve to an A record yet."
+            echo "Create DNS first, then re-run deploy."
+            exit 1
+          fi
+
+          echo "Apex DNS check passed: $APEX_DOMAIN -> $RESOLVED_IP"
 
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0

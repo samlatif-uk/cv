@@ -350,7 +350,15 @@
         "Developed and maintained a comprehensive component library using Next.js and React 18",
         "Implemented state management using TRPC and React Query, optimising data flow and performance"
       ],
-      "stack": ["Next.js", "React 18", "TRPC", "Mantine UI", "React Query"]
+      "stack": [
+        "Next.js",
+        "React 18",
+        "TRPC",
+        "Mantine UI",
+        "React Query",
+        "React Testing Library",
+        "Jest"
+      ]
     },
     {
       "co": "Bank of America",
@@ -362,7 +370,14 @@
         "Built a production-grade RFQ instrument editor in React 18, TypeScript and Redux",
         "Applied virtualisation and memoisation techniques to handle large-scale data at speed"
       ],
-      "stack": ["React 18", "ReactGrid", "TypeScript", "Redux", "Jest"]
+      "stack": [
+        "React 18",
+        "ReactGrid",
+        "TypeScript",
+        "Redux",
+        "Jest",
+        "React Testing Library"
+      ]
     },
     {
       "co": "ITRIOM",
@@ -379,7 +394,9 @@
         "React",
         "Chakra UI",
         "react-router-dom",
-        "react-spring"
+        "react-spring",
+        "React Testing Library",
+        "Jest"
       ]
     },
     {
@@ -397,7 +414,9 @@
         "react-router-dom",
         "styled-components",
         "Zustand",
-        "GSAP"
+        "GSAP",
+        "React Testing Library",
+        "Jest"
       ]
     },
     {
@@ -410,7 +429,15 @@
         "Created a responsive and accessible interface using Chakra UI",
         "Implemented complex form logic and validation using Formik and Yup"
       ],
-      "stack": ["React", "Chakra UI", "react-router-dom", "Formik", "Yup"]
+      "stack": [
+        "React",
+        "Chakra UI",
+        "react-router-dom",
+        "Formik",
+        "Yup",
+        "React Testing Library",
+        "Jest"
+      ]
     },
     {
       "co": "Deutsche Bank",
@@ -438,7 +465,14 @@
       "title": "Contract Senior React Developer",
       "desc": "Brought in as a specialist resource to fix critical issues on an outsourced project.",
       "bullets": [],
-      "stack": ["React", "SCSS", "Formik", "Reach Router"]
+      "stack": [
+        "React",
+        "SCSS",
+        "Formik",
+        "Reach Router",
+        "React Testing Library",
+        "Jest"
+      ]
     },
     {
       "co": "GotU (77Agency)",
@@ -454,6 +488,7 @@
         "GraphQL",
         "Apollo Client",
         "Material-UI",
+        "Jest",
         "React Testing Library"
       ]
     },
