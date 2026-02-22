@@ -114,9 +114,6 @@
             >Hire Me</a
           >
         </div>
-        <div class="testimonials">
-          <blockquote>Loading recommendations…</blockquote>
-        </div>
       </div>
     </header>
 
@@ -127,6 +124,7 @@
           <a href="#techskills" class="act">Tech Skills</a>
           <a href="#skills" class="">Stack Tags</a>
           <a href="#experience" class="">Experience</a>
+          <a href="#recommendations" class="">Recommendations</a>
           <a href="#education" class="">Education</a>
         </div>
       </div>
@@ -210,10 +208,23 @@
       </div>
     </section>
 
-    <section id="education">
+    <section id="recommendations">
       <div class="container">
         <div class="shead">
           <span class="snum">04</span>
+          <h2>Recommendations</h2>
+          <div class="sline"></div>
+        </div>
+        <div class="testimonials">
+          <blockquote>Loading recommendations…</blockquote>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">05</span>
           <h2>Education</h2>
           <div class="sline"></div>
         </div>
@@ -445,7 +456,9 @@
             '<div class="job vis"><div class="jdesc">CV data is temporarily unavailable. Please refresh later.</div></div>';
         }
 
-        const testimonials = document.querySelector(".testimonials");
+        const testimonials = document.querySelector(
+          "#recommendations .testimonials",
+        );
         if (testimonials) {
           testimonials.innerHTML =
             "<blockquote>Recommendations are temporarily unavailable.</blockquote>";
@@ -453,7 +466,9 @@
       }
 
       function renderTestimonials() {
-        const testimonials = document.querySelector(".testimonials");
+        const testimonials = document.querySelector(
+          "#recommendations .testimonials",
+        );
         if (!testimonials) {
           return;
         }
@@ -819,6 +834,7 @@
         "techskills",
         "skills",
         "experience",
+        "recommendations",
         "education",
       ];
       window.addEventListener("scroll", () => {

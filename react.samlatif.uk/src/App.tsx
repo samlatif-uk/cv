@@ -5,6 +5,7 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Nav } from "./components/Nav";
 import { Overview } from "./components/Overview";
+import { Recommendations } from "./components/Recommendations";
 import { StackTags } from "./components/StackTags";
 import { TechSkills } from "./components/TechSkills";
 
@@ -13,6 +14,7 @@ const SECTION_IDS = [
   "techskills",
   "skills",
   "experience",
+  "recommendations",
   "education",
 ];
 
@@ -70,6 +72,7 @@ function App() {
         onTechClick={handleTechClick}
         onClearTech={() => setActiveTechs([])}
       />
+      <Recommendations />
       <Education />
       <Footer />
     </>

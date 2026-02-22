@@ -2,7 +2,7 @@ export const Education = () => (
   <section id="education">
     <div className="container">
       <div className="shead">
-        <span className="snum">04</span>
+        <span className="snum">05</span>
         <h2>Education</h2>
         <div className="sline" />
       </div>

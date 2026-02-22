@@ -24,6 +24,12 @@ export const Nav = ({ activeNav }: NavProps) => (
         >
           Experience
         </a>
+        <a
+          href="#recommendations"
+          className={activeNav === "recommendations" ? "act" : ""}
+        >
+          Recommendations
+        </a>
         <a href="#education" className={activeNav === "education" ? "act" : ""}>
           Education
         </a>
