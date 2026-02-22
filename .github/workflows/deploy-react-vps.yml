@@ -98,8 +98,31 @@ jobs:
           HOST="${HOST:-79.99.45.146}"
           PORT="${{ secrets.VPS_PORT }}"
           PORT="${PORT:-22}"
+
           mkdir -p ~/.ssh
-          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "ssh-keyscan attempt $attempt for $HOST:$PORT"
+            if ssh-keyscan -T 10 -p "$PORT" -H "$HOST" 2>/dev/null >> ~/.ssh/known_hosts; then
+              success=1
+              break
+            fi
+            sleep 3
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to fetch SSH host key for $HOST:$PORT after retries."
+            exit 1
+          fi
+
+          ssh-keygen -F "$HOST" -f ~/.ssh/known_hosts >/dev/null || {
+            echo "Host key was not written to known_hosts"
+            exit 1
+          }
 
       - name: Ensure deploy directory exists
         run: |
