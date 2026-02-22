@@ -347,59 +347,82 @@
       }
 
       async function loadSharedCvData() {
-        try {
-          const syncArray = (target, source) => {
-            if (!Array.isArray(target) || !Array.isArray(source)) {
-              return;
-            }
-            target.splice(0, target.length, ...source);
-          };
+        const syncArray = (target, source) => {
+          if (!Array.isArray(target) || !Array.isArray(source)) {
+            return;
+          }
+          target.splice(0, target.length, ...source);
+        };
 
-          const applyData = (sharedData) => {
-            syncArray(TECH_ROWS, sharedData.TECH_ROWS);
-            syncArray(SKILLS, sharedData.SKILLS);
-            syncArray(
-              DATE_BASED_STACK_DEFAULTS,
-              sharedData.DATE_BASED_STACK_DEFAULTS,
-            );
-            syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
-            syncArray(TESTIMONIALS, sharedData.TESTIMONIALS);
-            syncArray(JOBS, sharedData.JOBS);
-
-            if (sharedData.profile) {
-              Object.assign(PROFILE, sharedData.profile);
-            }
-          };
-
-          const apiResponse = await fetch(
-            "https://network.samlatif.uk/api/cv/samlatif",
-            {
-              cache: "no-cache",
-            },
+        const applyData = (sharedData) => {
+          syncArray(TECH_ROWS, sharedData.TECH_ROWS);
+          syncArray(SKILLS, sharedData.SKILLS);
+          syncArray(
+            DATE_BASED_STACK_DEFAULTS,
+            sharedData.DATE_BASED_STACK_DEFAULTS,
           );
+          syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
+          syncArray(TESTIMONIALS, sharedData.TESTIMONIALS);
+          syncArray(JOBS, sharedData.JOBS);
 
-          if (apiResponse.ok) {
-            const apiData = await apiResponse.json();
-            applyData(apiData);
+          if (sharedData.profile) {
+            Object.assign(PROFILE, sharedData.profile);
+          }
+        };
+
+        const fetchJson = async (url, timeoutMs = 0) => {
+          try {
+            const controller = timeoutMs > 0 ? new AbortController() : null;
+            const timeoutId =
+              controller && timeoutMs > 0
+                ? setTimeout(() => controller.abort(), timeoutMs)
+                : null;
+
+            const response = await fetch(url, {
+              cache: "no-cache",
+              signal: controller ? controller.signal : undefined,
+            });
+
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+
+            if (!response.ok) {
+              return null;
+            }
+
+            return response.json();
+          } catch {
+            return null;
+          }
+        };
+
+        const apiData = await fetchJson(
+          "https://network.samlatif.uk/api/cv/samlatif",
+          3500,
+        );
+
+        if (apiData) {
+          applyData(apiData);
+          return true;
+        }
+
+        const candidates = [
+          "/shared/cv-data.json",
+          "./shared/cv-data.json",
+          "./cv-data.json",
+        ];
+
+        for (const candidate of candidates) {
+          const sharedData = await fetchJson(candidate, 3500);
+          if (sharedData) {
+            applyData(sharedData);
             return true;
           }
-
-          const candidates = ["./shared/cv-data.json", "./cv-data.json"];
-
-          for (const candidate of candidates) {
-            const response = await fetch(candidate, { cache: "no-cache" });
-            if (response.ok) {
-              const sharedData = await response.json();
-              applyData(sharedData);
-              return true;
-            }
-          }
-
-          return false;
-        } catch {
-          console.warn("Unable to load shared CV data.");
-          return false;
         }
+
+        console.warn("Unable to load shared CV data.");
+        return false;
       }
 
       function renderDataUnavailableNotice() {
