@@ -152,46 +152,46 @@ jobs:
             export DATABASE_URL='file:$DATA_PATH/dev.db'
             ./node_modules/.bin/prisma migrate deploy
 
-            cat > /etc/systemd/system/$SERVICE_NAME.service <<SERVICECONF
-            [Unit]
-            Description=$SERVICE_NAME Next.js app
-            After=network.target
-
-            [Service]
-            Type=simple
-            WorkingDirectory=$APP_PATH
-            Environment=NODE_ENV=production
-            Environment=PORT=$APP_PORT
-            ExecStart=$APP_PATH/node_modules/.bin/next start --port $APP_PORT
-            Restart=always
-            RestartSec=5
-            User=root
-
-            [Install]
-            WantedBy=multi-user.target
-SERVICECONF
+            printf '%s\n' \
+              '[Unit]' \
+              'Description=$SERVICE_NAME Next.js app' \
+              'After=network.target' \
+              '' \
+              '[Service]' \
+              'Type=simple' \
+              'WorkingDirectory=$APP_PATH' \
+              'Environment=NODE_ENV=production' \
+              'Environment=PORT=$APP_PORT' \
+              'ExecStart=$APP_PATH/node_modules/.bin/next start --port $APP_PORT' \
+              'Restart=always' \
+              'RestartSec=5' \
+              'User=root' \
+              '' \
+              '[Install]' \
+              'WantedBy=multi-user.target' \
+              > /etc/systemd/system/$SERVICE_NAME.service
 
             systemctl daemon-reload
             systemctl enable --now $SERVICE_NAME
             systemctl restart $SERVICE_NAME
 
-            cat > /etc/nginx/sites-available/$DOMAIN <<NGINXCONF
-            server {
-              listen 80;
-              server_name $DOMAIN;
-
-              location / {
-                proxy_pass http://127.0.0.1:$APP_PORT;
-                proxy_http_version 1.1;
-                proxy_set_header Host \$host;
-                proxy_set_header X-Real-IP \$remote_addr;
-                proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto \$scheme;
-                proxy_set_header Upgrade \$http_upgrade;
-                proxy_set_header Connection \"upgrade\";
-              }
-            }
-NGINXCONF
+            printf '%s\n' \
+              'server {' \
+              '  listen 80;' \
+              '  server_name $DOMAIN;' \
+              '' \
+              '  location / {' \
+              '    proxy_pass http://127.0.0.1:$APP_PORT;' \
+              '    proxy_http_version 1.1;' \
+              '    proxy_set_header Host \$host;' \
+              '    proxy_set_header X-Real-IP \$remote_addr;' \
+              '    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' \
+              '    proxy_set_header X-Forwarded-Proto \$scheme;' \
+              '    proxy_set_header Upgrade \$http_upgrade;' \
+              '    proxy_set_header Connection "upgrade";' \
+              '  }' \
+              '}' \
+              > /etc/nginx/sites-available/$DOMAIN
 
             ln -sfn /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
             nginx -t
