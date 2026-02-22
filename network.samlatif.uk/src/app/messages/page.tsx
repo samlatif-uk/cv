@@ -1,12 +1,23 @@
 import { MessageComposer } from "@/components/MessageComposer";
 import Link from "next/link";
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const CURRENT_USER = "samlatif";
-
 export default async function MessagesPage() {
+  const currentUsername = await getCurrentUsername();
+
+  if (!currentUsername) {
+    return (
+      <main className="mx-auto w-full max-w-4xl p-4 md:p-8">
+        <p className="cv-subtitle text-sm">
+          Log in from the nav to view messages.
+        </p>
+      </main>
+    );
+  }
+
   const currentUser = await prisma.user.findUnique({
-    where: { username: CURRENT_USER },
+    where: { username: currentUsername },
     select: { id: true, username: true, name: true },
   });
 
@@ -74,10 +85,7 @@ export default async function MessagesPage() {
         </p>
       </section>
 
-      <MessageComposer
-        senderUsername={currentUser.username}
-        recipients={recipients}
-      />
+      <MessageComposer recipients={recipients} />
 
       <section className="space-y-4">
         {conversations.map((conversation) => {

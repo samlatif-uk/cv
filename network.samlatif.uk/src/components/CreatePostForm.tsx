@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 
-type Author = {
+type CurrentUser = {
   username: string;
   name: string;
 };
 
-export function CreatePostForm({ authors }: { authors: Author[] }) {
-  const [authorUsername, setAuthorUsername] = useState(
-    authors[0]?.username ?? "",
-  );
+export function CreatePostForm({ currentUser }: { currentUser: CurrentUser }) {
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -19,8 +16,8 @@ export function CreatePostForm({ authors }: { authors: Author[] }) {
     event.preventDefault();
     setError("");
 
-    if (!authorUsername || !content.trim()) {
-      setError("Pick an author and write a post.");
+    if (!content.trim()) {
+      setError("Write a post.");
       return;
     }
 
@@ -30,7 +27,7 @@ export function CreatePostForm({ authors }: { authors: Author[] }) {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ authorUsername, content }),
+        body: JSON.stringify({ content }),
       });
 
       if (!response.ok) {
@@ -53,18 +50,10 @@ export function CreatePostForm({ authors }: { authors: Author[] }) {
 
   return (
     <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
-      <div className="grid gap-3 md:grid-cols-[200px_1fr]">
-        <select
-          className="cv-input rounded-md px-3 py-2 text-sm"
-          value={authorUsername}
-          onChange={(event) => setAuthorUsername(event.target.value)}
-        >
-          {authors.map((author) => (
-            <option key={author.username} value={author.username}>
-              {author.name} (@{author.username})
-            </option>
-          ))}
-        </select>
+      <p className="cv-muted text-xs">
+        Posting as {currentUser.name} (@{currentUser.username})
+      </p>
+      <div className="grid gap-3">
         <textarea
           className="cv-input min-h-[88px] rounded-md px-3 py-2 text-sm"
           placeholder="Share an update"

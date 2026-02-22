@@ -1,18 +1,23 @@
 import { CreatePostForm } from "@/components/CreatePostForm";
 import Link from "next/link";
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [authors, posts] = await Promise.all([
-    prisma.user.findMany({
-      select: {
-        username: true,
-        name: true,
-      },
-      orderBy: { name: "asc" },
-    }),
+  const currentUsername = await getCurrentUsername();
+
+  const [currentUser, posts] = await Promise.all([
+    currentUsername
+      ? prisma.user.findUnique({
+          where: { username: currentUsername },
+          select: {
+            username: true,
+            name: true,
+          },
+        })
+      : Promise.resolve(null),
     prisma.post.findMany({
       include: {
         author: {
@@ -42,7 +47,15 @@ export default async function Home() {
         </p>
       </section>
 
-      <CreatePostForm authors={authors} />
+      {currentUser ? (
+        <CreatePostForm currentUser={currentUser} />
+      ) : (
+        <section className="cv-card rounded-xl p-4">
+          <p className="cv-muted text-sm">
+            Log in from the nav to create posts.
+          </p>
+        </section>
+      )}
 
       <section className="space-y-3">
         {posts.length === 0 ? (

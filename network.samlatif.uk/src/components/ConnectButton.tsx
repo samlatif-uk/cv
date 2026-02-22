@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 export function ConnectButton({
-  requesterUsername,
+  isAuthenticated,
   receiverUsername,
 }: {
-  requesterUsername: string;
+  isAuthenticated: boolean;
   receiverUsername: string;
 }) {
   const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
@@ -17,7 +17,7 @@ export function ConnectButton({
     const response = await fetch("/api/connections", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ requesterUsername, receiverUsername }),
+      body: JSON.stringify({ receiverUsername }),
     });
 
     if (response.ok) {
@@ -34,12 +34,14 @@ export function ConnectButton({
         type="button"
         className="cv-btn-secondary rounded-md px-3 py-1.5 text-sm font-medium"
         onClick={requestConnection}
-        disabled={status === "sent"}
+        disabled={status === "sent" || !isAuthenticated}
       >
         {status === "sent" ? "Requested" : "Connect"}
       </button>
       {status === "error" ? (
         <span className="cv-danger text-xs">Failed</span>
+      ) : !isAuthenticated ? (
+        <span className="cv-muted text-xs">Login required</span>
       ) : null}
     </div>
   );

@@ -1,14 +1,15 @@
 import { ConnectButton } from "@/components/ConnectButton";
 import Link from "next/link";
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const CURRENT_USER = "samlatif";
-
 export default async function PeoplePage() {
+  const currentUsername = await getCurrentUsername();
+
   const users = await prisma.user.findMany({
-    where: { username: { not: CURRENT_USER } },
+    where: currentUsername ? { username: { not: currentUsername } } : undefined,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -59,7 +60,7 @@ export default async function PeoplePage() {
                 </p>
               </div>
               <ConnectButton
-                requesterUsername={CURRENT_USER}
+                isAuthenticated={Boolean(currentUsername)}
                 receiverUsername={user.username}
               />
             </div>

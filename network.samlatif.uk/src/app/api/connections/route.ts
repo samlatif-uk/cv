@@ -1,16 +1,27 @@
 import { ConnectionStatus } from "@prisma/client";
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const username = searchParams.get("username");
+  const currentUsername = await getCurrentUsername();
 
-  if (!username) {
-    return Response.json({ error: "username is required." }, { status: 400 });
+  if (!currentUsername) {
+    return Response.json(
+      { error: "Authentication required." },
+      { status: 401 },
+    );
   }
 
+  if (username && username !== currentUsername) {
+    return Response.json({ error: "Forbidden." }, { status: 403 });
+  }
+
+  const effectiveUsername = currentUsername;
+
   const user = await prisma.user.findUnique({
-    where: { username },
+    where: { username: effectiveUsername },
     select: { id: true },
   });
 
@@ -47,16 +58,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
-    requesterUsername?: string;
     receiverUsername?: string;
   };
 
-  const requesterUsername = body.requesterUsername?.trim();
+  const requesterUsername = await getCurrentUsername();
   const receiverUsername = body.receiverUsername?.trim();
 
   if (!requesterUsername || !receiverUsername) {
     return Response.json(
-      { error: "requesterUsername and receiverUsername are required." },
+      { error: "Authentication required and receiverUsername is required." },
       { status: 400 },
     );
   }
@@ -102,6 +112,15 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const currentUsername = await getCurrentUsername();
+
+  if (!currentUsername) {
+    return Response.json(
+      { error: "Authentication required." },
+      { status: 401 },
+    );
+  }
+
   const body = (await request.json()) as {
     connectionId?: string;
     status?: "ACCEPTED" | "DECLINED";
@@ -112,6 +131,23 @@ export async function PATCH(request: Request) {
       { error: "connectionId and status are required." },
       { status: 400 },
     );
+  }
+
+  const existing = await prisma.connection.findUnique({
+    where: { id: body.connectionId },
+    include: {
+      receiver: {
+        select: { username: true },
+      },
+    },
+  });
+
+  if (!existing) {
+    return Response.json({ error: "Connection not found." }, { status: 404 });
+  }
+
+  if (existing.receiver.username !== currentUsername) {
+    return Response.json({ error: "Forbidden." }, { status: 403 });
   }
 
   const connection = await prisma.connection.update({

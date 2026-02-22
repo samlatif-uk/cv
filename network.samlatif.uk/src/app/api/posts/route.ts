@@ -1,23 +1,27 @@
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
-    authorUsername?: string;
     content?: string;
   };
 
-  const authorUsername = body.authorUsername?.trim();
+  const currentUsername = await getCurrentUsername();
   const content = body.content?.trim();
 
-  if (!authorUsername || !content) {
+  if (!currentUsername) {
     return Response.json(
-      { error: "authorUsername and content are required." },
-      { status: 400 },
+      { error: "Authentication required." },
+      { status: 401 },
     );
   }
 
+  if (!content) {
+    return Response.json({ error: "content is required." }, { status: 400 });
+  }
+
   const author = await prisma.user.findUnique({
-    where: { username: authorUsername },
+    where: { username: currentUsername },
     select: { id: true },
   });
 

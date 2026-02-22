@@ -229,6 +229,7 @@
 
 .techTable tr {
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
 }
 
 .techTable td {

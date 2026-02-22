@@ -7,13 +7,7 @@ type Recipient = {
   name: string;
 };
 
-export function MessageComposer({
-  senderUsername,
-  recipients,
-}: {
-  senderUsername: string;
-  recipients: Recipient[];
-}) {
+export function MessageComposer({ recipients }: { recipients: Recipient[] }) {
   const [recipientUsername, setRecipientUsername] = useState(
     recipients[0]?.username ?? "",
   );
@@ -36,7 +30,7 @@ export function MessageComposer({
       const response = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ senderUsername, recipientUsername, content }),
+        body: JSON.stringify({ recipientUsername, content }),
       });
 
       if (!response.ok) {
