@@ -72,6 +72,30 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
+      - name: Configure SSH defaults
+        run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          cat > ~/.ssh/config <<EOF
+          Host vps-target
+            HostName $HOST
+            Port $PORT
+            ConnectTimeout 10
+            ConnectionAttempts 5
+            ServerAliveInterval 15
+            ServerAliveCountMax 3
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
+
+          chmod 600 ~/.ssh/config
+
       - name: Add VPS to known hosts
         run: |
           HOST="${{ secrets.VPS_HOST }}"
@@ -95,8 +119,9 @@ jobs:
           done
 
           if [ "$success" -ne 1 ]; then
-            echo "Failed to fetch SSH host key for $HOST:$PORT after retries."
-            exit 1
+            echo "Warning: failed to fetch SSH host key for $HOST:$PORT after retries."
+            echo "Continuing with StrictHostKeyChecking=accept-new"
+            exit 0
           fi
 
           ssh-keygen -F "$HOST" -f ~/.ssh/known_hosts >/dev/null || {
@@ -106,12 +131,8 @@ jobs:
 
       - name: Ensure deploy directories exist
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
 
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
@@ -120,49 +141,63 @@ jobs:
           DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
           DATA_PATH="${DATA_PATH:-/var/www/network.samlatif.uk/data}"
 
-          ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "ensure dir attempt $attempt"
+            if ssh "$USER@vps-target" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"; then
+              success=1
+              break
+            fi
+            sleep 3
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to create remote deploy directories after retries."
+            exit 1
+          fi
 
       - name: Sync app files
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           SHARED_PATH="${{ secrets.NETWORK_VPS_SHARED_PATH }}"
           SHARED_PATH="${SHARED_PATH:-/var/www/network.samlatif.uk/shared}"
 
-          rsync -az --delete \
-            --exclude='node_modules' \
-            --exclude='dev.db' \
-            --exclude='prisma/dev.db' \
-            -e "ssh -p $PORT" \
-            "network.samlatif.uk/" \
-            "$USER@$HOST:$APP_PATH/"
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "rsync attempt $attempt"
+            if rsync -az --delete \
+              --exclude='node_modules' \
+              --exclude='dev.db' \
+              --exclude='prisma/dev.db' \
+              -e "ssh" \
+              "network.samlatif.uk/" \
+              "$USER@vps-target:$APP_PATH/" && \
+              rsync -az --delete \
+              -e "ssh" \
+              "network.samlatif.uk/node_modules/" \
+              "$USER@vps-target:$APP_PATH/node_modules/" && \
+              rsync -az \
+              -e "ssh" \
+              "shared/cv-data.json" \
+              "$USER@vps-target:$SHARED_PATH/"; then
+              success=1
+              break
+            fi
+            sleep 5
+          done
 
-          rsync -az --delete \
-            -e "ssh -p $PORT" \
-            "network.samlatif.uk/node_modules/" \
-            "$USER@$HOST:$APP_PATH/node_modules/"
-
-          rsync -az \
-            -e "ssh -p $PORT" \
-            "shared/cv-data.json" \
-            "$USER@$HOST:$SHARED_PATH/"
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to sync app files after retries."
+            exit 1
+          fi
 
       - name: Migrate, restart service, and reload nginx
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
@@ -174,7 +209,7 @@ jobs:
           SERVICE_NAME="${{ secrets.NETWORK_SERVICE_NAME }}"
           SERVICE_NAME="${SERVICE_NAME:-network-samlatif-uk}"
 
-          ssh -p "$PORT" "$USER@$HOST" "
+          ssh "$USER@vps-target" "
             set -e
             cd '$APP_PATH'
 

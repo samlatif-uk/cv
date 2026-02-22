@@ -92,6 +92,30 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
+      - name: Configure SSH defaults
+        run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          cat > ~/.ssh/config <<EOF
+          Host vps-target
+            HostName $HOST
+            Port $PORT
+            ConnectTimeout 10
+            ConnectionAttempts 5
+            ServerAliveInterval 15
+            ServerAliveCountMax 3
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
+
+          chmod 600 ~/.ssh/config
+
       - name: Add VPS to known hosts
         run: |
           HOST="${{ secrets.VPS_HOST }}"
@@ -115,8 +139,9 @@ jobs:
           done
 
           if [ "$success" -ne 1 ]; then
-            echo "Failed to fetch SSH host key for $HOST:$PORT after retries."
-            exit 1
+            echo "Warning: failed to fetch SSH host key for $HOST:$PORT after retries."
+            echo "Continuing with StrictHostKeyChecking=accept-new"
+            exit 0
           fi
 
           ssh-keygen -F "$HOST" -f ~/.ssh/known_hosts >/dev/null || {
@@ -126,75 +151,119 @@ jobs:
 
       - name: Ensure deploy directory exists
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
           DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
           DEPLOY_PATH="${DEPLOY_PATH:-/var/www/react.samlatif.uk}"
           STATIC_DEPLOY_PATH="${{ secrets.STATIC_DEPLOY_PATH }}"
           STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH' '$STATIC_DEPLOY_PATH/shared'"
+
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "ensure dir attempt $attempt"
+            if ssh "$USER@vps-target" "mkdir -p '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH' '$STATIC_DEPLOY_PATH/shared'"; then
+              success=1
+              break
+            fi
+            sleep 3
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to create remote deploy directories after retries."
+            exit 1
+          fi
 
       - name: Sync React nginx vhost config
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
 
-          rsync -az \
-            -e "ssh -p $PORT" \
-            "scripts/react.nginx.conf" \
-            "$USER@$HOST:/tmp/react.samlatif.uk.conf"
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "nginx config sync attempt $attempt"
+            if rsync -az -e "ssh" scripts/react.nginx.conf "$USER@vps-target:/tmp/react.samlatif.uk.conf" && \
+              ssh "$USER@vps-target" "mv /tmp/react.samlatif.uk.conf /etc/nginx/sites-available/react.samlatif.uk && ln -sfn /etc/nginx/sites-available/react.samlatif.uk /etc/nginx/sites-enabled/react.samlatif.uk && nginx -t && systemctl reload nginx"; then
+              success=1
+              break
+            fi
+            sleep 5
+          done
 
-          ssh -p "$PORT" "$USER@$HOST" "mv /tmp/react.samlatif.uk.conf /etc/nginx/sites-available/react.samlatif.uk && ln -sfn /etc/nginx/sites-available/react.samlatif.uk /etc/nginx/sites-enabled/react.samlatif.uk && nginx -t && systemctl reload nginx"
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to sync nginx config after retries."
+            exit 1
+          fi
 
       - name: Sync built files to VPS
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
           DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
           DEPLOY_PATH="${DEPLOY_PATH:-/var/www/react.samlatif.uk}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          rsync -az --delete \
-            -e "ssh -p $PORT" \
-            "react.samlatif.uk/dist/" \
-            "$USER@$HOST:$DEPLOY_PATH/"
 
-          rsync -az \
-            -e "ssh -p $PORT" \
-            shared/filter-utils.js shared/site.css shared/ui-shared.css \
-            "$USER@$HOST:$DEPLOY_PATH/"
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "react dist sync attempt $attempt"
+            if rsync -az --delete -e "ssh" "react.samlatif.uk/dist/" "$USER@vps-target:$DEPLOY_PATH/" && \
+              rsync -az -e "ssh" shared/filter-utils.js shared/site.css shared/ui-shared.css "$USER@vps-target:$DEPLOY_PATH/"; then
+              success=1
+              break
+            fi
+            sleep 5
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to sync built files after retries."
+            exit 1
+          fi
 
       - name: Sync static site files to VPS
         run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
           STATIC_DEPLOY_PATH="${{ secrets.STATIC_DEPLOY_PATH }}"
           STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          rsync -az \
-            -e "ssh -p $PORT" \
-            index.html favicon-96x96.png favicon.ico apple-touch-icon.png favicon.svg site.webmanifest web-app-manifest-192x192.png web-app-manifest-512x512.png \
-            "$USER@$HOST:$STATIC_DEPLOY_PATH/"
 
-          rsync -az \
-            -e "ssh -p $PORT" \
-            shared/cv-data.json \
-            "$USER@$HOST:$STATIC_DEPLOY_PATH/shared/"
+          success=0
+          for attempt in 1 2 3 4 5; do
+            echo "static site sync attempt $attempt"
+            if rsync -az -e "ssh" \
+              index.html favicon-96x96.png favicon.ico apple-touch-icon.png favicon.svg site.webmanifest web-app-manifest-192x192.png web-app-manifest-512x512.png \
+              "$USER@vps-target:$STATIC_DEPLOY_PATH/" && \
+              rsync -az -e "ssh" shared/cv-data.json "$USER@vps-target:$STATIC_DEPLOY_PATH/shared/" && \
+              rsync -az -e "ssh" shared/filter-utils.js shared/site.css shared/ui-shared.css "$USER@vps-target:$STATIC_DEPLOY_PATH/shared/"; then
+              success=1
+              break
+            fi
+            sleep 5
+          done
 
-          rsync -az \
-            -e "ssh -p $PORT" \
-            shared/filter-utils.js shared/site.css shared/ui-shared.css \
-            "$USER@$HOST:$STATIC_DEPLOY_PATH/shared/"
+          if [ "$success" -ne 1 ]; then
+            echo "Failed to sync static site files after retries."
+            exit 1
+          fi
+
+      - name: Set ownership and reload nginx/certbot
+        run: |
+          USER="${{ secrets.VPS_USER }}"
+          USER="${USER:-root}"
+          DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
+          DEPLOY_PATH="${DEPLOY_PATH:-/var/www/react.samlatif.uk}"
+          STATIC_DEPLOY_PATH="${{ secrets.STATIC_DEPLOY_PATH }}"
+          STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
+          DOMAIN="${{ secrets.REACT_DOMAIN }}"
+          DOMAIN="${DOMAIN:-react.samlatif.uk}"
+          APEX_DOMAIN="${{ secrets.APEX_DOMAIN }}"
+
+          ssh "$USER@vps-target" "
+            set -e
+            chown -R www-data:www-data '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH'
+            nginx -t
+            systemctl reload nginx
+            if command -v certbot >/dev/null 2>&1; then
+              certbot --nginx -d '$DOMAIN' --non-interactive --agree-tos -m hello@samlatif.uk --redirect || true
+              if [ -n '$APEX_DOMAIN' ]; then
+                certbot --nginx -d '$APEX_DOMAIN' --non-interactive --agree-tos -m hello@samlatif.uk --redirect || true
+              fi
+            fi
+          "
