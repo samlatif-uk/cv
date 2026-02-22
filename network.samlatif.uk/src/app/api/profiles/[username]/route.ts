@@ -1,3 +1,4 @@
+import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -35,6 +36,14 @@ export async function PATCH(
   context: { params: Promise<{ username: string }> },
 ) {
   const { username } = await context.params;
+  const currentUsername = await getCurrentUsername();
+
+  if (currentUsername !== username) {
+    return Response.json(
+      { error: "You can only edit your own profile." },
+      { status: 403 },
+    );
+  }
 
   const body = (await request.json()) as {
     name?: string;
