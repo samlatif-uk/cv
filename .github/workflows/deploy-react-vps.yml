@@ -115,6 +115,22 @@ jobs:
           PORT="${PORT:-22}"
           ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$DEPLOY_PATH' '$STATIC_DEPLOY_PATH' '$STATIC_DEPLOY_PATH/shared'"
 
+      - name: Sync React nginx vhost config
+        run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
+          USER="${{ secrets.VPS_USER }}"
+          USER="${USER:-root}"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
+
+          rsync -az \
+            -e "ssh -p $PORT" \
+            "scripts/react.nginx.conf" \
+            "$USER@$HOST:/tmp/react.samlatif.uk.conf"
+
+          ssh -p "$PORT" "$USER@$HOST" "mv /tmp/react.samlatif.uk.conf /etc/nginx/sites-available/react.samlatif.uk && ln -sfn /etc/nginx/sites-available/react.samlatif.uk /etc/nginx/sites-enabled/react.samlatif.uk && nginx -t && systemctl reload nginx"
+
       - name: Sync built files to VPS
         run: |
           HOST="${{ secrets.VPS_HOST }}"
