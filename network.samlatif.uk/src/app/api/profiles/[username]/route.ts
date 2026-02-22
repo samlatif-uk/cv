@@ -56,10 +56,10 @@ export async function PATCH(
   const name = body.name?.trim();
   const headline = body.headline?.trim();
   const location = body.location?.trim();
-  const bio = body.bio?.trim();
+  const bio = body.bio ?? "";
   const avatarUrl = body.avatarUrl?.trim() || null;
 
-  if (!name || !headline || !location || !bio) {
+  if (!name || !headline || !location || !bio.trim()) {
     return Response.json(
       { error: "name, headline, location, and bio are required." },
       { status: 400 },
