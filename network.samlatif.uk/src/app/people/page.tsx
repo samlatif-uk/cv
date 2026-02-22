@@ -2,6 +2,8 @@ import { ConnectButton } from "@/components/ConnectButton";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const CURRENT_USER = "samlatif";
 
 export default async function PeoplePage() {

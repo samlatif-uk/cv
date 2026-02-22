@@ -130,7 +130,7 @@ async function main() {
       name: "Sam Latif",
       headline: "Senior Fullstack Consultant",
       location: "West London, UK",
-      bio: "15+ years delivering high-performance, scalable web applications.",
+      bio: "A senior fullstack consultant with 15+ years delivering high-performance, scalable web applications for blue-chip clients — from Goldman Sachs and Bank of America to Visa and Deutsche Bank.",
     },
   });
 
