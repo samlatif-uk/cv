@@ -96,6 +96,32 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
+      - name: Wait for SSH reachability
+        run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
+
+          # Wait up to ~5 minutes for network path to VPS SSH port.
+          # This handles temporary VPS reboot/network blips during deploy windows.
+          success=0
+          for attempt in $(seq 1 20); do
+            echo "ssh reachability attempt $attempt to $HOST:$PORT"
+            if nc -z -w 5 "$HOST" "$PORT"; then
+              success=1
+              break
+            fi
+            sleep 15
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "SSH port $PORT on $HOST stayed unreachable after retries."
+            echo "Likely causes: VPS down, provider firewall/security group, host firewall, or fail2ban block."
+            echo "Verify from VPS console: systemctl status ssh, ufw status, iptables -S, and provider network ACLs."
+            exit 1
+          fi
+
       - name: Add VPS to known hosts
         run: |
           HOST="${{ secrets.VPS_HOST }}"
@@ -134,6 +160,8 @@ jobs:
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
 
+          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
+
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           SHARED_PATH="${{ secrets.NETWORK_VPS_SHARED_PATH }}"
@@ -144,11 +172,11 @@ jobs:
           success=0
           for attempt in 1 2 3 4 5; do
             echo "ensure dir attempt $attempt"
-            if ssh "$USER@vps-target" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"; then
+            if ssh $SSH_OPTS "$USER@vps-target" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"; then
               success=1
               break
             fi
-            sleep 3
+            sleep $((attempt * 5))
           done
 
           if [ "$success" -ne 1 ]; then
@@ -160,6 +188,7 @@ jobs:
         run: |
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
+          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           SHARED_PATH="${{ secrets.NETWORK_VPS_SHARED_PATH }}"
@@ -172,21 +201,21 @@ jobs:
               --exclude='node_modules' \
               --exclude='dev.db' \
               --exclude='prisma/dev.db' \
-              -e "ssh" \
+              -e "ssh $SSH_OPTS" \
               "network.samlatif.uk/" \
               "$USER@vps-target:$APP_PATH/" && \
               rsync -az --delete \
-              -e "ssh" \
+              -e "ssh $SSH_OPTS" \
               "network.samlatif.uk/node_modules/" \
               "$USER@vps-target:$APP_PATH/node_modules/" && \
               rsync -az \
-              -e "ssh" \
+              -e "ssh $SSH_OPTS" \
               "shared/cv-data.json" \
               "$USER@vps-target:$SHARED_PATH/"; then
               success=1
               break
             fi
-            sleep 5
+            sleep $((attempt * 10))
           done
 
           if [ "$success" -ne 1 ]; then
@@ -198,6 +227,7 @@ jobs:
         run: |
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
+          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
@@ -209,7 +239,7 @@ jobs:
           SERVICE_NAME="${{ secrets.NETWORK_SERVICE_NAME }}"
           SERVICE_NAME="${SERVICE_NAME:-network-samlatif-uk}"
 
-          ssh "$USER@vps-target" "
+          ssh $SSH_OPTS "$USER@vps-target" "
             set -e
             cd '$APP_PATH'
 
