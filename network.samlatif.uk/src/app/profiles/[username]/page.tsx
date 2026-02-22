@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
 import { SamCvProfile } from "@/components/SamCvProfile";
+import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import { getCurrentUsername } from "@/lib/auth";
 import { getCvProfilePayload } from "@/lib/cvProfileData";
 
@@ -33,6 +35,7 @@ export default async function ProfilePage({
           headline: payload.profile.headline,
           location: payload.profile.location,
           bio: payload.profile.bio,
+          summary: payload.profile.summary,
         }}
       />
 
@@ -53,6 +56,38 @@ export default async function ProfilePage({
               initialLocation={payload.profile.location}
               initialBio={payload.profile.bio}
               initialAvatarUrl={payload.profile.avatarUrl}
+            />
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+                07
+              </span>
+              <h2 className="cv-title text-xl font-semibold">
+                Edit Tech Skills
+              </h2>
+              <div className="h-px flex-1 bg-[var(--border)]" />
+            </div>
+            <TechRowsEditorForm
+              username={payload.profile.username}
+              initialTechRows={payload.data.TECH_ROWS}
+            />
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+                08
+              </span>
+              <h2 className="cv-title text-xl font-semibold">
+                Edit Overview Stats
+              </h2>
+              <div className="h-px flex-1 bg-[var(--border)]" />
+            </div>
+            <OverviewStatsEditorForm
+              username={payload.profile.username}
+              initialOverviewStats={payload.data.OVERVIEW_STATS ?? []}
             />
           </section>
         </main>

@@ -141,6 +141,7 @@ type ProfileIdentity = {
   headline: string;
   location: string;
   bio: string;
+  summary: string[];
 };
 
 export function SamCvProfile({
@@ -152,10 +153,18 @@ export function SamCvProfile({
 }) {
   const [firstName, ...restNameParts] = profile.name.split(" ");
   const lastName = restNameParts.join(" ");
+  const isSam = profile.username === "samlatif";
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [activeNav, setActiveNav] = useState("techskills");
   const previousFilterCount = useRef(activeTechs.length);
+  const knownCompanies = useMemo(
+    () =>
+      Array.from(new Set(data.JOBS.map((job) => job.co))).sort(
+        (first, second) => second.length - first.length,
+      ),
+    [data.JOBS],
+  );
 
   const filterableTechSet = useMemo(() => {
     const techSet = new Set<string>([
@@ -379,6 +388,32 @@ export function SamCvProfile({
     window.scrollTo({ top: targetY, behavior: "smooth" });
   };
 
+  const resolveJobCompany = (testimonial: CvData["TESTIMONIALS"][number]) => {
+    if (testimonial.jobCompany) {
+      return testimonial.jobCompany;
+    }
+
+    const haystack = `${testimonial.relationship} ${testimonial.quote}`;
+    return knownCompanies.find((company) => haystack.includes(company));
+  };
+
+  const renderRelationship = (relationship: string, jobCompany?: string) => {
+    if (!jobCompany || !relationship.includes(jobCompany)) {
+      return relationship;
+    }
+
+    const [before, ...rest] = relationship.split(jobCompany);
+    const after = rest.join(jobCompany);
+
+    return (
+      <>
+        {before.trimEnd()}{" "}
+        <span className={styles.recCompany}>{jobCompany}</span>
+        {after}
+      </>
+    );
+  };
+
   return (
     <main className={styles.root}>
       <header className={styles.header}>
@@ -390,16 +425,68 @@ export function SamCvProfile({
             {firstName}
             {lastName ? <span className={styles.acc}> {lastName}</span> : null}
           </h1>
-          <div className={styles.role}>@{profile.username}</div>
+          <div className={styles.role}>
+            {isSam
+              ? "Frontend / UX Specialist · 15+ Years"
+              : `@${profile.username}`}
+          </div>
           <div className={styles.hcontact}>
+            {isSam ? (
+              <a href="tel:07851885776">
+                <em>◆</em>07851 885 776
+              </a>
+            ) : null}
             <a href={`mailto:${profile.email}`}>
               <em>◆</em>
               {profile.email}
             </a>
+            {isSam ? (
+              <>
+                <a href="https://samlatif.uk" target="_blank" rel="noreferrer">
+                  <em>◆</em>Vanilla Site
+                </a>
+                <a
+                  href="https://react.samlatif.uk"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <em>◆</em>React Site
+                </a>
+                <a
+                  href="https://uk.linkedin.com/in/samlatifuk"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <em>◆</em>LinkedIn
+                </a>
+                <a
+                  href="https://github.com/samlatif-uk"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <em>◆</em>GitHub
+                </a>
+              </>
+            ) : null}
           </div>
-          <div className={styles.summary}>
-            <p>{profile.bio}</p>
-          </div>
+          <ul className={styles.summary}>
+            {(profile.summary.length ? profile.summary : [profile.bio]).map(
+              (line) => (
+                <p key={line}>{line}</p>
+              ),
+            )}
+          </ul>
+          {isSam ? (
+            <div className={styles.hireCta}>
+              <strong>Available for contract roles from July 2026.</strong>
+              <a
+                className={styles.hireBtn}
+                href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
+              >
+                Hire Me
+              </a>
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -449,22 +536,15 @@ export function SamCvProfile({
       <section id="overview" className={styles.section}>
         <div className={styles.container}>
           <div className={styles.stats}>
-            <div className={styles.stat}>
-              <div className={styles.sn}>15+</div>
-              <div className={styles.sl}>Years Experience</div>
-            </div>
-            <div className={styles.stat}>
-              <div className={styles.sn}>25+</div>
-              <div className={styles.sl}>Client Engagements</div>
-            </div>
-            <div className={styles.stat}>
-              <div className={styles.sn}>5</div>
-              <div className={styles.sl}>Finance Institutions</div>
-            </div>
-            <div className={styles.stat}>
-              <div className={styles.sn}>MSc</div>
-              <div className={styles.sl}>1st Class BSc</div>
-            </div>
+            {(data.OVERVIEW_STATS ?? []).map((stat, statIndex) => (
+              <div
+                key={`${stat.value}-${stat.label}-${statIndex}`}
+                className={styles.stat}
+              >
+                <div className={styles.sn}>{stat.value}</div>
+                <div className={styles.sl}>{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -478,10 +558,13 @@ export function SamCvProfile({
           </div>
           <table className={styles.techTable}>
             <tbody>
-              {data.TECH_ROWS.map((row) => {
+              {data.TECH_ROWS.map((row, rowIndex) => {
                 const pct = Math.min(100, (parseInt(row.yrs, 10) * 100) / 15);
                 return (
-                  <tr key={row.cat} onClick={() => handleRowClick(row.items)}>
+                  <tr
+                    key={`${row.cat}-${rowIndex}`}
+                    onClick={() => handleRowClick(row.items)}
+                  >
                     <td>{row.cat}</td>
                     <td>
                       <div>
@@ -645,44 +728,31 @@ export function SamCvProfile({
           <div className={styles.testimonials}>
             {data.TESTIMONIALS.filter(
               (testimonial) => testimonial.visibility === "public",
-            ).map((testimonial) => (
-              <blockquote
-                key={`${testimonial.by}-${testimonial.date}`}
-                className={styles.testimonialLink}
-                role="button"
-                tabIndex={0}
-                onClick={() => scrollToCompanyJob(testimonial.jobCompany)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    scrollToCompanyJob(testimonial.jobCompany);
-                  }
-                }}
-              >
-                “{testimonial.quote}”
-                <cite>
-                  {testimonial.by} · {testimonial.role} ·{" "}
-                  {testimonial.jobCompany &&
-                  testimonial.relationship.includes(testimonial.jobCompany) ? (
-                    <>
-                      {testimonial.relationship
-                        .split(testimonial.jobCompany)[0]
-                        .trimEnd()}{" "}
-                      <span className={styles.recCompany}>
-                        {testimonial.jobCompany}
-                      </span>
-                      {testimonial.relationship.slice(
-                        testimonial.relationship.indexOf(
-                          testimonial.jobCompany,
-                        ) + testimonial.jobCompany.length,
-                      )}
-                    </>
-                  ) : (
-                    testimonial.relationship
-                  )}
-                </cite>
-              </blockquote>
-            ))}
+            ).map((testimonial) => {
+              const jobCompany = resolveJobCompany(testimonial);
+
+              return (
+                <blockquote
+                  key={`${testimonial.by}-${testimonial.date}`}
+                  className={styles.testimonialLink}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => scrollToCompanyJob(jobCompany)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      scrollToCompanyJob(jobCompany);
+                    }
+                  }}
+                >
+                  “{testimonial.quote}”
+                  <cite>
+                    {testimonial.by} · {testimonial.role} ·{" "}
+                    {renderRelationship(testimonial.relationship, jobCompany)}
+                  </cite>
+                </blockquote>
+              );
+            })}
           </div>
         </div>
       </section>

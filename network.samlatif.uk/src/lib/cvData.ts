@@ -27,7 +27,13 @@ export type DateBasedStackDefault = {
   maxStartYear?: number;
 };
 
+export type OverviewStat = {
+  value: string;
+  label: string;
+};
+
 export type CvData = {
+  OVERVIEW_STATS?: OverviewStat[];
   TECH_ROWS: TechRow[];
   SKILLS: Skill[];
   DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[];
