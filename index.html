@@ -333,14 +333,24 @@
             role.textContent = PROFILE.headline;
           }
 
-          header.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
-            link.setAttribute("href", `mailto:${PROFILE.email}`);
-            link.innerHTML = "<em>◆</em>" + PROFILE.email;
-          });
+          header
+            .querySelectorAll('.hcontact a[href^="mailto:"]')
+            .forEach((link) => {
+              link.setAttribute("href", `mailto:${PROFILE.email}`);
+              link.innerHTML = "<em>◆</em>" + PROFILE.email;
+            });
 
           const summaryFirst = header.querySelector(".summary p");
           if (summaryFirst) {
             summaryFirst.textContent = PROFILE.bio;
+          }
+
+          const hireButton = header.querySelector(".hire-btn");
+          if (hireButton) {
+            hireButton.setAttribute(
+              "href",
+              `mailto:${PROFILE.email}?subject=Contract%20Opportunity`,
+            );
           }
         }
 
