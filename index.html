@@ -288,24 +288,66 @@
       const GLOBAL_STACK_DEFAULTS = [];
       const TESTIMONIALS = [];
       const JOBS = [];
+      const PROFILE = {
+        username: "samlatif",
+        name: "Sam Latif",
+        email: "hello@samlatif.uk",
+        headline: "Senior Fullstack Consultant",
+        location: "West London, UK",
+        bio: "15+ years delivering high-performance, scalable web applications.",
+      };
+
+      function applyProfileData() {
+        const header = document.querySelector("header");
+        const footer = document.querySelector("footer");
+
+        if (header) {
+          const eyebrow = header.querySelector(".eyebrow");
+          if (eyebrow) {
+            eyebrow.innerHTML = `${PROFILE.headline} &nbsp;·&nbsp; ${PROFILE.location}`;
+          }
+
+          const heading = header.querySelector("h1");
+          if (heading) {
+            const parts = PROFILE.name.trim().split(" ");
+            const first = parts.slice(0, -1).join(" ") || PROFILE.name;
+            const last = parts.length > 1 ? parts[parts.length - 1] : "";
+            heading.innerHTML = last
+              ? `${first} <span class="acc">${last}</span>`
+              : first;
+          }
+
+          const role = header.querySelector(".role");
+          if (role) {
+            role.textContent = PROFILE.headline;
+          }
+
+          header.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+            link.setAttribute("href", `mailto:${PROFILE.email}`);
+            link.innerHTML = "<em>◆</em>" + PROFILE.email;
+          });
+
+          const summaryFirst = header.querySelector(".summary p");
+          if (summaryFirst) {
+            summaryFirst.textContent = PROFILE.bio;
+          }
+        }
+
+        if (footer) {
+          const name = footer.querySelector(".fname");
+          if (name) {
+            name.textContent = PROFILE.name;
+          }
+
+          footer.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+            link.setAttribute("href", `mailto:${PROFILE.email}`);
+            link.textContent = PROFILE.email;
+          });
+        }
+      }
 
       async function loadSharedCvData() {
         try {
-          const candidates = ["./shared/cv-data.json", "./cv-data.json"];
-          let sharedData = null;
-
-          for (const candidate of candidates) {
-            const response = await fetch(candidate, { cache: "no-cache" });
-            if (response.ok) {
-              sharedData = await response.json();
-              break;
-            }
-          }
-
-          if (!sharedData) {
-            return false;
-          }
-
           const syncArray = (target, source) => {
             if (!Array.isArray(target) || !Array.isArray(source)) {
               return;
@@ -313,16 +355,47 @@
             target.splice(0, target.length, ...source);
           };
 
-          syncArray(TECH_ROWS, sharedData.TECH_ROWS);
-          syncArray(SKILLS, sharedData.SKILLS);
-          syncArray(
-            DATE_BASED_STACK_DEFAULTS,
-            sharedData.DATE_BASED_STACK_DEFAULTS,
+          const applyData = (sharedData) => {
+            syncArray(TECH_ROWS, sharedData.TECH_ROWS);
+            syncArray(SKILLS, sharedData.SKILLS);
+            syncArray(
+              DATE_BASED_STACK_DEFAULTS,
+              sharedData.DATE_BASED_STACK_DEFAULTS,
+            );
+            syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
+            syncArray(TESTIMONIALS, sharedData.TESTIMONIALS);
+            syncArray(JOBS, sharedData.JOBS);
+
+            if (sharedData.profile) {
+              Object.assign(PROFILE, sharedData.profile);
+            }
+          };
+
+          const apiResponse = await fetch(
+            "https://network.samlatif.uk/api/cv/samlatif",
+            {
+              cache: "no-cache",
+            },
           );
-          syncArray(GLOBAL_STACK_DEFAULTS, sharedData.GLOBAL_STACK_DEFAULTS);
-          syncArray(TESTIMONIALS, sharedData.TESTIMONIALS);
-          syncArray(JOBS, sharedData.JOBS);
-          return true;
+
+          if (apiResponse.ok) {
+            const apiData = await apiResponse.json();
+            applyData(apiData);
+            return true;
+          }
+
+          const candidates = ["./shared/cv-data.json", "./cv-data.json"];
+
+          for (const candidate of candidates) {
+            const response = await fetch(candidate, { cache: "no-cache" });
+            if (response.ok) {
+              const sharedData = await response.json();
+              applyData(sharedData);
+              return true;
+            }
+          }
+
+          return false;
         } catch {
           console.warn("Unable to load shared CV data.");
           return false;
@@ -752,6 +825,7 @@
       }
 
       loadSharedCvData().then((loaded) => {
+        applyProfileData();
         setActiveSiteLink();
 
         if (!loaded) {

@@ -1,3 +1,5 @@
+import { PROFILE } from "../data/cv";
+
 export const Footer = () => {
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "";
@@ -6,10 +8,10 @@ export const Footer = () => {
   return (
     <footer>
       <div className="container">
-        <div className="fname">Sam Latif</div>
+        <div className="fname">{PROFILE.name}</div>
         <div className="fline"></div>
         <div className="finfo">
-          <a href="mailto:hello@samlatif.uk">hello@samlatif.uk</a>
+          <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
           &nbsp;·&nbsp;
           <a href="tel:07851885776">07851 885 776</a>
           &nbsp;·&nbsp;

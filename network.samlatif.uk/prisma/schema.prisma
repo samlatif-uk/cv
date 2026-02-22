@@ -34,6 +34,77 @@ model User {
   messages            Message[]
   conversationMembers ConversationMember[]
   recommendations     Recommendation[]
+  cvTechRows          CvTechRow[]
+  cvSkills            CvSkill[]
+  cvJobs              CvJob[]
+}
+
+model CvTechRow {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  items     String
+  years     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sortOrder])
+}
+
+model CvSkill {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  category  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sortOrder])
+}
+
+model CvJob {
+  id              String         @id @default(cuid())
+  userId          String
+  company         String
+  date            String
+  title           String
+  description     String
+  sortOrder       Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cvJobBullets    CvJobBullet[]
+  cvJobStackItems CvJobStackItem[]
+
+  @@index([userId, sortOrder])
+}
+
+model CvJobBullet {
+  id        String   @id @default(cuid())
+  jobId     String
+  content   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job       CvJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, sortOrder])
+}
+
+model CvJobStackItem {
+  id        String   @id @default(cuid())
+  jobId     String
+  label     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job       CvJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, sortOrder])
 }
 
 model Recommendation {

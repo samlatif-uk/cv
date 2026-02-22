@@ -1,4 +1,4 @@
-import { TESTIMONIALS } from "../data/cv";
+import { PROFILE, TESTIMONIALS } from "../data/cv";
 
 const toCompanyKey = (value: string) =>
   value
@@ -22,6 +22,10 @@ export const Header = () => {
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "";
   const activeSite = hostname.startsWith("react.") ? "react" : "vanilla";
+
+  const nameParts = PROFILE.name.trim().split(" ");
+  const firstName = nameParts.slice(0, -1).join(" ") || PROFILE.name;
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
 
   const scrollToCompanyJob = (jobCompany?: string) => {
     const experienceSection = document.getElementById("experience");
@@ -54,20 +58,20 @@ export const Header = () => {
     <header>
       <div className="container">
         <div className="eyebrow">
-          Senior Fullstack Consultant &nbsp;·&nbsp; West London, UK
+          {PROFILE.headline} &nbsp;·&nbsp; {PROFILE.location}
         </div>
         <h1>
-          Sam <span className="acc">Latif</span>
+          {firstName}{" "}
+          {lastName ? <span className="acc">{lastName}</span> : null}
         </h1>
-        <div className="role">
-          Frontend / UX Specialist &nbsp;·&nbsp; 15+ Years
-        </div>
+        <div className="role">{PROFILE.headline}</div>
         <div className="hcontact">
           <a href="tel:07851885776">
             <em>◆</em>07851 885 776
           </a>
-          <a href="mailto:hello@samlatif.uk">
-            <em>◆</em>hello@samlatif.uk
+          <a href={`mailto:${PROFILE.email}`}>
+            <em>◆</em>
+            {PROFILE.email}
           </a>
           <a
             className={`site-link${activeSite === "vanilla" ? " active" : ""}`}
@@ -89,11 +93,7 @@ export const Header = () => {
           </a>
         </div>
         <div className="summary">
-          <p>
-            A senior fullstack consultant with 15+ years delivering
-            high-performance, scalable web applications for blue-chip clients —
-            from Goldman Sachs and Bank of America to Visa and Deutsche Bank.
-          </p>
+          <p>{PROFILE.bio}</p>
           <p>
             An early adopter of React, with deep expertise spanning every major
             version from 0.13 to 18, and a track record of bringing it into

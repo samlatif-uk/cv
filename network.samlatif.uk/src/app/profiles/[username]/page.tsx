@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
 import { SamCvProfile } from "@/components/SamCvProfile";
 import { getCurrentUsername } from "@/lib/auth";
-import { getSharedCvData } from "@/lib/cvData";
-import { prisma } from "@/lib/prisma";
+import { getCvProfilePayload } from "@/lib/cvProfileData";
 
 export default async function ProfilePage({
   params,
@@ -12,31 +11,30 @@ export default async function ProfilePage({
 }) {
   const { username } = await params;
 
-  const [profile, cvData, currentUsername] = await Promise.all([
-    prisma.user.findUnique({
-      where: { username },
-      select: {
-        username: true,
-        name: true,
-        headline: true,
-        location: true,
-        bio: true,
-        avatarUrl: true,
-      },
-    }),
-    getSharedCvData(),
+  const [payload, currentUsername] = await Promise.all([
+    getCvProfilePayload(username),
     getCurrentUsername(),
   ]);
 
-  if (!profile) {
+  if (!payload) {
     notFound();
   }
 
-  const canEdit = currentUsername === profile.username;
+  const canEdit = currentUsername === payload.profile.username;
 
   return (
     <>
-      <SamCvProfile data={cvData} />
+      <SamCvProfile
+        data={payload.data}
+        profile={{
+          username: payload.profile.username,
+          name: payload.profile.name,
+          email: payload.profile.email,
+          headline: payload.profile.headline,
+          location: payload.profile.location,
+          bio: payload.profile.bio,
+        }}
+      />
 
       {canEdit ? (
         <main className="mx-auto w-full max-w-4xl space-y-4 p-4 md:p-8">
@@ -49,12 +47,12 @@ export default async function ProfilePage({
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
             <ProfileEditorForm
-              username={profile.username}
-              initialName={profile.name}
-              initialHeadline={profile.headline}
-              initialLocation={profile.location}
-              initialBio={profile.bio}
-              initialAvatarUrl={profile.avatarUrl}
+              username={payload.profile.username}
+              initialName={payload.profile.name}
+              initialHeadline={payload.profile.headline}
+              initialLocation={payload.profile.location}
+              initialBio={payload.profile.bio}
+              initialAvatarUrl={payload.profile.avatarUrl}
             />
           </section>
         </main>

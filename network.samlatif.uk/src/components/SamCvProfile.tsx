@@ -134,7 +134,24 @@ const toCompanyKey = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export function SamCvProfile({ data }: { data: CvData }) {
+type ProfileIdentity = {
+  username: string;
+  name: string;
+  email: string;
+  headline: string;
+  location: string;
+  bio: string;
+};
+
+export function SamCvProfile({
+  data,
+  profile,
+}: {
+  data: CvData;
+  profile: ProfileIdentity;
+}) {
+  const [firstName, ...restNameParts] = profile.name.split(" ");
+  const lastName = restNameParts.join(" ");
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [activeNav, setActiveNav] = useState("techskills");
@@ -367,63 +384,21 @@ export function SamCvProfile({ data }: { data: CvData }) {
       <header className={styles.header}>
         <div className={styles.container}>
           <div className={styles.eyebrow}>
-            Senior Fullstack Consultant · West London, UK
+            {profile.headline} · {profile.location}
           </div>
           <h1 className={styles.name}>
-            Sam <span className={styles.acc}>Latif</span>
+            {firstName}
+            {lastName ? <span className={styles.acc}> {lastName}</span> : null}
           </h1>
-          <div className={styles.role}>
-            Frontend / UX Specialist · 15+ Years
-          </div>
+          <div className={styles.role}>@{profile.username}</div>
           <div className={styles.hcontact}>
-            <a href="tel:07851885776">
-              <em>◆</em>07851 885 776
-            </a>
-            <a href="mailto:hello@samlatif.uk">
-              <em>◆</em>hello@samlatif.uk
-            </a>
-            <a href="https://samlatif.uk" target="_blank" rel="noreferrer">
-              <em>◆</em>Vanilla Site
-            </a>
-            <a
-              href="https://react.samlatif.uk"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <em>◆</em>React Site
-            </a>
-            <a
-              href="https://uk.linkedin.com/in/samlatifuk"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <em>◆</em>LinkedIn
-            </a>
-            <a
-              href="https://github.com/samlatif-uk"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <em>◆</em>GitHub
+            <a href={`mailto:${profile.email}`}>
+              <em>◆</em>
+              {profile.email}
             </a>
           </div>
           <div className={styles.summary}>
-            <p>
-              A senior fullstack consultant with 15+ years delivering
-              high-performance, scalable web applications for blue-chip clients
-              — from Goldman Sachs and Bank of America to Visa and Deutsche
-              Bank.
-            </p>
-            <p>
-              An early adopter of React, with deep expertise spanning every
-              major version from 0.13 to 18, and a track record of bringing it
-              into organisations before it became mainstream.
-            </p>
-            <p>
-              Strong eye for design and UX, with a habit of dogfooding work
-              personally — features are QA&apos;d before they ship, eliminating
-              the “chuck it over the fence” bottleneck.
-            </p>
+            <p>{profile.bio}</p>
           </div>
         </div>
       </header>
@@ -764,24 +739,10 @@ export function SamCvProfile({ data }: { data: CvData }) {
 
       <footer className={styles.footer}>
         <div className={styles.container}>
-          <div className={styles.fname}>Sam Latif</div>
+          <div className={styles.fname}>{profile.name}</div>
           <div className={styles.fline} />
           <div className={styles.finfo}>
-            <a href="mailto:hello@samlatif.uk">hello@samlatif.uk</a>
-            &nbsp;·&nbsp;
-            <a href="tel:07851885776">07851 885 776</a>
-            &nbsp;·&nbsp;
-            <a href="https://samlatif.uk" target="_blank" rel="noreferrer">
-              Vanilla Site
-            </a>
-            &nbsp;·&nbsp;
-            <a
-              href="https://react.samlatif.uk"
-              target="_blank"
-              rel="noreferrer"
-            >
-              React Site
-            </a>
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
           </div>
         </div>
       </footer>

@@ -1,10 +1,69 @@
 import pkg from "@prisma/client";
+import { readFile } from "node:fs/promises";
 
 const { PrismaClient, ConnectionStatus } = pkg;
 
 const prisma = new PrismaClient();
 
+async function seedCvProfile(userId, profile) {
+  await prisma.cvTechRow.createMany({
+    data: profile.techRows.map((row, index) => ({
+      userId,
+      category: row.cat,
+      items: row.items,
+      years: row.yrs,
+      sortOrder: index,
+    })),
+  });
+
+  await prisma.cvSkill.createMany({
+    data: profile.skills.map((skill, index) => ({
+      userId,
+      name: skill.n,
+      category: skill.c,
+      sortOrder: index,
+    })),
+  });
+
+  for (const [jobIndex, job] of profile.jobs.entries()) {
+    await prisma.cvJob.create({
+      data: {
+        userId,
+        company: job.co,
+        date: job.date,
+        title: job.title,
+        description: job.desc,
+        sortOrder: jobIndex,
+        cvJobBullets: {
+          create: job.bullets.map((bullet, index) => ({
+            content: bullet,
+            sortOrder: index,
+          })),
+        },
+        cvJobStackItems: {
+          create: job.stack.map((label, index) => ({
+            label,
+            sortOrder: index,
+          })),
+        },
+      },
+    });
+  }
+}
+
 async function main() {
+  const sharedCvData = JSON.parse(
+    await readFile(
+      new URL("../../shared/cv-data.json", import.meta.url),
+      "utf-8",
+    ),
+  );
+
+  await prisma.cvJobStackItem.deleteMany();
+  await prisma.cvJobBullet.deleteMany();
+  await prisma.cvJob.deleteMany();
+  await prisma.cvSkill.deleteMany();
+  await prisma.cvTechRow.deleteMany();
   await prisma.message.deleteMany();
   await prisma.conversationMember.deleteMany();
   await prisma.conversation.deleteMany();
@@ -46,6 +105,221 @@ async function main() {
     },
   });
 
+  const aisha = await prisma.user.create({
+    data: {
+      email: "aisha.rahman@example.com",
+      username: "aisharahman",
+      name: "Aisha Rahman",
+      headline: "Engineering Manager · Payments",
+      location: "Birmingham, UK",
+      bio: "Leads distributed teams building resilient payment infrastructure and developer platforms.",
+    },
+  });
+
+  const luca = await prisma.user.create({
+    data: {
+      email: "luca.moretti@example.com",
+      username: "lucamoretti",
+      name: "Luca Moretti",
+      headline: "Staff Product Designer",
+      location: "Milan, Italy",
+      bio: "Design systems specialist focused on enterprise UX, accessibility, and measurable product outcomes.",
+    },
+  });
+
+  const priya = await prisma.user.create({
+    data: {
+      email: "priya.nair@example.com",
+      username: "priyanair",
+      name: "Priya Nair",
+      headline: "Data Platform Architect",
+      location: "Leeds, UK",
+      bio: "Designs cloud-native data pipelines and observability foundations for analytics and ML teams.",
+    },
+  });
+
+  await seedCvProfile(sam.id, {
+    techRows: sharedCvData.TECH_ROWS,
+    skills: sharedCvData.SKILLS,
+    jobs: sharedCvData.JOBS,
+  });
+
+  await seedCvProfile(emma.id, {
+    techRows: [
+      {
+        cat: "Product",
+        items: "Roadmapping, Experimentation, Analytics",
+        yrs: "10+",
+      },
+      { cat: "Delivery", items: "Agile, Discovery Workshops, OKRs", yrs: "9+" },
+    ],
+    skills: [
+      { n: "Figma", c: "ui" },
+      { n: "Storybook", c: "ui" },
+      { n: "React", c: "core" },
+      { n: "Next.js", c: "core" },
+      { n: "React Query", c: "state" },
+      { n: "Git", c: "tooling" },
+    ],
+    jobs: [
+      {
+        co: "ScalePath SaaS",
+        date: "2021 – Present",
+        title: "Product Lead",
+        desc: "Owns activation and retention initiatives across a multi-product B2B suite.",
+        bullets: [
+          "Scaled experimentation cadence from monthly to weekly.",
+          "Aligned engineering and GTM priorities through measurable product goals.",
+        ],
+        stack: ["React", "Next.js", "Figma", "Storybook"],
+      },
+    ],
+  });
+
+  await seedCvProfile(daniel.id, {
+    techRows: [
+      { cat: "Frontend", items: "React, TypeScript, Next.js", yrs: "7+" },
+      { cat: "Testing", items: "Jest, RTL, Cypress", yrs: "6+" },
+    ],
+    skills: [
+      { n: "React", c: "core" },
+      { n: "TypeScript", c: "core" },
+      { n: "Next.js", c: "core" },
+      { n: "Jest", c: "testing" },
+      { n: "React Testing Library", c: "testing" },
+      { n: "Cypress", c: "testing" },
+      { n: "Redux", c: "state" },
+      { n: "Git", c: "tooling" },
+    ],
+    jobs: [
+      {
+        co: "Northbridge Fintech",
+        date: "2022 – Present",
+        title: "Frontend Engineer",
+        desc: "Delivers workflow-heavy UX for onboarding and compliance journeys.",
+        bullets: [
+          "Created shared form architecture that reduced implementation time.",
+          "Improved accessibility conformance across key transaction screens.",
+        ],
+        stack: ["React", "TypeScript", "Redux", "Cypress"],
+      },
+    ],
+  });
+
+  await seedCvProfile(aisha.id, {
+    techRows: [
+      {
+        cat: "Platform",
+        items: "Node.js, TypeScript, Kafka, PostgreSQL",
+        yrs: "11+",
+      },
+      {
+        cat: "Leadership",
+        items: "Hiring, Mentoring, Incident Management",
+        yrs: "8+",
+      },
+    ],
+    skills: [
+      { n: "Node.js", c: "core" },
+      { n: "TypeScript", c: "core" },
+      { n: "RESTful APIs", c: "core" },
+      { n: "GraphQL", c: "core" },
+      { n: "Jest", c: "testing" },
+      { n: "Git", c: "tooling" },
+    ],
+    jobs: [
+      {
+        co: "OrbitPay",
+        date: "2020 – Present",
+        title: "Engineering Manager",
+        desc: "Leads payments platform teams across reliability and compliance workstreams.",
+        bullets: [
+          "Cut critical incident volume through reliability programme execution.",
+          "Introduced platform standards adopted by four product squads.",
+        ],
+        stack: ["Node.js", "TypeScript", "RESTful APIs", "Jest"],
+      },
+      {
+        co: "Mercury Transfers",
+        date: "2016 – 2020",
+        title: "Senior Software Engineer",
+        desc: "Built money-movement services and partner integration tooling.",
+        bullets: [
+          "Delivered migration from monolith services to modular APIs.",
+          "Mentored engineers moving from support to product development.",
+        ],
+        stack: ["Node.js", "GraphQL", "Git"],
+      },
+    ],
+  });
+
+  await seedCvProfile(luca.id, {
+    techRows: [
+      {
+        cat: "Design Systems",
+        items: "Figma, Storybook, Design Tokens",
+        yrs: "9+",
+      },
+      {
+        cat: "Prototyping",
+        items: "React, Framer, Accessibility Testing",
+        yrs: "7+",
+      },
+    ],
+    skills: [
+      { n: "Figma", c: "ui" },
+      { n: "Storybook", c: "ui" },
+      { n: "React", c: "core" },
+      { n: "TypeScript", c: "core" },
+      { n: "Jest", c: "testing" },
+      { n: "Git", c: "tooling" },
+    ],
+    jobs: [
+      {
+        co: "Atlas Enterprise",
+        date: "2021 – Present",
+        title: "Staff Product Designer",
+        desc: "Owns multi-product design system and cross-team UX quality metrics.",
+        bullets: [
+          "Raised adoption of shared components across six product teams.",
+          "Partnered with engineering to ship accessible patterns by default.",
+        ],
+        stack: ["Figma", "Storybook", "React", "TypeScript"],
+      },
+    ],
+  });
+
+  await seedCvProfile(priya.id, {
+    techRows: [
+      {
+        cat: "Data Engineering",
+        items: "Python, SQL, Airflow, Spark",
+        yrs: "10+",
+      },
+      { cat: "Cloud", items: "AWS, Terraform, Kubernetes", yrs: "8+" },
+    ],
+    skills: [
+      { n: "Node.js", c: "core" },
+      { n: "GraphQL", c: "core" },
+      { n: "RESTful APIs", c: "core" },
+      { n: "TypeScript", c: "core" },
+      { n: "Git", c: "tooling" },
+    ],
+    jobs: [
+      {
+        co: "Northstar Data",
+        date: "2019 – Present",
+        title: "Data Platform Architect",
+        desc: "Architects ingestion and serving pipelines for analytics and ML workloads.",
+        bullets: [
+          "Introduced data contracts reducing downstream schema breakages.",
+          "Built observability standards for pipeline SLAs and lineage.",
+        ],
+        stack: ["TypeScript", "Node.js", "RESTful APIs", "Git"],
+      },
+    ],
+  });
+
   await prisma.post.createMany({
     data: [
       {
@@ -63,6 +337,21 @@ async function main() {
         content:
           "Open-sourcing our accessibility checklist for enterprise dashboards.",
       },
+      {
+        authorId: aisha.id,
+        content:
+          "We just completed a major reliability sprint across our payment retries and alerting workflows.",
+      },
+      {
+        authorId: luca.id,
+        content:
+          "Sharing a practical approach for scaling design systems without slowing down product delivery.",
+      },
+      {
+        authorId: priya.id,
+        content:
+          "Exploring event-driven data contracts to reduce breakages between platform and product teams.",
+      },
     ],
   });
 
@@ -75,6 +364,21 @@ async function main() {
       },
       {
         requesterId: daniel.id,
+        receiverId: sam.id,
+        status: ConnectionStatus.PENDING,
+      },
+      {
+        requesterId: sam.id,
+        receiverId: aisha.id,
+        status: ConnectionStatus.ACCEPTED,
+      },
+      {
+        requesterId: luca.id,
+        receiverId: sam.id,
+        status: ConnectionStatus.ACCEPTED,
+      },
+      {
+        requesterId: priya.id,
         receiverId: sam.id,
         status: ConnectionStatus.PENDING,
       },
@@ -206,6 +510,36 @@ async function main() {
         recommendationAt: new Date("2012-05-04"),
         content:
           "Sam was passionate, open-minded, and deadline oriented. During university projects he was consistently proactive and dependable in getting things done.",
+        isPublic: true,
+      },
+      {
+        recipientId: aisha.id,
+        recommenderName: "Tom Reeves",
+        recommenderRole: "VP Engineering",
+        relationshipLabel: "Managed Aisha directly",
+        recommendationAt: new Date("2024-09-12"),
+        content:
+          "Aisha consistently balances delivery pace with engineering quality. She led multiple cross-team migrations with clear communication and measurable outcomes.",
+        isPublic: true,
+      },
+      {
+        recipientId: luca.id,
+        recommenderName: "Elena Ricci",
+        recommenderRole: "Director of Product",
+        relationshipLabel: "Worked with Luca on the same team",
+        recommendationAt: new Date("2023-11-03"),
+        content:
+          "Luca raises the quality bar across design and product. His system thinking helped us ship faster while improving UX consistency.",
+        isPublic: true,
+      },
+      {
+        recipientId: priya.id,
+        recommenderName: "Karan Mehta",
+        recommenderRole: "Head of Data",
+        relationshipLabel: "Priya was senior to Karan",
+        recommendationAt: new Date("2024-02-18"),
+        content:
+          "Priya has a rare blend of platform depth and practical delivery focus. She modernised our data stack without disrupting downstream teams.",
         isPublic: true,
       },
     ],
