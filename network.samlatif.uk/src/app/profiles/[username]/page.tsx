@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ConnectionStatus } from "@prisma/client";
-import { SamCvProfile } from "@/components/SamCvProfile";
-import { getSharedCvData } from "@/lib/cvData";
 import { prisma } from "@/lib/prisma";
 
 function renderName(name: string) {
@@ -30,8 +29,7 @@ export default async function ProfilePage({
   const { username } = await params;
 
   if (username === "samlatif") {
-    const cvData = await getSharedCvData();
-    return <SamCvProfile data={cvData} />;
+    redirect("https://react.samlatif.uk");
   }
 
   const profile = await prisma.user.findUnique({
