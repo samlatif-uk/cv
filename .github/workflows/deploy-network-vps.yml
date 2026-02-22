@@ -51,76 +51,21 @@ jobs:
             echo "Missing required secret: VPS_SSH_KEY"
             exit 1
           fi
-
       - name: Validate DNS record exists
         run: |
           DOMAIN="${{ secrets.NETWORK_DOMAIN }}"
           DOMAIN="${DOMAIN:-network.samlatif.uk}"
-
           RESOLVED_IP="$(dig +short A "$DOMAIN" | tail -n 1)"
-
           if [ -z "$RESOLVED_IP" ]; then
             echo "DNS check failed: $DOMAIN does not resolve to an A record yet."
             echo "Create DNS first, then re-run deploy."
             exit 1
           fi
-
           echo "DNS check passed: $DOMAIN -> $RESOLVED_IP"
-
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-
-      - name: Configure SSH defaults
-        run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-
-          cat > ~/.ssh/config <<EOF
-          Host vps-target
-            HostName $HOST
-            Port $PORT
-            ConnectTimeout 10
-            ConnectionAttempts 5
-            ServerAliveInterval 15
-            ServerAliveCountMax 3
-            StrictHostKeyChecking accept-new
-            UserKnownHostsFile ~/.ssh/known_hosts
-          EOF
-
-          chmod 600 ~/.ssh/config
-
-      - name: Wait for SSH reachability
-        run: |
-          HOST="${{ secrets.VPS_HOST }}"
-          HOST="${HOST:-79.99.45.146}"
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-
-          # Wait up to ~5 minutes for network path to VPS SSH port.
-          # This handles temporary VPS reboot/network blips during deploy windows.
-          success=0
-          for attempt in $(seq 1 20); do
-            echo "ssh reachability attempt $attempt to $HOST:$PORT"
-            if nc -z -w 5 "$HOST" "$PORT"; then
-              success=1
-              break
-            fi
-            sleep 15
-          done
-
-          if [ "$success" -ne 1 ]; then
-            echo "SSH port $PORT on $HOST stayed unreachable after retries."
-            echo "Likely causes: VPS down, provider firewall/security group, host firewall, or fail2ban block."
-            echo "Verify from VPS console: systemctl status ssh, ufw status, iptables -S, and provider network ACLs."
-            exit 1
-          fi
 
       - name: Add VPS to known hosts
         run: |
@@ -128,106 +73,58 @@ jobs:
           HOST="${HOST:-79.99.45.146}"
           PORT="${{ secrets.VPS_PORT }}"
           PORT="${PORT:-22}"
-
           mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          touch ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
-          success=0
-          for attempt in 1 2 3 4 5; do
-            echo "ssh-keyscan attempt $attempt for $HOST:$PORT"
-            if ssh-keyscan -T 10 -p "$PORT" -H "$HOST" 2>/dev/null >> ~/.ssh/known_hosts; then
-              success=1
-              break
-            fi
-            sleep 3
-          done
-
-          if [ "$success" -ne 1 ]; then
-            echo "Warning: failed to fetch SSH host key for $HOST:$PORT after retries."
-            echo "Continuing with StrictHostKeyChecking=accept-new"
-            exit 0
-          fi
-
-          ssh-keygen -F "$HOST" -f ~/.ssh/known_hosts >/dev/null || {
-            echo "Host key was not written to known_hosts"
-            exit 1
-          }
-
+          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts
       - name: Ensure deploy directories exist
         run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-
-          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
-
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           SHARED_PATH="${{ secrets.NETWORK_VPS_SHARED_PATH }}"
           SHARED_PATH="${SHARED_PATH:-/var/www/network.samlatif.uk/shared}"
           DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
           DATA_PATH="${DATA_PATH:-/var/www/network.samlatif.uk/data}"
-
-          success=0
-          for attempt in 1 2 3 4 5; do
-            echo "ensure dir attempt $attempt"
-            if ssh $SSH_OPTS "$USER@vps-target" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"; then
-              success=1
-              break
-            fi
-            sleep $((attempt * 5))
-          done
-
-          if [ "$success" -ne 1 ]; then
-            echo "Failed to create remote deploy directories after retries."
-            exit 1
-          fi
-
+          ssh -p "$PORT" "$USER@$HOST" "mkdir -p '$APP_PATH' '$SHARED_PATH' '$DATA_PATH'"
       - name: Sync app files
         run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           SHARED_PATH="${{ secrets.NETWORK_VPS_SHARED_PATH }}"
           SHARED_PATH="${SHARED_PATH:-/var/www/network.samlatif.uk/shared}"
-
-          success=0
-          for attempt in 1 2 3 4 5; do
-            echo "rsync attempt $attempt"
-            if rsync -az --delete \
-              --exclude='node_modules' \
-              --exclude='dev.db' \
-              --exclude='prisma/dev.db' \
-              -e "ssh $SSH_OPTS" \
-              "network.samlatif.uk/" \
-              "$USER@vps-target:$APP_PATH/" && \
-              rsync -az --delete \
-              -e "ssh $SSH_OPTS" \
-              "network.samlatif.uk/node_modules/" \
-              "$USER@vps-target:$APP_PATH/node_modules/" && \
-              rsync -az \
-              -e "ssh $SSH_OPTS" \
-              "shared/cv-data.json" \
-              "$USER@vps-target:$SHARED_PATH/"; then
-              success=1
-              break
-            fi
-            sleep $((attempt * 10))
-          done
-
-          if [ "$success" -ne 1 ]; then
-            echo "Failed to sync app files after retries."
-            exit 1
-          fi
-
+          rsync -az --delete \
+            --exclude='node_modules' \
+            --exclude='dev.db' \
+            --exclude='prisma/dev.db' \
+            -e "ssh -p $PORT" \
+            "network.samlatif.uk/" \
+            "$USER@$HOST:$APP_PATH/"
+          rsync -az --delete \
+            -e "ssh -p $PORT" \
+            "network.samlatif.uk/node_modules/" \
+            "$USER@$HOST:$APP_PATH/node_modules/"
+          rsync -az \
+            -e "ssh -p $PORT" \
+            "shared/cv-data.json" \
+            "$USER@$HOST:$SHARED_PATH/"
       - name: Migrate, restart service, and reload nginx
         run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
           USER="${{ secrets.VPS_USER }}"
           USER="${USER:-root}"
-          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o ServerAliveInterval=15 -o ServerAliveCountMax=3"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
           APP_PATH="${{ secrets.NETWORK_VPS_APP_PATH }}"
           APP_PATH="${APP_PATH:-/var/www/network.samlatif.uk/app}"
           DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
@@ -238,14 +135,11 @@ jobs:
           APP_PORT="${APP_PORT:-3100}"
           SERVICE_NAME="${{ secrets.NETWORK_SERVICE_NAME }}"
           SERVICE_NAME="${SERVICE_NAME:-network-samlatif-uk}"
-
-          ssh $SSH_OPTS "$USER@vps-target" "
+          ssh -p "$PORT" "$USER@$HOST" "
             set -e
             cd '$APP_PATH'
-
             export DATABASE_URL='file:$DATA_PATH/dev.db'
             ./node_modules/.bin/prisma migrate deploy
-
             printf '%s\n' \
               '[Unit]' \
               'Description=$SERVICE_NAME Next.js app' \
@@ -265,11 +159,9 @@ jobs:
               '[Install]' \
               'WantedBy=multi-user.target' \
               > /etc/systemd/system/$SERVICE_NAME.service
-
             systemctl daemon-reload
             systemctl enable --now $SERVICE_NAME
             systemctl restart $SERVICE_NAME
-
             printf '%s\n' \
               'server {' \
               '  listen 80;' \
@@ -287,11 +179,9 @@ jobs:
               '  }' \
               '}' \
               > /etc/nginx/sites-available/$DOMAIN
-
             ln -sfn /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
             nginx -t
             systemctl reload nginx
-
             if command -v certbot >/dev/null 2>&1; then
               certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m hello@samlatif.uk --redirect || true
             fi
