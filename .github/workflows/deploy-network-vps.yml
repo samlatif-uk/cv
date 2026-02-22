@@ -140,6 +140,7 @@ jobs:
             cd '$APP_PATH'
             export DATABASE_URL='file:$DATA_PATH/dev.db'
             ./node_modules/.bin/prisma migrate deploy
+            node prisma/seed.mjs
             printf '%s\n' \
               '[Unit]' \
               'Description=$SERVICE_NAME Next.js app' \
