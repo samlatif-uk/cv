@@ -8,6 +8,7 @@ A minimal personal CV / portfolio website for Sam Latif.
 
 - `index.html` — the site homepage (static HTML).
 - `react.samlatif.uk/` — a modern React mirror of the CV, built with Vite and TypeScript.
+- `network.samlatif.uk/` — Craftfolio network app (Next.js + Prisma + SQLite).
 
 ## Usage
 
@@ -26,6 +27,17 @@ A minimal personal CV / portfolio website for Sam Latif.
   ```bash
   cd react.samlatif.uk
   npm install
+  npm run dev
+  ```
+
+### Network Version
+
+- To run the network app locally:
+
+  ```bash
+  cd network.samlatif.uk
+  npm install
+  npm run db:reset
   npm run dev
   ```
 
