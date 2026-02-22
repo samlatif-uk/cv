@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import styles from "./SamCvProfile.module.css";
+import styles from "./CvProfile.module.css";
 import type { CvData } from "@/lib/cvData";
 
 const SECTION_IDS = [

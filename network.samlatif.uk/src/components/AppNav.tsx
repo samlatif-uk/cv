@@ -35,7 +35,7 @@ export function AppNav() {
           className={linkClass(pathname.startsWith("/profiles"))}
           href="/profiles/samlatif"
         >
-          Profile
+          My Profile
         </Link>
       </div>
     </nav>

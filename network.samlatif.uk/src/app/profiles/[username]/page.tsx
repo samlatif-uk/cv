@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { EducationEditorForm } from "@/components/EducationEditorForm";
 import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
-import { ProfileCv } from "@/components/SamCvProfile";
+import { ProfileCv } from "@/components/CvProfile";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import { getCurrentUsername } from "@/lib/auth";
