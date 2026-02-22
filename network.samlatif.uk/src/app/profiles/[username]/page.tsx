@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { redirect } from "next/navigation";
 import { ConnectionStatus } from "@prisma/client";
+import { ProfileEditorForm } from "@/components/ProfileEditorForm";
 import { prisma } from "@/lib/prisma";
 
 function renderName(name: string) {
@@ -27,10 +27,6 @@ export default async function ProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-
-  if (username === "samlatif") {
-    redirect("https://react.samlatif.uk");
-  }
 
   const profile = await prisma.user.findUnique({
     where: { username },
@@ -111,6 +107,24 @@ export default async function ProfilePage({
             {profile.bio}
           </p>
         </div>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+            00
+          </span>
+          <h2 className="cv-title text-xl font-semibold">Edit Profile</h2>
+          <div className="h-px flex-1 bg-[var(--border)]" />
+        </div>
+        <ProfileEditorForm
+          username={profile.username}
+          initialName={profile.name}
+          initialHeadline={profile.headline}
+          initialLocation={profile.location}
+          initialBio={profile.bio}
+          initialAvatarUrl={profile.avatarUrl}
+        />
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

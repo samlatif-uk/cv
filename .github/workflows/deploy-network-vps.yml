@@ -168,6 +168,7 @@ jobs:
               'WorkingDirectory=$APP_PATH' \
               'Environment=NODE_ENV=production' \
               'Environment=PORT=$APP_PORT' \
+              'Environment=DATABASE_URL=file:$DATA_PATH/dev.db' \
               'ExecStart=$APP_PATH/node_modules/.bin/next start --port $APP_PORT' \
               'Restart=always' \
               'RestartSec=5' \
