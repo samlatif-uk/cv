@@ -64,9 +64,11 @@ export default async function MessagesPage() {
     <main className="mx-auto w-full max-w-4xl space-y-6 p-4 md:p-8">
       <section>
         <div className="cv-kicker text-xs font-semibold uppercase tracking-[0.2em]">
-          03 · Inbox
+          03 · Craftfolio Inbox
         </div>
-        <h1 className="cv-title mt-2 text-2xl font-semibold">Messages</h1>
+        <h1 className="cv-title mt-2 text-2xl font-semibold">
+          Craftfolio Messages
+        </h1>
         <p className="cv-subtitle mt-1 text-sm">
           Direct messaging between professionals.
         </p>

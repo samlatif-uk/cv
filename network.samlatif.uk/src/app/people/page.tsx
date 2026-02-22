@@ -29,9 +29,11 @@ export default async function PeoplePage() {
     <main className="mx-auto w-full max-w-4xl space-y-6 p-4 md:p-8">
       <section>
         <div className="cv-kicker text-xs font-semibold uppercase tracking-[0.2em]">
-          02 · Network
+          02 · Craftfolio Network
         </div>
-        <h1 className="cv-title mt-2 text-2xl font-semibold">People</h1>
+        <h1 className="cv-title mt-2 text-2xl font-semibold">
+          Craftfolio Network
+        </h1>
         <p className="cv-subtitle mt-1 text-sm">
           Discover professionals and send connection requests.
         </p>

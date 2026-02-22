@@ -1,6 +1,6 @@
-# network.samlatif.uk
+# Craftfolio (network.samlatif.uk)
 
-MVP professional network product (LinkedIn-style) built with Next.js, Prisma, and SQLite.
+Craftfolio is a professional network product (LinkedIn-style) built with Next.js, Prisma, and SQLite.
 
 ## Features
 

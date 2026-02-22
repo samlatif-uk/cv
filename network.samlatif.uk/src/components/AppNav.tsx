@@ -13,7 +13,7 @@ export function AppNav() {
   return (
     <nav className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3 md:px-8">
       <Link href="/" className="cv-link-active text-sm font-semibold">
-        network.samlatif.uk
+        Craftfolio
       </Link>
       <div className="flex items-center gap-4 text-sm">
         <Link className={linkClass(pathname === "/")} href="/">

@@ -30,10 +30,10 @@ export default async function Home() {
     <main className="mx-auto w-full max-w-4xl space-y-6 p-4 md:p-8">
       <section>
         <div className="cv-kicker text-xs font-semibold uppercase tracking-[0.2em]">
-          01 · Feed
+          01 · Craftfolio Feed
         </div>
         <h1 className="cv-title mt-2 text-2xl font-semibold">
-          Professional Feed
+          Craftfolio Feed
         </h1>
         <p className="cv-subtitle mt-1 text-sm">
           Share updates, hiring needs, and product progress.

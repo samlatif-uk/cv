@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Network by Sam Latif",
+  title: "Craftfolio",
   description:
-    "MVP professional network product with feed, people, and messaging.",
+    "Craftfolio is a professional network with feed, people discovery, and messaging.",
 };
 
 export default function RootLayout({
