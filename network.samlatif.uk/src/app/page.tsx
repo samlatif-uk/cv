@@ -2,6 +2,8 @@ import { CreatePostForm } from "@/components/CreatePostForm";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [authors, posts] = await Promise.all([
     prisma.user.findMany({
@@ -43,35 +45,41 @@ export default async function Home() {
       <CreatePostForm authors={authors} />
 
       <section className="space-y-3">
-        {posts.map((post) => (
-          <article key={post.id} className="cv-card rounded-xl p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <Link
-                  href={`/profiles/${post.author.username}`}
-                  className="cv-link font-medium"
-                >
-                  {post.author.name}
-                </Link>
-                <p className="cv-muted text-sm">
+        {posts.length === 0 ? (
+          <article className="cv-card rounded-xl p-4">
+            <p className="cv-muted text-sm">No posts yet.</p>
+          </article>
+        ) : (
+          posts.map((post) => (
+            <article key={post.id} className="cv-card rounded-xl p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
                   <Link
                     href={`/profiles/${post.author.username}`}
-                    className="cv-link"
+                    className="cv-link font-medium"
                   >
-                    @{post.author.username}
-                  </Link>{" "}
-                  • {post.author.headline}
-                </p>
+                    {post.author.name}
+                  </Link>
+                  <p className="cv-muted text-sm">
+                    <Link
+                      href={`/profiles/${post.author.username}`}
+                      className="cv-link"
+                    >
+                      @{post.author.username}
+                    </Link>{" "}
+                    • {post.author.headline}
+                  </p>
+                </div>
+                <time className="cv-muted text-xs">
+                  {post.createdAt.toLocaleDateString()}
+                </time>
               </div>
-              <time className="cv-muted text-xs">
-                {post.createdAt.toLocaleDateString()}
-              </time>
-            </div>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[var(--text-dim)]">
-              {post.content}
-            </p>
-          </article>
-        ))}
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[var(--text-dim)]">
+                {post.content}
+              </p>
+            </article>
+          ))
+        )}
       </section>
     </main>
   );
