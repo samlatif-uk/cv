@@ -51,10 +51,10 @@ A minimal personal CV / portfolio website for Sam Latif.
 - Workflow file: `.github/workflows/deploy-react-vps.yml`
 - Trigger: push to `main` when React, static site, shared data/assets, or workflow files change
 - Required GitHub repository secrets:
-  - `VPS_HOST` (example: `79.99.45.146`)
-  - `VPS_USER` (example: `root`)
+  - `VPS_HOST` (example: `your-server.example.com`)
+  - `VPS_USER` (example: `deploy`)
   - `VPS_SSH_KEY` (private SSH key for the VPS user)
-  - `VPS_DEPLOY_PATH` (example: `/var/www/react.samlatif.uk`)
+  - `VPS_DEPLOY_PATH` (example: `/var/www/your-site`)
   - `VPS_PORT` (optional, default `22`)
 
 ### One-time VPS Setup (Nginx)
@@ -62,13 +62,13 @@ A minimal personal CV / portfolio website for Sam Latif.
 Before running setup, ensure DNS has an `A` record:
 
 - Host: `react`
-- Value: `79.99.45.146`
+- Value: `$VPS_HOST`
 
 Run the bootstrap script directly on the VPS:
 
 ```bash
-scp scripts/bootstrap-react-vps.sh root@79.99.45.146:/root/
-ssh root@79.99.45.146 "chmod +x /root/bootstrap-react-vps.sh && /root/bootstrap-react-vps.sh react.samlatif.uk /var/www/react.samlatif.uk hello@samlatif.uk"
+scp scripts/bootstrap-react-vps.sh "$VPS_USER@$VPS_HOST:/tmp/"
+ssh "$VPS_USER@$VPS_HOST" "chmod +x /tmp/bootstrap-react-vps.sh && /tmp/bootstrap-react-vps.sh react.example.com $VPS_DEPLOY_PATH hello@example.com"
 ```
 
 Manual equivalent:
@@ -76,7 +76,7 @@ Manual equivalent:
 ```bash
 sudo apt update
 sudo apt install -y nginx
-sudo mkdir -p /var/www/react.samlatif.uk
+sudo mkdir -p "$VPS_DEPLOY_PATH"
 ```
 
 Create `/etc/nginx/sites-available/react.samlatif.uk`:
@@ -84,9 +84,9 @@ Create `/etc/nginx/sites-available/react.samlatif.uk`:
 ```nginx
 server {
   listen 80;
-  server_name react.samlatif.uk;
+  server_name react.example.com;
 
-  root /var/www/react.samlatif.uk;
+  root /var/www/your-site;
   index index.html;
 
   location / {
@@ -100,7 +100,7 @@ sudo ln -s /etc/nginx/sites-available/react.samlatif.uk /etc/nginx/sites-enabled
 sudo nginx -t
 sudo systemctl reload nginx
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d react.samlatif.uk
+sudo certbot --nginx -d react.example.com
 ```
 
 ## Contact
