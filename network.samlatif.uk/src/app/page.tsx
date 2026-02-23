@@ -52,7 +52,14 @@ export default async function Home() {
       ) : (
         <section className="cv-card rounded-xl p-4">
           <p className="cv-muted text-sm">
-            Log in from the nav to create posts.
+            <Link href="/auth?mode=login" className="cv-link">
+              Log in
+            </Link>{" "}
+            or{" "}
+            <Link href="/auth?mode=signup" className="cv-link">
+              sign up
+            </Link>{" "}
+            to create posts.
           </p>
         </section>
       )}

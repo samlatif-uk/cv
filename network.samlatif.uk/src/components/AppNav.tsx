@@ -2,57 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 function linkClass(active: boolean) {
   return active ? "cv-link-active" : "cv-link";
 }
 
-type NavUser = {
-  username: string;
-  name: string;
-};
-
 export function AppNav({
-  users,
   currentUsername,
+  googleEnabled,
+  linkedInEnabled,
 }: {
-  users: NavUser[];
   currentUsername: string | null;
+  googleEnabled: boolean;
+  linkedInEnabled: boolean;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [selectedUsername, setSelectedUsername] = useState(
-    currentUsername ?? users[0]?.username ?? "",
-  );
   const [pending, setPending] = useState(false);
-
-  async function login() {
-    if (!selectedUsername) {
-      return;
-    }
-
-    setPending(true);
-
-    try {
-      await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: selectedUsername }),
-      });
-      router.refresh();
-    } finally {
-      setPending(false);
-    }
-  }
 
   async function logout() {
     setPending(true);
 
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.refresh();
+      await signOut({ callbackUrl: "/" });
     } finally {
       setPending(false);
     }
@@ -86,18 +59,6 @@ export function AppNav({
           My Profile
         </Link>
         <div className="flex items-center gap-2">
-          <select
-            className="cv-input rounded-md px-2 py-1 text-xs"
-            value={selectedUsername}
-            onChange={(event) => setSelectedUsername(event.target.value)}
-            disabled={pending || users.length === 0}
-          >
-            {users.map((user) => (
-              <option key={user.username} value={user.username}>
-                {user.name}
-              </option>
-            ))}
-          </select>
           {currentUsername ? (
             <button
               type="button"
@@ -108,14 +69,26 @@ export function AppNav({
               Logout
             </button>
           ) : (
-            <button
-              type="button"
-              className="cv-btn-primary rounded-md px-2 py-1 text-xs font-medium"
-              onClick={login}
-              disabled={pending || !selectedUsername}
-            >
-              Login
-            </button>
+            <>
+              {googleEnabled || linkedInEnabled ? (
+                <>
+                  <Link
+                    href="/auth?mode=login"
+                    className="cv-btn-secondary rounded-md px-2 py-1 text-xs font-medium"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/auth?mode=signup"
+                    className="cv-btn-primary rounded-md px-2 py-1 text-xs font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              ) : (
+                <span className="cv-muted text-xs">OAuth not configured</span>
+              )}
+            </>
           )}
         </div>
       </div>

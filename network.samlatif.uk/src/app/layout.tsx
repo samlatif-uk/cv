@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppNav } from "@/components/AppNav";
 import { getCurrentUsername } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,13 +25,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [users, currentUsername] = await Promise.all([
-    prisma.user.findMany({
-      select: { username: true, name: true },
-      orderBy: { name: "asc" },
-    }),
-    getCurrentUsername(),
-  ]);
+  const currentUsername = await getCurrentUsername();
+  const googleEnabled = Boolean(
+    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+  );
+  const linkedInEnabled = Boolean(
+    process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET,
+  );
 
   return (
     <html lang="en">
@@ -40,7 +39,11 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header className="cv-nav border-b">
-          <AppNav users={users} currentUsername={currentUsername} />
+          <AppNav
+            currentUsername={currentUsername}
+            googleEnabled={googleEnabled}
+            linkedInEnabled={linkedInEnabled}
+          />
         </header>
         {children}
       </body>

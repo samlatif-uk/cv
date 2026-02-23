@@ -10,7 +10,10 @@ export default async function MessagesPage() {
     return (
       <main className="mx-auto w-full max-w-4xl p-4 md:p-8">
         <p className="cv-subtitle text-sm">
-          Log in from the nav to view messages.
+          <Link href="/auth?mode=login" className="cv-link">
+            Log in
+          </Link>{" "}
+          to view messages.
         </p>
       </main>
     );

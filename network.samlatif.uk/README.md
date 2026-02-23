@@ -29,10 +29,24 @@ Open http://localhost:3000
 
 ## Authentication (MVP)
 
-- Session cookie: `network_username` (httpOnly, SameSite Lax, Secure in production)
-- Login endpoint: `POST /api/auth/login` with `{ "username": "samlatif" }`
-- Logout endpoint: `POST /api/auth/logout`
-- The navigation bar includes a user selector + Login/Logout controls for local/demo usage.
+- OAuth providers: Google and LinkedIn via `next-auth`
+- Session strategy: JWT session cookie managed by `next-auth`
+- Local `User` records are created/updated on successful OAuth sign-in
+- Dedicated auth flow at `/auth` with explicit `Log in` and `Sign up` modes
+
+### Required Environment Variables
+
+```bash
+NEXTAUTH_SECRET=your-long-random-secret
+
+AUTH_GOOGLE_ID=...
+AUTH_GOOGLE_SECRET=...
+
+AUTH_LINKEDIN_ID=...
+AUTH_LINKEDIN_SECRET=...
+```
+
+If one provider is missing, only the configured provider button is shown.
 
 ## Database Commands
 
