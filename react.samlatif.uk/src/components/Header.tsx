@@ -46,6 +46,13 @@ export const Header = () => {
           <a href="https://github.com/samlatif-uk" target="_blank">
             <em>◆</em>GitHub
           </a>
+          <button
+            type="button"
+            className="pdf-btn"
+            onClick={() => window.print()}
+          >
+            <em>◆</em>Export PDF
+          </button>
         </div>
         <div className="summary">
           <p>{PROFILE.bio}</p>

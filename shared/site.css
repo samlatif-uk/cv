@@ -118,6 +118,26 @@ h1 .acc {
 .hcontact a:hover {
   color: var(--accent);
 }
+.hcontact .pdf-btn {
+  color: var(--text-dim);
+  background: transparent;
+  border: 0;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.hcontact .pdf-btn em {
+  color: var(--accent);
+  font-style: normal;
+  font-size: 10px;
+}
+.hcontact .pdf-btn:hover {
+  color: var(--accent);
+}
 .summary {
   margin-top: 32px;
   padding: 20px 24px;
@@ -311,6 +331,48 @@ h2 {
   text-transform: uppercase;
   color: var(--text-muted);
   margin-top: 6px;
+}
+
+@media print {
+  * {
+    color: #111 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    font-size: 12px;
+  }
+
+  nav,
+  .fbtns,
+  .fbar,
+  .pdf-btn,
+  .hire-btn {
+    display: none !important;
+  }
+
+  section {
+    padding: 24px 0;
+    border-bottom: 1px solid #d7d7d7;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 0 18px;
+  }
+
+  .job,
+  .job.vis,
+  .job.filtered {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
 /* TECH SKILLS TABLE */
