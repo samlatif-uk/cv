@@ -26,6 +26,14 @@ export function AuthFlow({
   }, [searchParams]);
 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const oauthLabel =
+    googleEnabled && linkedInEnabled
+      ? "Google or LinkedIn"
+      : googleEnabled
+        ? "Google"
+        : linkedInEnabled
+          ? "LinkedIn"
+          : "OAuth";
 
   async function start(provider: "google" | "linkedin") {
     setPending(true);
@@ -66,8 +74,21 @@ export function AuthFlow({
         });
 
         if (!response.ok) {
-          const payload = (await response.json()) as { error?: string };
-          setError(payload.error || "Unable to create account.");
+          const responseText = await response.text();
+          let errorMessage = "Unable to create account.";
+
+          if (responseText) {
+            try {
+              const payload = JSON.parse(responseText) as { error?: string };
+              if (payload.error) {
+                errorMessage = payload.error;
+              }
+            } catch {
+              errorMessage = "Unable to create account. Please try again.";
+            }
+          }
+
+          setError(errorMessage);
           return;
         }
       }
@@ -86,6 +107,8 @@ export function AuthFlow({
 
       router.push(result?.url || callbackUrl);
       router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setPending(false);
     }
@@ -123,8 +146,8 @@ export function AuthFlow({
       </h1>
       <p className="cv-subtitle mt-2 text-sm">
         {mode === "signup"
-          ? "Create your account with email, Google, or LinkedIn."
-          : "Log in with email, Google, or LinkedIn to continue."}
+          ? `Create your account with email${googleEnabled || linkedInEnabled ? ` or ${oauthLabel}` : ""}.`
+          : `Log in with email${googleEnabled || linkedInEnabled ? ` or ${oauthLabel}` : ""} to continue.`}
       </p>
 
       <form className="mt-5 space-y-3" onSubmit={handleEmailSubmit}>
@@ -138,6 +161,7 @@ export function AuthFlow({
               onChange={(event) => setName(event.target.value)}
               disabled={pending}
               autoComplete="name"
+              suppressHydrationWarning
             />
           </label>
         ) : null}
@@ -152,6 +176,7 @@ export function AuthFlow({
             disabled={pending}
             autoComplete="email"
             required
+            suppressHydrationWarning
           />
         </label>
 
@@ -168,6 +193,7 @@ export function AuthFlow({
             }
             minLength={8}
             required
+            suppressHydrationWarning
           />
         </label>
 

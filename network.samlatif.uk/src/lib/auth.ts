@@ -7,6 +7,15 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
 import { generateUniqueUsername } from "@/lib/usernames";
 
+const googleClientId =
+  process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret =
+  process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+const linkedInClientId =
+  process.env.AUTH_LINKEDIN_ID || process.env.LINKEDIN_CLIENT_ID;
+const linkedInClientSecret =
+  process.env.AUTH_LINKEDIN_SECRET || process.env.LINKEDIN_CLIENT_SECRET;
+
 const providers = [];
 
 providers.push(
@@ -51,20 +60,20 @@ providers.push(
   }),
 );
 
-if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
+if (googleClientId && googleClientSecret) {
   providers.push(
     GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
     }),
   );
 }
 
-if (process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET) {
+if (linkedInClientId && linkedInClientSecret) {
   providers.push(
     LinkedInProvider({
-      clientId: process.env.AUTH_LINKEDIN_ID,
-      clientSecret: process.env.AUTH_LINKEDIN_SECRET,
+      clientId: linkedInClientId,
+      clientSecret: linkedInClientSecret,
     }),
   );
 }

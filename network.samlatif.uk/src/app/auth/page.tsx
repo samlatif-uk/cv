@@ -2,10 +2,12 @@ import { AuthFlow } from "@/components/AuthFlow";
 
 export default function AuthPage() {
   const googleEnabled = Boolean(
-    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+    (process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID) &&
+    (process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET),
   );
   const linkedInEnabled = Boolean(
-    process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET,
+    (process.env.AUTH_LINKEDIN_ID || process.env.LINKEDIN_CLIENT_ID) &&
+    (process.env.AUTH_LINKEDIN_SECRET || process.env.LINKEDIN_CLIENT_SECRET),
   );
 
   return (
