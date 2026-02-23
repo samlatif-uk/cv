@@ -4,36 +4,52 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import LinkedInProvider from "next-auth/providers/linkedin";
 import { prisma } from "@/lib/prisma";
-
-function normalizeUsername(input: string) {
-  const normalized = input
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "")
-    .slice(0, 20);
-
-  return normalized || "member";
-}
-
-async function generateUniqueUsername(base: string) {
-  const normalizedBase = normalizeUsername(base);
-
-  for (let index = 0; index < 20; index += 1) {
-    const candidate =
-      index === 0 ? normalizedBase : `${normalizedBase}${index + 1}`;
-    const existing = await prisma.user.findUnique({
-      where: { username: candidate },
-      select: { id: true },
-    });
-
-    if (!existing) {
-      return candidate;
-    }
-  }
-
-  return `${normalizedBase}${Date.now().toString().slice(-6)}`;
-}
+import { verifyPassword } from "@/lib/password";
+import { generateUniqueUsername } from "@/lib/usernames";
 
 const providers = [];
+
+providers.push(
+  CredentialsProvider({
+    name: "Email",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" },
+    },
+    async authorize(credentials) {
+      const email = credentials?.email?.trim().toLowerCase();
+      const password = credentials?.password;
+
+      if (!email || !password) {
+        return null;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email },
+        include: { localAuth: true },
+      });
+
+      if (!user?.localAuth) {
+        return null;
+      }
+
+      const passwordMatches = verifyPassword(
+        password,
+        user.localAuth.passwordHash,
+      );
+
+      if (!passwordMatches) {
+        return null;
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
+    },
+  }),
+);
 
 if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
   providers.push(
@@ -49,18 +65,6 @@ if (process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET) {
     LinkedInProvider({
       clientId: process.env.AUTH_LINKEDIN_ID,
       clientSecret: process.env.AUTH_LINKEDIN_SECRET,
-    }),
-  );
-}
-
-if (providers.length === 0) {
-  providers.push(
-    CredentialsProvider({
-      name: "Disabled",
-      credentials: {},
-      async authorize() {
-        return null;
-      },
     }),
   );
 }
