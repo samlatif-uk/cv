@@ -15,6 +15,10 @@ const linkedInClientId =
   process.env.AUTH_LINKEDIN_ID || process.env.LINKEDIN_CLIENT_ID;
 const linkedInClientSecret =
   process.env.AUTH_LINKEDIN_SECRET || process.env.LINKEDIN_CLIENT_SECRET;
+const authSecret =
+  process.env.NEXTAUTH_SECRET ||
+  process.env.AUTH_SECRET ||
+  process.env.AUTHJS_SECRET;
 
 const providers = [];
 
@@ -80,6 +84,7 @@ if (linkedInClientId && linkedInClientSecret) {
 
 export const authOptions: NextAuthOptions = {
   providers,
+  secret: authSecret,
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user }) {
