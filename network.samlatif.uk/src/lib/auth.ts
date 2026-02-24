@@ -129,15 +129,17 @@ export const authOptions: NextAuthOptions = {
 
       const existingByEmail = await prisma.user.findUnique({
         where: { email: normalizedEmail },
-        select: { id: true, username: true },
+        select: { id: true, username: true, name: true, email: true },
       });
+
+      let persistedUser = existingByEmail;
 
       if (!existingByEmail) {
         const baseSource =
           normalizedEmail.split("@")[0] || user.name || "member";
         const username = await generateUniqueUsername(baseSource);
 
-        await prisma.user.create({
+        persistedUser = await prisma.user.create({
           data: {
             email: normalizedEmail,
             username,
@@ -146,41 +148,79 @@ export const authOptions: NextAuthOptions = {
             location: "Location not set",
             bio: "Bio coming soon.",
           },
+          select: { id: true, username: true, name: true, email: true },
         });
       } else if (user.name?.trim()) {
-        await prisma.user.update({
+        persistedUser = await prisma.user.update({
           where: { email: normalizedEmail },
           data: {
             name: user.name.trim(),
           },
+          select: { id: true, username: true, name: true, email: true },
         });
       }
 
-      user.email = normalizedEmail;
+      const sessionUser = user as typeof user & {
+        appUserId?: string;
+        username?: string;
+      };
+
+      if (persistedUser) {
+        sessionUser.email = persistedUser.email;
+        sessionUser.name = persistedUser.name;
+        sessionUser.appUserId = persistedUser.id;
+        sessionUser.username = persistedUser.username;
+      } else {
+        sessionUser.email = normalizedEmail;
+      }
+
       return true;
     },
     async jwt({ token, user, account }) {
-      if (!token.email) {
-        token.email =
+      const sessionUser = user as
+        | (typeof user & {
+            appUserId?: string;
+            username?: string;
+          })
+        | undefined;
+      const mutableToken = token as typeof token & {
+        appUserId?: string;
+        username?: string;
+      };
+
+      if (sessionUser?.appUserId) {
+        mutableToken.appUserId = sessionUser.appUserId;
+      }
+
+      if (sessionUser?.username) {
+        mutableToken.username = sessionUser.username;
+      }
+
+      if (!mutableToken.email) {
+        mutableToken.email =
           user?.email?.trim().toLowerCase() ??
           getOAuthFallbackEmail(account?.provider, account?.providerAccountId);
       }
 
-      if (!token.email) {
-        return token;
+      if (mutableToken.username) {
+        return mutableToken;
       }
 
-      const profile = await prisma.user.findUnique({
-        where: { email: token.email },
+      const profile = await prisma.user.findFirst({
+        where: mutableToken.appUserId
+          ? { id: mutableToken.appUserId }
+          : mutableToken.email
+            ? { email: mutableToken.email }
+            : undefined,
         select: { username: true, name: true },
       });
 
       if (profile) {
-        token.username = profile.username;
-        token.name = profile.name;
+        mutableToken.username = profile.username;
+        mutableToken.name = profile.name;
       }
 
-      return token;
+      return mutableToken;
     },
     async session({ session, token }) {
       if (session.user) {
