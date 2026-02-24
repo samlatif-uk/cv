@@ -82,7 +82,7 @@ export function OverviewStatsEditorForm({
       <div className="grid gap-3 md:grid-cols-2">
         {stats.slice(0, 4).map((stat, index) => (
           <div
-            key={`${index}-${stat.label}`}
+            key={`overview-stat-${index}`}
             className="grid gap-2 md:grid-cols-5"
           >
             <input

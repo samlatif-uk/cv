@@ -26,11 +26,7 @@ export function TechRowsEditorForm({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const updateRow = (
-    index: number,
-    field: keyof TechRow,
-    value: string,
-  ) => {
+  const updateRow = (index: number, field: keyof TechRow, value: string) => {
     setRows((current) =>
       current.map((row, rowIndex) =>
         rowIndex === index ? { ...row, [field]: value } : row,
@@ -88,7 +84,7 @@ export function TechRowsEditorForm({
     <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-3">
         {rows.map((row, index) => (
-          <div key={`${index}-${row.cat}`} className="grid gap-3 md:grid-cols-12">
+          <div key={`tech-row-${index}`} className="grid gap-3 md:grid-cols-12">
             <input
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-3"
               value={row.cat}
@@ -98,14 +94,18 @@ export function TechRowsEditorForm({
             <input
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-7"
               value={row.items}
-              onChange={(event) => updateRow(index, "items", event.target.value)}
+              onChange={(event) =>
+                updateRow(index, "items", event.target.value)
+              }
               placeholder="Skills (comma separated)"
             />
             <div className="flex gap-2 md:col-span-2">
               <input
                 className="cv-input w-full rounded-md px-3 py-2 text-sm"
                 value={row.yrs}
-                onChange={(event) => updateRow(index, "yrs", event.target.value)}
+                onChange={(event) =>
+                  updateRow(index, "yrs", event.target.value)
+                }
                 placeholder="Yrs"
               />
               <button

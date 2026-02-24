@@ -110,7 +110,7 @@ export function EducationEditorForm({
       <div className="space-y-3">
         {entries.map((entry, index) => (
           <div
-            key={`${index}-${entry.degree}-${entry.institution}`}
+            key={`education-entry-${index}`}
             className="space-y-2 rounded-md border border-[var(--border)] p-3"
           >
             <div className="grid gap-2 md:grid-cols-2">
