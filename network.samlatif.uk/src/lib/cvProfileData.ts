@@ -205,7 +205,7 @@ export async function getCvProfilePayload(
           items: row.items,
           yrs: row.years,
         }))
-      : sharedCvData.TECH_ROWS;
+      : [];
 
   const skills =
     dbSkills.length > 0
@@ -213,7 +213,7 @@ export async function getCvProfilePayload(
           n: skill.name,
           c: skill.category,
         }))
-      : sharedCvData.SKILLS;
+      : [];
 
   const bulletsByJobId = new Map<string, string[]>();
   dbJobBullets.forEach((bullet) => {
@@ -239,7 +239,7 @@ export async function getCvProfilePayload(
           bullets: bulletsByJobId.get(job.id) ?? [],
           stack: stackByJobId.get(job.id) ?? [],
         }))
-      : sharedCvData.JOBS;
+      : [];
 
   const knownCompanies = jobs
     .map((job) => job.co)
@@ -315,8 +315,8 @@ export async function getCvProfilePayload(
       EDUCATION: education,
       TECH_ROWS: techRows,
       SKILLS: skills,
-      DATE_BASED_STACK_DEFAULTS: sharedCvData.DATE_BASED_STACK_DEFAULTS,
-      GLOBAL_STACK_DEFAULTS: sharedCvData.GLOBAL_STACK_DEFAULTS,
+      DATE_BASED_STACK_DEFAULTS: [],
+      GLOBAL_STACK_DEFAULTS: [],
       TESTIMONIALS: testimonials,
       JOBS: jobs,
     },
