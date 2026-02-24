@@ -20,6 +20,30 @@ const authSecret =
   process.env.AUTH_SECRET ||
   process.env.AUTHJS_SECRET;
 
+function getOAuthFallbackEmail(
+  provider?: string | null,
+  providerAccountId?: string | null,
+) {
+  if (!provider || !providerAccountId) {
+    return null;
+  }
+
+  const providerSlug = provider
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
+  const accountSlug = providerAccountId
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
+
+  if (!providerSlug || !accountSlug) {
+    return null;
+  }
+
+  return `${providerSlug}-${accountSlug}@oauth.local`;
+}
+
 const providers = [];
 
 providers.push(
@@ -78,6 +102,7 @@ if (linkedInClientId && linkedInClientSecret) {
     LinkedInProvider({
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
+      issuer: "https://www.linkedin.com/oauth",
     }),
   );
 }
@@ -87,12 +112,14 @@ export const authOptions: NextAuthOptions = {
   secret: authSecret,
   session: { strategy: "jwt" },
   callbacks: {
-    async signIn({ user }) {
-      if (!user.email) {
+    async signIn({ user, account }) {
+      const normalizedEmail =
+        user.email?.trim().toLowerCase() ||
+        getOAuthFallbackEmail(account?.provider, account?.providerAccountId);
+
+      if (!normalizedEmail) {
         return false;
       }
-
-      const normalizedEmail = user.email.trim().toLowerCase();
 
       const existingByEmail = await prisma.user.findUnique({
         where: { email: normalizedEmail },
@@ -126,7 +153,13 @@ export const authOptions: NextAuthOptions = {
       user.email = normalizedEmail;
       return true;
     },
-    async jwt({ token }) {
+    async jwt({ token, user, account }) {
+      if (!token.email) {
+        token.email =
+          user?.email?.trim().toLowerCase() ??
+          getOAuthFallbackEmail(account?.provider, account?.providerAccountId);
+      }
+
       if (!token.email) {
         return token;
       }
