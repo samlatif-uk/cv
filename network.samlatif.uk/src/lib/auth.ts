@@ -102,7 +102,13 @@ if (linkedInClientId && linkedInClientSecret) {
     LinkedInProvider({
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
-      issuer: "https://www.linkedin.com/oauth",
+      wellKnown:
+        "https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      authorization: {
+        params: {
+          scope: "openid profile email",
+        },
+      },
     }),
   );
 }
