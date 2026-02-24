@@ -92,18 +92,21 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
+      const normalizedEmail = user.email.trim().toLowerCase();
+
       const existingByEmail = await prisma.user.findUnique({
-        where: { email: user.email },
+        where: { email: normalizedEmail },
         select: { id: true, username: true },
       });
 
       if (!existingByEmail) {
-        const baseSource = user.email.split("@")[0] || user.name || "member";
+        const baseSource =
+          normalizedEmail.split("@")[0] || user.name || "member";
         const username = await generateUniqueUsername(baseSource);
 
         await prisma.user.create({
           data: {
-            email: user.email,
+            email: normalizedEmail,
             username,
             name: user.name?.trim() || username,
             headline: "Professional",
@@ -111,8 +114,16 @@ export const authOptions: NextAuthOptions = {
             bio: "Bio coming soon.",
           },
         });
+      } else if (user.name?.trim()) {
+        await prisma.user.update({
+          where: { email: normalizedEmail },
+          data: {
+            name: user.name.trim(),
+          },
+        });
       }
 
+      user.email = normalizedEmail;
       return true;
     },
     async jwt({ token }) {

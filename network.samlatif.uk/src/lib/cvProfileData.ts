@@ -1,4 +1,4 @@
-import { getSharedCvData, type CvData } from "@/lib/cvData";
+import type { CvData } from "@/lib/cvData";
 import { prisma } from "@/lib/prisma";
 
 type CvTechRowRecord = {
@@ -43,30 +43,6 @@ type CvEducationRecord = {
   note: string;
 };
 
-const DEFAULT_EDUCATION = [
-  {
-    degree: "MSc Computer Games & Entertainment",
-    institution: "Goldsmiths, University of London",
-    period: "2011 – 2012",
-    grade: "Merit · 67%",
-    note: "Final project deferred to maintain quality of concurrent client commitments.",
-  },
-  {
-    degree: "BSc Computer Games Technologies",
-    institution: "University of East London",
-    period: "2007 – 2010",
-    grade: "1st Class Honours",
-    note: "Modules: Games Programming, 3D Graphics, Virtual Environments, Network Gaming, Advanced Animation, Project Management.",
-  },
-  {
-    degree: "BSc Cognitive Science (1st year attended)",
-    institution: "University of Leeds",
-    period: "2005 – 2006",
-    grade: "Year 1 Completed",
-    note: "Foundations in HCI, UX design, human behaviour and logic — directly relevant to frontend and UX work.",
-  },
-];
-
 const toNumeric = (value: string) => {
   const match = value.match(/\d+/);
   return match ? Number(match[0]) : 0;
@@ -92,8 +68,7 @@ export type CvProfilePayload = {
 export async function getCvProfilePayload(
   username: string,
 ): Promise<CvProfilePayload | null> {
-  const [sharedCvData, profile, recommendations] = await Promise.all([
-    getSharedCvData(),
+  const [profile, recommendations] = await Promise.all([
     prisma.user.findUnique({
       where: { username },
       select: {
@@ -291,12 +266,7 @@ export async function getCvProfilePayload(
         }))
       : inferredOverviewStats;
 
-  const education =
-    dbEducation.length > 0
-      ? dbEducation
-      : sharedCvData.EDUCATION && sharedCvData.EDUCATION.length
-        ? sharedCvData.EDUCATION
-        : DEFAULT_EDUCATION;
+  const education = dbEducation.length > 0 ? dbEducation : [];
 
   return {
     profile: {
