@@ -44,6 +44,24 @@ function getOAuthFallbackEmail(
   return `${providerSlug}-${accountSlug}@oauth.local`;
 }
 
+function getAuthEmail(
+  userEmail?: string | null,
+  provider?: string | null,
+  providerAccountId?: string | null,
+) {
+  const normalizedUserEmail = userEmail?.trim().toLowerCase();
+
+  if (normalizedUserEmail) {
+    return normalizedUserEmail;
+  }
+
+  if (provider === "linkedin") {
+    return null;
+  }
+
+  return getOAuthFallbackEmail(provider, providerAccountId);
+}
+
 const providers = [];
 
 providers.push(
@@ -119,9 +137,11 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account }) {
-      const normalizedEmail =
-        user.email?.trim().toLowerCase() ||
-        getOAuthFallbackEmail(account?.provider, account?.providerAccountId);
+      const normalizedEmail = getAuthEmail(
+        user.email,
+        account?.provider,
+        account?.providerAccountId,
+      );
 
       if (!normalizedEmail) {
         return false;
@@ -197,9 +217,11 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (!mutableToken.email) {
-        mutableToken.email =
-          user?.email?.trim().toLowerCase() ??
-          getOAuthFallbackEmail(account?.provider, account?.providerAccountId);
+        mutableToken.email = getAuthEmail(
+          user?.email,
+          account?.provider,
+          account?.providerAccountId,
+        );
       }
 
       if (mutableToken.username) {
