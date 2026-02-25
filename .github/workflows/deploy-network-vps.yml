@@ -139,8 +139,17 @@ jobs:
             set -e
             cd '$APP_PATH'
             export DATABASE_URL='file:$DATA_PATH/dev.db'
+            DB_FILE='$DATA_PATH/dev.db'
+            DB_EXISTS_BEFORE=0
+            if [ -f \"\$DB_FILE\" ]; then
+              DB_EXISTS_BEFORE=1
+            fi
             ./node_modules/.bin/prisma migrate deploy
-            node prisma/seed.mjs
+            if [ \"\$DB_EXISTS_BEFORE\" -eq 0 ]; then
+              node prisma/seed.mjs
+            else
+              echo 'Skipping seed: existing database detected.'
+            fi
             printf '%s\n' \
               '[Unit]' \
               'Description=$SERVICE_NAME Next.js app' \
