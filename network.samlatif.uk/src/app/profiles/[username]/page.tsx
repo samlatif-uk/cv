@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { EducationEditorForm } from "@/components/EducationEditorForm";
+import { JobsEditorForm } from "@/components/JobsEditorForm";
 import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
 import { ProfileCv } from "@/components/CvProfile";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
@@ -90,6 +91,22 @@ export default async function ProfilePage({
             09
           </span>
           <h2 className="cv-title text-xl font-semibold">
+            Edit Job Experience
+          </h2>
+          <div className="h-px flex-1 bg-[var(--border)]" />
+        </div>
+        <JobsEditorForm
+          username={payload.profile.username}
+          initialJobs={payload.data.JOBS}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+            10
+          </span>
+          <h2 className="cv-title text-xl font-semibold">
             Edit Overview Stats
           </h2>
           <div className="h-px flex-1 bg-[var(--border)]" />
@@ -103,7 +120,7 @@ export default async function ProfilePage({
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            10
+            11
           </span>
           <h2 className="cv-title text-xl font-semibold">Edit Education</h2>
           <div className="h-px flex-1 bg-[var(--border)]" />
