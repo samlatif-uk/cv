@@ -3,9 +3,6 @@ import { hashPassword } from "@/lib/password";
 import { generateUniqueUsername } from "@/lib/usernames";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const EMAIL_PROFILE_LINKS: Record<string, string> = {
-  "hello@samlatif.uk": "samlatif",
-};
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
@@ -55,42 +52,6 @@ export async function POST(request: Request) {
     });
 
     return Response.json({ ok: true }, { status: 201 });
-  }
-
-  const linkedUsername = EMAIL_PROFILE_LINKS[email];
-
-  if (linkedUsername) {
-    const linkedUser = await prisma.user.findUnique({
-      where: { username: linkedUsername },
-      include: { localAuth: true },
-    });
-
-    if (linkedUser) {
-      if (linkedUser.localAuth) {
-        return Response.json(
-          { error: "An account with this email already exists." },
-          { status: 409 },
-        );
-      }
-
-      await prisma.$transaction([
-        prisma.user.update({
-          where: { id: linkedUser.id },
-          data: {
-            email,
-            ...(rawName ? { name: rawName } : {}),
-          },
-        }),
-        prisma.localAuth.create({
-          data: {
-            userId: linkedUser.id,
-            passwordHash,
-          },
-        }),
-      ]);
-
-      return Response.json({ ok: true }, { status: 201 });
-    }
   }
 
   const baseSource = email.split("@")[0] || rawName || "member";
