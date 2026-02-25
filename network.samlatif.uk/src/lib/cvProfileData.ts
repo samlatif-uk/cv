@@ -48,6 +48,18 @@ const toNumeric = (value: string) => {
   return match ? Number(match[0]) : 0;
 };
 
+const toIsoDate = (value: Date | string | null | undefined) => {
+  if (!value) {
+    return "1970-01-01";
+  }
+
+  const parsed = value instanceof Date ? value : new Date(value);
+
+  return Number.isNaN(parsed.getTime())
+    ? "1970-01-01"
+    : parsed.toISOString().slice(0, 10);
+};
+
 export type CvProfileIdentity = {
   id: string;
   username: string;
@@ -228,7 +240,7 @@ export async function getCvProfilePayload(
   const testimonials = recommendations.map((recommendation) => ({
     by: recommendation.recommenderName,
     role: recommendation.recommenderRole,
-    date: recommendation.recommendationAt.toISOString().slice(0, 10),
+    date: toIsoDate(recommendation.recommendationAt),
     jobCompany: resolveJobCompany(
       recommendation.relationshipLabel,
       recommendation.content,
