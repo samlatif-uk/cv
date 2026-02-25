@@ -517,6 +517,19 @@
           return Number.isNaN(timestamp) ? 0 : timestamp;
         };
 
+        const formatRecommendationDate = (dateText) => {
+          const timestamp = Date.parse(dateText);
+          if (Number.isNaN(timestamp)) {
+            return dateText || "Unknown date";
+          }
+
+          return new Date(timestamp).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+        };
+
         const publicTestimonials = TESTIMONIALS.filter(
           (testimonial) => testimonial.visibility === "public",
         )
@@ -535,7 +548,7 @@
         testimonials.innerHTML = publicTestimonials
           .map(
             (testimonial) =>
-              `<blockquote class="testimonial-link" data-job-company="${toCompanyKey(testimonial.jobCompany || "")}">“${testimonial.quote}”<cite>${testimonial.by} · ${testimonial.role} · ${formatRelationship(testimonial)}</cite></blockquote>`,
+              `<blockquote class="testimonial-link" data-job-company="${toCompanyKey(testimonial.jobCompany || "")}">“${testimonial.quote}”<cite>${testimonial.by} · ${testimonial.role} · ${formatRecommendationDate(testimonial.date)} · ${formatRelationship(testimonial)}</cite></blockquote>`,
           )
           .join("");
 

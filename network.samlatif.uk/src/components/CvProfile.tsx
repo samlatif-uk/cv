@@ -423,6 +423,23 @@ export function ProfileCv({
     );
   };
 
+  const formatRecommendationDate = (value?: string) => {
+    if (!value) {
+      return "Date unknown";
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(parsed);
+  };
+
   return (
     <main className={styles.root}>
       <header className={styles.header}>
@@ -789,6 +806,7 @@ export function ProfileCv({
                   “{testimonial.quote}”
                   <cite>
                     {testimonial.by} · {testimonial.role} ·{" "}
+                    {formatRecommendationDate(testimonial.date)} ·{" "}
                     {renderRelationship(testimonial.relationship, jobCompany)}
                   </cite>
                 </blockquote>

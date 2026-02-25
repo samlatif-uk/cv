@@ -41,6 +41,19 @@ const getDateValue = (dateText: string) => {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 };
 
+const formatRecommendationDate = (dateText: string) => {
+  const timestamp = Date.parse(dateText);
+  if (Number.isNaN(timestamp)) {
+    return dateText || "Unknown date";
+  }
+
+  return new Date(timestamp).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 export const Recommendations = () => {
   const publicTestimonials = TESTIMONIALS.filter(
     (testimonial) => testimonial.visibility === "public",
@@ -103,6 +116,7 @@ export const Recommendations = () => {
               “{testimonial.quote}”
               <cite>
                 {testimonial.by} · {testimonial.role} ·{" "}
+                {formatRecommendationDate(testimonial.date)} ·{" "}
                 {formatRelationship(
                   testimonial.relationship,
                   testimonial.jobCompany,
