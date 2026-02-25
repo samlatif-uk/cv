@@ -56,6 +56,168 @@ function getLinkedInProfileSeed(
   return { headline, location, bio, avatarUrl };
 }
 
+type SeedJob = {
+  company: string;
+  date: string;
+  title: string;
+  description: string;
+  bullets: string[];
+  stack: string[];
+};
+
+function getHeadlineParts(headline: string | null | undefined) {
+  const normalized = headline?.trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const splitByAt = normalized.split(/\s+at\s+/i);
+  if (splitByAt.length >= 2) {
+    const title = splitByAt[0]?.trim();
+    const company = splitByAt.slice(1).join(" at ").trim();
+    if (title && company) {
+      return { title, company };
+    }
+  }
+
+  return null;
+}
+
+function mapLinkedInExperienceItem(item: unknown): SeedJob | null {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+
+  const record = item as Record<string, unknown>;
+  const title =
+    toTrimmedString(record.title) ||
+    toTrimmedString(record.role) ||
+    toTrimmedString(record.occupation);
+  const company =
+    toTrimmedString(record.company) ||
+    toTrimmedString(record.companyName) ||
+    toTrimmedString(record.organization);
+
+  if (!title || !company) {
+    return null;
+  }
+
+  const startDate =
+    toTrimmedString(record.startDate) || toTrimmedString(record.startedOn);
+  const endDate =
+    toTrimmedString(record.endDate) || toTrimmedString(record.endedOn);
+  const date =
+    startDate || endDate
+      ? `${startDate || "Unknown"} – ${endDate || "Present"}`
+      : "LinkedIn";
+
+  const description =
+    toTrimmedString(record.description) ||
+    toTrimmedString(record.summary) ||
+    "Imported from LinkedIn.";
+
+  return {
+    company,
+    date,
+    title,
+    description,
+    bullets: [],
+    stack: [],
+  };
+}
+
+function getLinkedInSeedJobs(
+  profile: Record<string, unknown> | null | undefined,
+  seedProfile: {
+    headline?: string | null;
+    bio?: string | null;
+  },
+) {
+  const candidates: SeedJob[] = [];
+
+  const experienceSources = [
+    profile?.positions,
+    profile?.position,
+    profile?.experiences,
+    profile?.experience,
+  ];
+
+  for (const source of experienceSources) {
+    if (!Array.isArray(source)) {
+      continue;
+    }
+
+    for (const item of source) {
+      const mapped = mapLinkedInExperienceItem(item);
+      if (mapped) {
+        candidates.push(mapped);
+      }
+    }
+  }
+
+  if (candidates.length === 0) {
+    const fromHeadline = getHeadlineParts(seedProfile.headline);
+    if (fromHeadline) {
+      candidates.push({
+        company: fromHeadline.company,
+        title: fromHeadline.title,
+        date: "LinkedIn",
+        description: seedProfile.bio || "Imported from LinkedIn.",
+        bullets: [],
+        stack: [],
+      });
+    }
+  }
+
+  return candidates.slice(0, 8);
+}
+
+async function seedJobsIfEmpty(userId: string, jobs: SeedJob[]) {
+  if (!jobs.length) {
+    return;
+  }
+
+  const existingCount = await prisma.cvJob.count({ where: { userId } });
+  if (existingCount > 0) {
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    for (const [jobIndex, job] of jobs.entries()) {
+      const createdJob = await tx.cvJob.create({
+        data: {
+          userId,
+          company: job.company,
+          date: job.date,
+          title: job.title,
+          description: job.description,
+          sortOrder: jobIndex,
+        },
+      });
+
+      if (job.bullets.length) {
+        await tx.cvJobBullet.createMany({
+          data: job.bullets.map((bullet, bulletIndex) => ({
+            jobId: createdJob.id,
+            content: bullet,
+            sortOrder: bulletIndex,
+          })),
+        });
+      }
+
+      if (job.stack.length) {
+        await tx.cvJobStackItem.createMany({
+          data: job.stack.map((stackItem, stackIndex) => ({
+            jobId: createdJob.id,
+            label: stackItem,
+            sortOrder: stackIndex,
+          })),
+        });
+      }
+    }
+  });
+}
+
 function getOAuthFallbackEmail(
   provider?: string | null,
   providerAccountId?: string | null,
@@ -327,6 +489,17 @@ export const authOptions: NextAuthOptions = {
       sessionUser.name = persistedUser.name;
       sessionUser.appUserId = persistedUser.id;
       sessionUser.username = persistedUser.username;
+
+      if (account?.provider === "linkedin") {
+        const linkedInJobs = getLinkedInSeedJobs(
+          (profile as Record<string, unknown> | null | undefined) ?? null,
+          {
+            headline: linkedInSeed?.headline,
+            bio: linkedInSeed?.bio,
+          },
+        );
+        await seedJobsIfEmpty(persistedUser.id, linkedInJobs);
+      }
 
       return true;
     },
