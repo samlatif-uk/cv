@@ -132,8 +132,7 @@ h1 .acc {
   line-height: 1.8;
   color: var(--text-dim);
   font-style: italic;
-  margin-bottom: 6px;
-  white-space: pre-wrap;
+  margin-bottom: 8px;
 }
 .hire-cta {
   margin-top: 14px;
