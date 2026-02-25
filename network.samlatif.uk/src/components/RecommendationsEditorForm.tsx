@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CsvJsonConverter } from "@/components/CsvJsonConverter";
 
 type RecommendationEntry = {
   by: string;
@@ -79,6 +78,141 @@ const normalizeDate = (value: string) => {
   }
 
   return parsed.toISOString().slice(0, 10);
+};
+
+const parseCsvLine = (line: string, delimiter = ",") => {
+  const cells: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+
+    if (char === '"') {
+      const next = line[index + 1];
+      if (inQuotes && next === '"') {
+        current += '"';
+        index += 1;
+        continue;
+      }
+
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if (char === delimiter && !inQuotes) {
+      cells.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  cells.push(current.trim());
+  return cells;
+};
+
+const normalizeHeader = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+
+const getRowValue = (row: Record<string, string>, keys: string[]) => {
+  for (const key of keys) {
+    const normalized = normalizeHeader(key);
+    if (normalized in row) {
+      const value = row[normalized]?.trim();
+      if (value) {
+        return value;
+      }
+    }
+  }
+
+  return "";
+};
+
+const collectRecommendationsFromCsv = (csvText: string) => {
+  const lines = csvText
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+
+  if (lines.length < 2) {
+    return [] as RecommendationEntry[];
+  }
+
+  const headers = parseCsvLine(lines[0]).map((header) =>
+    normalizeHeader(header),
+  );
+  const recommendations: RecommendationEntry[] = [];
+  const dedupe = new Set<string>();
+
+  for (const line of lines.slice(1)) {
+    const cells = parseCsvLine(line);
+    const row: Record<string, string> = {};
+
+    headers.forEach((header, index) => {
+      row[header] = cells[index] ?? "";
+    });
+
+    const by = getRowValue(row, [
+      "By",
+      "Author",
+      "Recommender",
+      "Recommender Name",
+      "Name",
+    ]);
+    const quote = getRowValue(row, [
+      "Quote",
+      "Content",
+      "Recommendation",
+      "Text",
+      "Message",
+    ]);
+
+    if (!by || !quote) {
+      continue;
+    }
+
+    const role =
+      getRowValue(row, ["Role", "Title", "Headline", "Recommender Role"]) ||
+      "Colleague";
+    const relationship =
+      getRowValue(row, ["Relationship", "Context", "Relationship Label"]) ||
+      "Worked together";
+    const date = normalizeDate(
+      getRowValue(row, [
+        "Date",
+        "Recommendation At",
+        "Created At",
+        "Timestamp",
+      ]),
+    );
+    const visibilityRaw = getRowValue(row, ["Visibility", "Is Public"]);
+
+    const recommendation: RecommendationEntry = {
+      by,
+      role,
+      date,
+      relationship,
+      quote,
+      visibility:
+        visibilityRaw.toLowerCase() === "private" ? "private" : "public",
+    };
+
+    const key = `${by}|${date}|${quote.slice(0, 80)}`.toLowerCase();
+    if (dedupe.has(key)) {
+      continue;
+    }
+
+    dedupe.add(key);
+    recommendations.push(recommendation);
+  }
+
+  return recommendations;
 };
 
 const normalizeRecommendation = (
@@ -235,6 +369,27 @@ export function RecommendationsEditorForm({
     });
   };
 
+  const saveRecommendations = async (
+    nextRecommendations: RecommendationEntry[],
+    successMessage: string,
+  ) => {
+    const response = await fetch(`/api/profiles/${username}/recommendations`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ recommendations: nextRecommendations }),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json()) as { error?: string };
+      throw new Error(data.error ?? "Could not save recommendations.");
+    }
+
+    setMessage(successMessage);
+    window.location.reload();
+  };
+
   async function onImportFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -249,22 +404,31 @@ export function RecommendationsEditorForm({
 
     try {
       const text = await file.text();
-      const payload = JSON.parse(text) as unknown;
-      const imported = collectRecommendations(payload);
+      const isCsv =
+        file.name.toLowerCase().endsWith(".csv") ||
+        file.type.includes("csv") ||
+        file.type.includes("text/plain");
+
+      const imported = isCsv
+        ? collectRecommendationsFromCsv(text)
+        : collectRecommendations(JSON.parse(text) as unknown);
 
       if (!imported.length) {
-        throw new Error("No recommendations found in that JSON file.");
+        throw new Error(
+          `No recommendations found in that ${isCsv ? "CSV" : "JSON"} file.`,
+        );
       }
 
       setEntries(imported);
-      setMessage(
-        `Imported ${imported.length} recommendation${imported.length === 1 ? "" : "s"}. Review and click Save recommendations.`,
+      await saveRecommendations(
+        imported,
+        `Imported and saved ${imported.length} recommendation${imported.length === 1 ? "" : "s"}.`,
       );
     } catch (importError) {
       setError(
         importError instanceof Error
           ? importError.message
-          : "Could not import LinkedIn JSON.",
+          : "Could not import LinkedIn file.",
       );
     } finally {
       setImporting(false);
@@ -278,24 +442,7 @@ export function RecommendationsEditorForm({
     setMessage("");
 
     try {
-      const response = await fetch(
-        `/api/profiles/${username}/recommendations`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ recommendations: entries }),
-        },
-      );
-
-      if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? "Could not save recommendations.");
-      }
-
-      setMessage("Recommendations saved.");
-      window.location.reload();
+      await saveRecommendations(entries, "Recommendations saved.");
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -310,20 +457,21 @@ export function RecommendationsEditorForm({
   return (
     <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-2 rounded-md border border-[var(--border)] p-3">
-        <p className="text-sm font-medium">Import LinkedIn export (JSON)</p>
+        <p className="text-sm font-medium">
+          Import LinkedIn export (CSV or JSON)
+        </p>
         <input
           type="file"
-          accept=".json,application/json"
+          accept=".csv,text/csv,.json,application/json"
           className="cv-input w-full rounded-md px-3 py-2 text-sm"
           onChange={onImportFile}
           disabled={saving || importing}
         />
         <p className="text-xs text-[var(--muted)]">
-          Loads recommendations into this editor. Click Save recommendations to
-          persist.
+          Upload a CSV or JSON file and recommendations are imported and saved
+          automatically.
         </p>
       </div>
-      <CsvJsonConverter />
       <div className="space-y-3">
         {entries.map((entry, index) => (
           <div
