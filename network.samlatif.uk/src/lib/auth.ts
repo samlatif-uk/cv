@@ -55,11 +55,59 @@ function getAuthEmail(
     return normalizedUserEmail;
   }
 
-  if (provider === "linkedin") {
+  return getOAuthFallbackEmail(provider, providerAccountId);
+}
+
+async function ensureAppUser(
+  user: { email?: string | null; name?: string | null },
+  account?: {
+    provider?: string | null;
+    providerAccountId?: string | null;
+  } | null,
+) {
+  const normalizedEmail = getAuthEmail(
+    user.email,
+    account?.provider,
+    account?.providerAccountId,
+  );
+
+  if (!normalizedEmail) {
     return null;
   }
 
-  return getOAuthFallbackEmail(provider, providerAccountId);
+  const existingByEmail = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+    select: { id: true, username: true, name: true, email: true },
+  });
+
+  if (!existingByEmail) {
+    const baseSource = normalizedEmail.split("@")[0] || user.name || "member";
+    const username = await generateUniqueUsername(baseSource);
+
+    return prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        username,
+        name: user.name?.trim() || username,
+        headline: "Professional",
+        location: "Location not set",
+        bio: "Bio coming soon.",
+      },
+      select: { id: true, username: true, name: true, email: true },
+    });
+  }
+
+  if (user.name?.trim() && user.name.trim() !== existingByEmail.name) {
+    return prisma.user.update({
+      where: { email: normalizedEmail },
+      data: {
+        name: user.name.trim(),
+      },
+      select: { id: true, username: true, name: true, email: true },
+    });
+  }
+
+  return existingByEmail;
 }
 
 const providers = [];
@@ -127,6 +175,37 @@ if (linkedInClientId && linkedInClientSecret) {
           scope: "openid profile email",
         },
       },
+      profile(profile) {
+        const oidcProfile = profile as {
+          sub?: string;
+          id?: string;
+          name?: string;
+          email?: string;
+          email_verified?: boolean;
+          given_name?: string;
+          family_name?: string;
+        };
+
+        const id = oidcProfile.sub || oidcProfile.id;
+
+        if (!id) {
+          throw new TypeError(
+            "Profile id is missing in LinkedIn OAuth profile response",
+          );
+        }
+
+        return {
+          id,
+          name:
+            oidcProfile.name ||
+            [oidcProfile.given_name, oidcProfile.family_name]
+              .filter(Boolean)
+              .join(" ") ||
+            null,
+          email: oidcProfile.email ?? null,
+          image: null,
+        };
+      },
     }),
   );
 }
@@ -137,47 +216,10 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account }) {
-      const normalizedEmail = getAuthEmail(
-        user.email,
-        account?.provider,
-        account?.providerAccountId,
-      );
+      const persistedUser = await ensureAppUser(user, account);
 
-      if (!normalizedEmail) {
+      if (!persistedUser) {
         return false;
-      }
-
-      const existingByEmail = await prisma.user.findUnique({
-        where: { email: normalizedEmail },
-        select: { id: true, username: true, name: true, email: true },
-      });
-
-      let persistedUser = existingByEmail;
-
-      if (!existingByEmail) {
-        const baseSource =
-          normalizedEmail.split("@")[0] || user.name || "member";
-        const username = await generateUniqueUsername(baseSource);
-
-        persistedUser = await prisma.user.create({
-          data: {
-            email: normalizedEmail,
-            username,
-            name: user.name?.trim() || username,
-            headline: "Professional",
-            location: "Location not set",
-            bio: "Bio coming soon.",
-          },
-          select: { id: true, username: true, name: true, email: true },
-        });
-      } else if (user.name?.trim()) {
-        persistedUser = await prisma.user.update({
-          where: { email: normalizedEmail },
-          data: {
-            name: user.name.trim(),
-          },
-          select: { id: true, username: true, name: true, email: true },
-        });
       }
 
       const sessionUser = user as typeof user & {
@@ -185,14 +227,10 @@ export const authOptions: NextAuthOptions = {
         username?: string;
       };
 
-      if (persistedUser) {
-        sessionUser.email = persistedUser.email;
-        sessionUser.name = persistedUser.name;
-        sessionUser.appUserId = persistedUser.id;
-        sessionUser.username = persistedUser.username;
-      } else {
-        sessionUser.email = normalizedEmail;
-      }
+      sessionUser.email = persistedUser.email;
+      sessionUser.name = persistedUser.name;
+      sessionUser.appUserId = persistedUser.id;
+      sessionUser.username = persistedUser.username;
 
       return true;
     },
@@ -214,6 +252,28 @@ export const authOptions: NextAuthOptions = {
 
       if (sessionUser?.username) {
         mutableToken.username = sessionUser.username;
+      }
+
+      if (account) {
+        const persistedUser = await ensureAppUser(
+          {
+            email:
+              sessionUser?.email ||
+              (typeof mutableToken.email === "string"
+                ? mutableToken.email
+                : null),
+            name: sessionUser?.name || null,
+          },
+          account,
+        );
+
+        if (persistedUser) {
+          mutableToken.appUserId = persistedUser.id;
+          mutableToken.username = persistedUser.username;
+          mutableToken.email = persistedUser.email;
+          mutableToken.name = persistedUser.name;
+          return mutableToken;
+        }
       }
 
       if (!mutableToken.email) {

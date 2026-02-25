@@ -3,6 +3,7 @@ import { EducationEditorForm } from "@/components/EducationEditorForm";
 import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
 import { ProfileCv } from "@/components/CvProfile";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
+import { SkillsEditorForm } from "@/components/SkillsEditorForm";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import { getCurrentUsername } from "@/lib/auth";
 import { getCvProfilePayload } from "@/lib/cvProfileData";
@@ -56,7 +57,9 @@ export default async function ProfilePage({
           <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
             07
           </span>
-          <h2 className="cv-title text-xl font-semibold">Edit Tech Skills</h2>
+          <h2 className="cv-title text-xl font-semibold">
+            Edit Technical Skills
+          </h2>
           <div className="h-px flex-1 bg-[var(--border)]" />
         </div>
         <TechRowsEditorForm
@@ -69,6 +72,22 @@ export default async function ProfilePage({
         <div className="flex items-center gap-3">
           <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
             08
+          </span>
+          <h2 className="cv-title text-xl font-semibold">
+            Edit Stack at a Glance
+          </h2>
+          <div className="h-px flex-1 bg-[var(--border)]" />
+        </div>
+        <SkillsEditorForm
+          username={payload.profile.username}
+          initialSkills={payload.data.SKILLS}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
+            09
           </span>
           <h2 className="cv-title text-xl font-semibold">
             Edit Overview Stats
@@ -84,7 +103,7 @@ export default async function ProfilePage({
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            09
+            10
           </span>
           <h2 className="cv-title text-xl font-semibold">Edit Education</h2>
           <div className="h-px flex-1 bg-[var(--border)]" />

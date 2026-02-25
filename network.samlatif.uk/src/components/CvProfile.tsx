@@ -546,36 +546,42 @@ export function ProfileCv({
             <h2>Stack at a Glance</h2>
             <div className={styles.sline} />
           </div>
-          <div className={styles.fbtns}>
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setActiveCategory(category)}
-                className={`${styles.fbtn} ${activeCategory === category ? styles.on : ""}`}
-              >
-                {getCategoryLabel(category)}
-              </button>
-            ))}
-          </div>
-          <div className={styles.swrap}>
-            {data.SKILLS.map((skill) => {
-              const visible =
-                activeCategory === "all" || skill.c === activeCategory;
-              const highlighted = activeTechs.includes(skill.n);
+          {data.SKILLS.length > 0 ? (
+            <>
+              <div className={styles.fbtns}>
+                {CATEGORIES.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setActiveCategory(category)}
+                    className={`${styles.fbtn} ${activeCategory === category ? styles.on : ""}`}
+                  >
+                    {getCategoryLabel(category)}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.swrap}>
+                {data.SKILLS.map((skill) => {
+                  const visible =
+                    activeCategory === "all" || skill.c === activeCategory;
+                  const highlighted = activeTechs.includes(skill.n);
 
-              return (
-                <button
-                  key={skill.n}
-                  type="button"
-                  className={`${styles.stag} ${visible ? "" : styles.dim} ${highlighted ? styles.lit : ""}`}
-                  onClick={() => handleTechClick(skill.n)}
-                >
-                  {skill.n}
-                </button>
-              );
-            })}
-          </div>
+                  return (
+                    <button
+                      key={skill.n}
+                      type="button"
+                      className={`${styles.stag} ${visible ? "" : styles.dim} ${highlighted ? styles.lit : ""}`}
+                      onClick={() => handleTechClick(skill.n)}
+                    >
+                      {skill.n}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <p className={styles.emptyState}>No stack tags added yet.</p>
+          )}
         </div>
       </section>
 
