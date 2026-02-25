@@ -2,12 +2,6 @@
 
 import { ChangeEvent, useMemo, useState } from "react";
 
-type ParseResult = {
-  rows: string[][];
-  headers: string[];
-  json: unknown[];
-};
-
 function parseCsvLine(line: string, delimiter: string) {
   const cells: string[] = [];
   let current = "";
@@ -46,7 +40,7 @@ function parseCsv(
   delimiter: string,
   hasHeader: boolean,
   trimValues: boolean,
-): ParseResult {
+) {
   const lines = input
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
@@ -54,11 +48,10 @@ function parseCsv(
     .filter((line) => line.trim().length > 0);
 
   if (lines.length === 0) {
-    return { rows: [], headers: [], json: [] };
+    return { headers: [] as string[], json: [] as Record<string, string>[] };
   }
 
   const rows = lines.map((line) => parseCsvLine(line, delimiter));
-
   const normalizedRows = trimValues
     ? rows.map((row) => row.map((cell) => cell.trim()))
     : rows;
@@ -80,7 +73,6 @@ function parseCsv(
     : Array.from({ length: columnCount }, (_, index) => `column_${index + 1}`);
 
   const bodyRows = hasHeader ? paddedRows.slice(1) : paddedRows;
-
   const json = bodyRows.map((row) => {
     const record: Record<string, string> = {};
     headers.forEach((header, index) => {
@@ -89,10 +81,10 @@ function parseCsv(
     return record;
   });
 
-  return { rows: paddedRows, headers, json };
+  return { headers, json };
 }
 
-export default function CsvJsonToolPage() {
+export function CsvJsonConverter() {
   const [csvInput, setCsvInput] = useState("");
   const [delimiter, setDelimiter] = useState(",");
   const [hasHeader, setHasHeader] = useState(true);
@@ -122,7 +114,6 @@ export default function CsvJsonToolPage() {
       setCsvInput(String(reader.result ?? ""));
     };
     reader.readAsText(file);
-
     event.target.value = "";
   }
 
@@ -137,33 +128,13 @@ export default function CsvJsonToolPage() {
     setTimeout(() => setCopyState("idle"), 1800);
   }
 
-  function downloadJson() {
-    const blob = new Blob([jsonText], {
-      type: "application/json;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "converted.json";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-  }
-
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-6 p-4 md:p-8">
-      <section>
-        <div className="cv-kicker text-xs font-semibold uppercase tracking-[0.2em]">
-          07 · Tools
-        </div>
-        <h1 className="cv-title mt-2 text-2xl font-semibold">CSV to JSON</h1>
-        <p className="cv-subtitle mt-1 text-sm">
-          Paste CSV or upload a file, then copy or download JSON output.
-        </p>
-      </section>
+    <details className="rounded-md border border-[var(--border)] p-3">
+      <summary className="cursor-pointer text-sm font-medium">
+        CSV to JSON helper (for LinkedIn imports)
+      </summary>
 
-      <section className="cv-card rounded-xl p-4 md:p-5 space-y-4">
+      <div className="mt-3 space-y-3">
         <div className="grid gap-3 md:grid-cols-4">
           <label className="space-y-1 text-sm">
             <span className="cv-muted text-xs">Delimiter</span>
@@ -181,7 +152,7 @@ export default function CsvJsonToolPage() {
               checked={hasHeader}
               onChange={(event) => setHasHeader(event.target.checked)}
             />
-            First row is header
+            Header row
           </label>
 
           <label className="inline-flex items-center gap-2 pt-6 text-sm text-[var(--text-dim)]">
@@ -198,64 +169,43 @@ export default function CsvJsonToolPage() {
               type="file"
               accept=".csv,text/csv"
               onChange={onFileChange}
-              className="cv-input w-full rounded-md px-2 py-1 file:mr-2 file:rounded file:border-0 file:bg-[var(--accent)] file:px-2 file:py-1 file:text-xs file:font-semibold file:text-black"
+              className="cv-input w-full rounded-md px-2 py-1 text-xs file:mr-2 file:rounded file:border-0 file:bg-[var(--accent)] file:px-2 file:py-1 file:text-xs file:font-semibold file:text-black"
             />
           </label>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-2">
-            <p className="cv-muted text-xs uppercase tracking-[0.12em]">
-              CSV Input
-            </p>
-            <textarea
-              value={csvInput}
-              onChange={(event) => setCsvInput(event.target.value)}
-              placeholder="name,email\nSam,sam@example.com"
-              className="cv-input min-h-[320px] w-full rounded-lg p-3 font-mono text-xs"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <p className="cv-muted text-xs uppercase tracking-[0.12em]">
-                JSON Output
-              </p>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="cv-btn-secondary rounded-md px-2 py-1 text-xs"
-                  onClick={copyJson}
-                  disabled={result.json.length === 0}
-                >
-                  {copyState === "copied"
-                    ? "Copied"
-                    : copyState === "failed"
-                      ? "Copy failed"
-                      : "Copy"}
-                </button>
-                <button
-                  type="button"
-                  className="cv-btn-primary rounded-md px-2 py-1 text-xs"
-                  onClick={downloadJson}
-                  disabled={result.json.length === 0}
-                >
-                  Download JSON
-                </button>
-              </div>
-            </div>
-            <textarea
-              value={jsonText}
-              readOnly
-              className="cv-input min-h-[320px] w-full rounded-lg p-3 font-mono text-xs"
-            />
-          </div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <textarea
+            value={csvInput}
+            onChange={(event) => setCsvInput(event.target.value)}
+            placeholder="name,email\nSam,sam@example.com"
+            className="cv-input min-h-36 w-full rounded-md p-2 font-mono text-xs"
+          />
+          <textarea
+            value={jsonText}
+            readOnly
+            className="cv-input min-h-36 w-full rounded-md p-2 font-mono text-xs"
+          />
         </div>
 
-        <div className="cv-muted text-xs">
-          Rows parsed: {result.json.length} · Columns: {result.headers.length}
+        <div className="flex items-center justify-between gap-2">
+          <p className="cv-muted text-xs">
+            Rows: {result.json.length} · Columns: {result.headers.length}
+          </p>
+          <button
+            type="button"
+            className="cv-btn-secondary rounded-md px-2 py-1 text-xs"
+            onClick={copyJson}
+            disabled={result.json.length === 0}
+          >
+            {copyState === "copied"
+              ? "Copied"
+              : copyState === "failed"
+                ? "Copy failed"
+                : "Copy JSON"}
+          </button>
         </div>
-      </section>
-    </main>
+      </div>
+    </details>
   );
 }

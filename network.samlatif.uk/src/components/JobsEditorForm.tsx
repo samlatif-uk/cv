@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CsvJsonConverter } from "@/components/CsvJsonConverter";
 
 type JobEntry = {
   co: string;
@@ -434,6 +435,7 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
           Loads roles into this editor. Click Save job experience to persist.
         </p>
       </div>
+      <CsvJsonConverter />
       <div className="space-y-3">
         {jobs.map((job, index) => (
           <div

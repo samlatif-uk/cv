@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CsvJsonConverter } from "@/components/CsvJsonConverter";
 
 type RecommendationEntry = {
   by: string;
@@ -322,6 +323,7 @@ export function RecommendationsEditorForm({
           persist.
         </p>
       </div>
+      <CsvJsonConverter />
       <div className="space-y-3">
         {entries.map((entry, index) => (
           <div
