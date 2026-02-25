@@ -7,6 +7,7 @@ import { EducationEditorForm } from "@/components/EducationEditorForm";
 import { JobsEditorForm } from "@/components/JobsEditorForm";
 import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
+import { RecommendationsEditorForm } from "@/components/RecommendationsEditorForm";
 import { SkillsEditorForm } from "@/components/SkillsEditorForm";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 
@@ -515,6 +516,11 @@ export function ProfileCv({
             >
               Recommendations
             </a>
+            {canEdit ? (
+              <a href="#edit-recommendations" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
             <a
               href="#education"
               className={activeNav === "education" ? styles.active : ""}
@@ -789,6 +795,14 @@ export function ProfileCv({
               );
             })}
           </div>
+          {canEdit ? (
+            <div id="edit-recommendations" className="mt-4">
+              <RecommendationsEditorForm
+                username={profile.username}
+                initialRecommendations={data.TESTIMONIALS}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
