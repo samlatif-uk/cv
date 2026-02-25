@@ -43,17 +43,6 @@ body {
   margin: 0 auto;
   padding: 0 40px;
 }
-@keyframes up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* HEADER */
 header {
   background: var(--bg);
@@ -67,8 +56,6 @@ header {
   color: var(--accent);
   margin-bottom: 12px;
   font-weight: 600;
-  opacity: 0;
-  animation: up 0.5s ease forwards 0.05s;
 }
 h1 {
   font-family: "Inter", sans-serif;
@@ -77,8 +64,6 @@ h1 {
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--text);
-  opacity: 0;
-  animation: up 0.6s ease forwards 0.15s;
 }
 h1 .acc {
   color: var(--text-dim);
@@ -90,16 +75,12 @@ h1 .acc {
   color: var(--text-muted);
   margin-top: 16px;
   font-weight: 500;
-  opacity: 0;
-  animation: up 0.5s ease forwards 0.3s;
 }
 .hcontact {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
   margin-top: 24px;
-  opacity: 0;
-  animation: up 0.5s ease forwards 0.4s;
 }
 .hcontact a {
   color: var(--text-dim);
@@ -143,59 +124,63 @@ h1 .acc {
   padding: 20px 24px;
   border-left: 3px solid var(--accent);
   background: var(--accent-light);
-  max-width: 700px;
+  max-width: 760px;
   border-radius: 0 6px 6px 0;
-  opacity: 0;
-  animation: up 0.5s ease forwards 0.55s;
 }
 .summary p {
-  font-family: "Lora", serif;
   font-size: 16px;
   line-height: 1.8;
   color: var(--text-dim);
   font-style: italic;
   margin-bottom: 6px;
+  white-space: pre-wrap;
 }
 .hire-cta {
-  margin-top: 20px;
-  padding: 14px 18px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 760px;
+  padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg2);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
+}
+.hire-cta strong {
+  font-size: 14px;
   color: var(--text-dim);
 }
 .hire-btn {
-  margin-left: auto;
-  text-decoration: none;
-  color: var(--bg);
-  background: var(--accent);
-  border: 1px solid var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
   border-radius: 999px;
-  padding: 6px 14px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-decoration: none;
 }
 .hire-btn:hover {
-  background: var(--accent2);
-  border-color: var(--accent2);
+  background: transparent;
+  color: var(--accent);
 }
 .testimonials {
-  margin-top: 16px;
+  margin-top: 4px;
   display: grid;
   gap: 10px;
 }
 .testimonials blockquote {
   margin: 0;
   border-left: 2px solid var(--accent);
-  padding: 10px 12px;
-  color: var(--text-muted);
+  padding: 12px 14px;
+  color: var(--text-dim);
   background: rgba(184, 169, 138, 0.06);
   border-radius: 0 6px 6px 0;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
@@ -213,7 +198,7 @@ h1 .acc {
   transform: translateX(4px);
   border-left-color: var(--accent2);
   background: var(--accent-light);
-  color: var(--text-dim);
+  color: var(--text);
   box-shadow: 0 0 0 1px rgba(240, 165, 0, 0.2);
 }
 
@@ -230,11 +215,21 @@ h1 .acc {
   text-underline-offset: 2px;
 }
 
+.testimonials cite {
+  margin-top: 8px;
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* NAV */
 nav {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 30;
   background: rgba(8, 8, 8, 0.95);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
@@ -266,7 +261,6 @@ nav a:hover {
 nav a.act {
   color: var(--accent);
   background: var(--accent-light);
-  border-bottom: 2px solid var(--accent);
 }
 
 /* SECTION */
@@ -312,10 +306,6 @@ h2 {
   padding: 28px 20px;
   text-align: center;
   border-radius: 8px;
-  transition: box-shadow 0.2s;
-}
-.stat:hover {
-  box-shadow: 0 4px 20px rgba(240, 165, 0, 0.12);
 }
 .sn {
   font-size: 36px;
@@ -383,9 +373,6 @@ h2 {
 .tech-table tr {
   border-bottom: 1px solid var(--border);
 }
-.tech-table tr:hover td {
-  background: #f5f3f0;
-}
 .tech-table td {
   padding: 13px 16px;
   font-size: 13px;
@@ -408,22 +395,17 @@ h2 {
   margin-left: 10px;
 }
 .bar-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-top: 5px;
 }
 .bar {
   height: 3px;
   background: var(--border);
-  flex: 1;
   border-radius: 2px;
 }
 .bar-fill {
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
-  transition: width 1s ease;
 }
 
 /* FILTER BTNS */
@@ -467,20 +449,16 @@ h2 {
   padding: 5px 12px;
   font-size: 12px;
   border-radius: 4px;
-  transition: all 0.2s;
   cursor: pointer;
-  font-family: "Inter", sans-serif;
 }
 .stag:hover {
   border-color: var(--accent);
   color: var(--accent);
-  transform: translateY(-1px);
 }
 .stag.lit {
   border-color: var(--accent);
   color: var(--bg);
   background: var(--accent);
-  transform: translateY(-1px);
   font-weight: 600;
 }
 .stag.dim {
@@ -505,14 +483,8 @@ h2 {
   padding: 0 0 40px 32px;
   position: relative;
   transition:
-    opacity 0.4s,
-    transform 0.4s;
-  opacity: 0;
-  transform: translateY(12px);
-}
-.job.vis {
-  opacity: 1;
-  transform: translateY(0);
+    opacity 0.35s,
+    transform 0.35s;
 }
 .job::before {
   content: "";
@@ -524,7 +496,6 @@ h2 {
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid var(--bg);
-  box-shadow: 0 0 10px rgba(240, 165, 0, 0.5);
 }
 .jhead {
   display: flex;
@@ -537,8 +508,7 @@ h2 {
 .jco {
   font-size: 17px;
   font-weight: 700;
-  color: var(--white);
-  transition: color 0.2s;
+  color: var(--text);
 }
 .jdate {
   font-size: 11px;
@@ -619,7 +589,7 @@ h2 {
   border-color: var(--accent);
 }
 .job.filtered {
-  opacity: 0.08;
+  opacity: 0.1;
 }
 .job.match .jco {
   color: var(--accent);
@@ -629,7 +599,7 @@ h2 {
 .fbar {
   display: none;
   position: sticky;
-  top: 50px;
+  top: 120px;
   z-index: 15;
   align-items: center;
   gap: 12px;
@@ -686,14 +656,10 @@ h2 {
   gap: 16px;
 }
 .educard {
-  background: var(--white);
+  background: var(--bg2);
   border: 1px solid var(--border);
   padding: 28px;
   border-radius: 8px;
-  transition: box-shadow 0.2s;
-}
-.educard:hover {
-  box-shadow: 0 4px 16px rgba(26, 86, 160, 0.08);
 }
 .edudeg {
   font-size: 15px;
@@ -727,7 +693,6 @@ h2 {
 }
 .edunote {
   margin-top: 12px;
-  font-family: "Lora", serif;
   font-size: 12.5px;
   color: var(--text-muted);
   font-style: italic;
@@ -738,7 +703,6 @@ h2 {
 footer {
   padding: 40px 0;
   text-align: center;
-  background: var(--white);
   border-top: 1px solid var(--border);
 }
 .fname {
