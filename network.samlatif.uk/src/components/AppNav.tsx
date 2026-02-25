@@ -58,6 +58,12 @@ export function AppNav({
         >
           My Profile
         </Link>
+        <Link
+          className={linkClass(pathname.startsWith("/tools/csv-json"))}
+          href="/tools/csv-json"
+        >
+          CSV → JSON
+        </Link>
         <div className="flex items-center gap-2">
           {currentUsername ? (
             <button
