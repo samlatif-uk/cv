@@ -1,0 +1,24 @@
+.hcontact a.site-link.active {
+  color: var(--bg);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.hcontact a.site-link.active em {
+  color: var(--bg);
+}
+
+.tech-table tr.tech-filterable {
+  cursor: pointer;
+}
+
+.finfo a.site-link.active {
+  color: var(--bg);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  text-decoration: none;
+}
