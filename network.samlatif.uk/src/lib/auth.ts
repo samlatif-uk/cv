@@ -373,6 +373,7 @@ function getLinkedInSeedJobs(
     headline?: string | null;
     bio?: string | null;
   },
+  userName?: string | null,
 ) {
   const candidates: SeedJob[] = [];
 
@@ -408,6 +409,28 @@ function getLinkedInSeedJobs(
         stack: [],
       });
     }
+  }
+
+  if (candidates.length === 0) {
+    const occupation =
+      toTrimmedString(profile?.occupation) ||
+      toTrimmedString(profile?.localizedHeadline) ||
+      (seedProfile.headline && seedProfile.headline !== DEFAULT_HEADLINE
+        ? seedProfile.headline
+        : null) ||
+      toTrimmedString(userName) ||
+      "LinkedIn Member";
+
+    const company = toTrimmedString(userName) || "LinkedIn";
+
+    candidates.push({
+      company,
+      title: occupation,
+      date: "LinkedIn",
+      description: seedProfile.bio || "Imported from LinkedIn.",
+      bullets: [],
+      stack: [],
+    });
   }
 
   return candidates.slice(0, 8);
@@ -789,6 +812,7 @@ export const authOptions: NextAuthOptions = {
                   headline: linkedInSeed?.headline,
                   bio: linkedInSeed?.bio,
                 },
+                persistedUser.name,
               );
 
         if (linkedInApiResult.jobs.length === 0) {
