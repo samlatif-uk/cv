@@ -687,13 +687,19 @@ if (linkedInClientId && linkedInClientSecret) {
           picture?: string;
         };
 
-        const id = oidcProfile.sub || oidcProfile.id;
+        const email = oidcProfile.email?.trim().toLowerCase();
+        const nameSlug =
+          oidcProfile.name
+            ?.trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-") || null;
 
-        if (!id) {
-          throw new TypeError(
-            "Profile id is missing in LinkedIn OAuth profile response",
-          );
-        }
+        const id =
+          oidcProfile.sub ||
+          oidcProfile.id ||
+          (email ? `email:${email}` : null) ||
+          (nameSlug ? `name:${nameSlug}` : null) ||
+          "linkedin:unknown";
 
         return {
           id,
@@ -703,7 +709,7 @@ if (linkedInClientId && linkedInClientSecret) {
               .filter(Boolean)
               .join(" ") ||
             null,
-          email: oidcProfile.email ?? null,
+          email,
           image: oidcProfile.picture ?? null,
         };
       },
