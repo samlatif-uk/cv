@@ -20,6 +20,42 @@ const authSecret =
   process.env.AUTH_SECRET ||
   process.env.AUTHJS_SECRET;
 
+const DEFAULT_HEADLINE = "Professional";
+const DEFAULT_LOCATION = "Location not set";
+const DEFAULT_BIO = "Bio coming soon.";
+
+function toTrimmedString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function getLinkedInProfileSeed(
+  profile: Record<string, unknown> | null | undefined,
+  user: { image?: string | null },
+) {
+  const headline =
+    toTrimmedString(profile?.headline) ||
+    toTrimmedString(profile?.localizedHeadline) ||
+    toTrimmedString(profile?.occupation);
+
+  const localeValue = profile?.locale as
+    | { country?: string; language?: string }
+    | string
+    | undefined;
+  const location =
+    toTrimmedString(profile?.location) ||
+    toTrimmedString(
+      typeof localeValue === "string" ? localeValue : localeValue?.country,
+    );
+
+  const bio =
+    toTrimmedString(profile?.summary) || toTrimmedString(profile?.bio);
+
+  const avatarUrl =
+    toTrimmedString(user.image) || toTrimmedString(profile?.picture);
+
+  return { headline, location, bio, avatarUrl };
+}
+
 function getOAuthFallbackEmail(
   provider?: string | null,
   providerAccountId?: string | null,
@@ -64,6 +100,12 @@ async function ensureAppUser(
     provider?: string | null;
     providerAccountId?: string | null;
   } | null,
+  seedProfile?: {
+    headline?: string | null;
+    location?: string | null;
+    bio?: string | null;
+    avatarUrl?: string | null;
+  },
 ) {
   const normalizedEmail = getAuthEmail(
     user.email,
@@ -77,7 +119,16 @@ async function ensureAppUser(
 
   const existingByEmail = await prisma.user.findUnique({
     where: { email: normalizedEmail },
-    select: { id: true, username: true, name: true, email: true },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      email: true,
+      headline: true,
+      location: true,
+      bio: true,
+      avatarUrl: true,
+    },
   });
 
   if (!existingByEmail) {
@@ -89,20 +140,56 @@ async function ensureAppUser(
         email: normalizedEmail,
         username,
         name: user.name?.trim() || username,
-        headline: "Professional",
-        location: "Location not set",
-        bio: "Bio coming soon.",
+        headline: seedProfile?.headline || DEFAULT_HEADLINE,
+        location: seedProfile?.location || DEFAULT_LOCATION,
+        bio: seedProfile?.bio || DEFAULT_BIO,
+        avatarUrl: seedProfile?.avatarUrl || null,
       },
       select: { id: true, username: true, name: true, email: true },
     });
   }
 
+  const updateData: {
+    name?: string;
+    headline?: string;
+    location?: string;
+    bio?: string;
+    avatarUrl?: string;
+  } = {};
+
   if (user.name?.trim() && user.name.trim() !== existingByEmail.name) {
+    updateData.name = user.name.trim();
+  }
+
+  if (
+    seedProfile?.headline &&
+    (existingByEmail.headline === DEFAULT_HEADLINE || !existingByEmail.headline)
+  ) {
+    updateData.headline = seedProfile.headline;
+  }
+
+  if (
+    seedProfile?.location &&
+    (existingByEmail.location === DEFAULT_LOCATION || !existingByEmail.location)
+  ) {
+    updateData.location = seedProfile.location;
+  }
+
+  if (
+    seedProfile?.bio &&
+    (existingByEmail.bio === DEFAULT_BIO || !existingByEmail.bio)
+  ) {
+    updateData.bio = seedProfile.bio;
+  }
+
+  if (seedProfile?.avatarUrl && !existingByEmail.avatarUrl) {
+    updateData.avatarUrl = seedProfile.avatarUrl;
+  }
+
+  if (Object.keys(updateData).length > 0) {
     return prisma.user.update({
       where: { email: normalizedEmail },
-      data: {
-        name: user.name.trim(),
-      },
+      data: updateData,
       select: { id: true, username: true, name: true, email: true },
     });
   }
@@ -184,6 +271,7 @@ if (linkedInClientId && linkedInClientSecret) {
           email_verified?: boolean;
           given_name?: string;
           family_name?: string;
+          picture?: string;
         };
 
         const id = oidcProfile.sub || oidcProfile.id;
@@ -203,7 +291,7 @@ if (linkedInClientId && linkedInClientSecret) {
               .join(" ") ||
             null,
           email: oidcProfile.email ?? null,
-          image: null,
+          image: oidcProfile.picture ?? null,
         };
       },
     }),
@@ -215,8 +303,16 @@ export const authOptions: NextAuthOptions = {
   secret: authSecret,
   session: { strategy: "jwt" },
   callbacks: {
-    async signIn({ user, account }) {
-      const persistedUser = await ensureAppUser(user, account);
+    async signIn({ user, account, profile }) {
+      const linkedInSeed =
+        account?.provider === "linkedin"
+          ? getLinkedInProfileSeed(
+              (profile as Record<string, unknown> | null | undefined) ?? null,
+              user,
+            )
+          : undefined;
+
+      const persistedUser = await ensureAppUser(user, account, linkedInSeed);
 
       if (!persistedUser) {
         return false;
