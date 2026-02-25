@@ -149,8 +149,8 @@
             <div class="sl">Finance Institutions</div>
           </div>
           <div class="stat">
-            <div class="sn">MSc</div>
-            <div class="sl">1st Class BSc</div>
+            <div class="sn" id="overviewRecommendationsCount">0</div>
+            <div class="sl">Recommendations</div>
           </div>
         </div>
       </div>
@@ -536,6 +536,22 @@
         });
       }
 
+      function renderOverviewStats() {
+        const recommendationsCount = document.getElementById(
+          "overviewRecommendationsCount",
+        );
+
+        if (!recommendationsCount) {
+          return;
+        }
+
+        const publicTestimonials = TESTIMONIALS.filter(
+          (testimonial) => testimonial.visibility === "public",
+        );
+
+        recommendationsCount.textContent = String(publicTestimonials.length);
+      }
+
       function formatRelationship(testimonial) {
         if (
           testimonial.jobCompany &&
@@ -912,6 +928,7 @@
         }
 
         renderTechTable();
+        renderOverviewStats();
         renderTestimonials();
         renderSkills();
         renderFilterBar();
