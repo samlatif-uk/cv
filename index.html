@@ -512,9 +512,19 @@
           return;
         }
 
+        const getDateValue = (dateText) => {
+          const timestamp = Date.parse(dateText);
+          return Number.isNaN(timestamp) ? 0 : timestamp;
+        };
+
         const publicTestimonials = TESTIMONIALS.filter(
           (testimonial) => testimonial.visibility === "public",
-        );
+        )
+          .slice()
+          .sort(
+            (first, second) =>
+              getDateValue(second.date) - getDateValue(first.date),
+          );
 
         if (!publicTestimonials.length) {
           testimonials.innerHTML =

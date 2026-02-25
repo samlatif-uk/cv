@@ -36,7 +36,20 @@ const formatRelationship = (relationship: string, jobCompany?: string) => {
   );
 };
 
+const getDateValue = (dateText: string) => {
+  const timestamp = Date.parse(dateText);
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
 export const Recommendations = () => {
+  const publicTestimonials = TESTIMONIALS.filter(
+    (testimonial) => testimonial.visibility === "public",
+  )
+    .slice()
+    .sort(
+      (first, second) => getDateValue(second.date) - getDateValue(first.date),
+    );
+
   const scrollToCompanyJob = (jobCompany?: string) => {
     const experienceSection = document.getElementById("experience");
     if (!experienceSection) {
@@ -73,9 +86,7 @@ export const Recommendations = () => {
           <div className="sline" />
         </div>
         <div className="testimonials">
-          {TESTIMONIALS.filter(
-            (testimonial) => testimonial.visibility === "public",
-          ).map((testimonial) => (
+          {publicTestimonials.map((testimonial) => (
             <blockquote
               key={`${testimonial.by}-${testimonial.date}`}
               className="testimonial-link"
