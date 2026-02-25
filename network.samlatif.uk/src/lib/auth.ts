@@ -15,6 +15,21 @@ const linkedInClientId =
   process.env.AUTH_LINKEDIN_ID || process.env.LINKEDIN_CLIENT_ID;
 const linkedInClientSecret =
   process.env.AUTH_LINKEDIN_SECRET || process.env.LINKEDIN_CLIENT_SECRET;
+const linkedInScopeOverride =
+  process.env.AUTH_LINKEDIN_SCOPE || process.env.LINKEDIN_SCOPE;
+const linkedInExtraScopes =
+  process.env.AUTH_LINKEDIN_EXTRA_SCOPES || process.env.LINKEDIN_EXTRA_SCOPES;
+const linkedInExperienceApiUrls = (
+  process.env.AUTH_LINKEDIN_EXPERIENCE_API_URLS ||
+  process.env.LINKEDIN_EXPERIENCE_API_URLS ||
+  ""
+)
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+const linkedInImportLoggingEnabled =
+  process.env.AUTH_LINKEDIN_IMPORT_LOG === "1" ||
+  process.env.LINKEDIN_IMPORT_LOG === "1";
 const authSecret =
   process.env.NEXTAUTH_SECRET ||
   process.env.AUTH_SECRET ||
@@ -26,6 +41,46 @@ const DEFAULT_BIO = "Bio coming soon.";
 
 function toTrimmedString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function splitScopes(rawValue: string | null | undefined) {
+  if (!rawValue?.trim()) {
+    return [];
+  }
+
+  return rawValue
+    .split(/[\s,]+/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function buildLinkedInScope() {
+  if (linkedInScopeOverride?.trim()) {
+    return splitScopes(linkedInScopeOverride).join(" ");
+  }
+
+  const merged = new Set<string>(["openid", "profile", "email"]);
+
+  for (const scope of splitScopes(linkedInExtraScopes)) {
+    merged.add(scope);
+  }
+
+  return Array.from(merged).join(" ");
+}
+
+const linkedInScope = buildLinkedInScope();
+
+function logLinkedInImport(event: string, details?: Record<string, unknown>) {
+  if (!linkedInImportLoggingEnabled) {
+    return;
+  }
+
+  if (!details) {
+    console.info(`[auth][linkedin-import] ${event}`);
+    return;
+  }
+
+  console.info(`[auth][linkedin-import] ${event}`, details);
 }
 
 function getLinkedInProfileSeed(
@@ -83,29 +138,124 @@ function getHeadlineParts(headline: string | null | undefined) {
   return null;
 }
 
+function getLinkedInCompanyName(record: Record<string, unknown>) {
+  const companyObject =
+    record.company && typeof record.company === "object"
+      ? (record.company as Record<string, unknown>)
+      : null;
+
+  const companyLocalized =
+    companyObject?.localizedName || companyObject?.name || companyObject?.urn;
+
+  return (
+    toTrimmedString(record.company) ||
+    toTrimmedString(record.companyName) ||
+    toTrimmedString(record.organization) ||
+    toTrimmedString(companyLocalized)
+  );
+}
+
+function formatLinkedInDateValue(value: unknown) {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    return toTrimmedString(value);
+  }
+
+  if (typeof value !== "object") {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const year =
+    typeof record.year === "number"
+      ? record.year
+      : Number.parseInt(String(record.year), 10);
+  const month =
+    typeof record.month === "number"
+      ? record.month
+      : Number.parseInt(String(record.month), 10);
+
+  if (!Number.isFinite(year)) {
+    return null;
+  }
+
+  if (Number.isFinite(month) && month >= 1 && month <= 12) {
+    return `${year}-${String(month).padStart(2, "0")}`;
+  }
+
+  return String(year);
+}
+
+function collectExperienceItems(payload: unknown) {
+  if (!payload) {
+    return [];
+  }
+
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (typeof payload !== "object") {
+    return [];
+  }
+
+  const record = payload as Record<string, unknown>;
+  const candidates = [
+    record.elements,
+    record.items,
+    record.data,
+    record.positions,
+    record.position,
+    record.experiences,
+    record.experience,
+  ];
+
+  const items: unknown[] = [];
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) {
+      items.push(...candidate);
+    }
+  }
+
+  if (items.length > 0) {
+    return items;
+  }
+
+  return [record];
+}
+
 function mapLinkedInExperienceItem(item: unknown): SeedJob | null {
   if (!item || typeof item !== "object") {
     return null;
   }
 
   const record = item as Record<string, unknown>;
+  const summaryRecord =
+    record.summary && typeof record.summary === "object"
+      ? (record.summary as Record<string, unknown>)
+      : null;
+
   const title =
     toTrimmedString(record.title) ||
     toTrimmedString(record.role) ||
-    toTrimmedString(record.occupation);
-  const company =
-    toTrimmedString(record.company) ||
-    toTrimmedString(record.companyName) ||
-    toTrimmedString(record.organization);
+    toTrimmedString(record.occupation) ||
+    toTrimmedString(record.localizedTitle);
+  const company = getLinkedInCompanyName(record);
 
   if (!title || !company) {
     return null;
   }
 
   const startDate =
-    toTrimmedString(record.startDate) || toTrimmedString(record.startedOn);
+    formatLinkedInDateValue(record.startDate) ||
+    formatLinkedInDateValue(record.startedOn) ||
+    formatLinkedInDateValue(record.timePeriod);
   const endDate =
-    toTrimmedString(record.endDate) || toTrimmedString(record.endedOn);
+    formatLinkedInDateValue(record.endDate) ||
+    formatLinkedInDateValue(record.endedOn);
   const date =
     startDate || endDate
       ? `${startDate || "Unknown"} – ${endDate || "Present"}`
@@ -114,6 +264,7 @@ function mapLinkedInExperienceItem(item: unknown): SeedJob | null {
   const description =
     toTrimmedString(record.description) ||
     toTrimmedString(record.summary) ||
+    toTrimmedString(summaryRecord?.text) ||
     "Imported from LinkedIn.";
 
   return {
@@ -123,6 +274,96 @@ function mapLinkedInExperienceItem(item: unknown): SeedJob | null {
     description,
     bullets: [],
     stack: [],
+  };
+}
+
+async function fetchLinkedInExperienceWithAccessToken(accessToken: string) {
+  if (!accessToken || linkedInExperienceApiUrls.length === 0) {
+    return {
+      jobs: [] as SeedJob[],
+      diagnostics: {
+        attemptedEndpoints: linkedInExperienceApiUrls.length,
+        successfulEndpoints: 0,
+        failedEndpoints: linkedInExperienceApiUrls.length,
+        reasons: linkedInExperienceApiUrls.length
+          ? ["missing_access_token"]
+          : ["no_configured_experience_endpoints"],
+      },
+    };
+  }
+
+  const collected: SeedJob[] = [];
+  const reasons: string[] = [];
+  let successfulEndpoints = 0;
+  let failedEndpoints = 0;
+
+  for (const apiUrl of linkedInExperienceApiUrls) {
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        failedEndpoints += 1;
+        reasons.push(`http_${response.status}`);
+        continue;
+      }
+
+      successfulEndpoints += 1;
+
+      const payload = (await response.json()) as unknown;
+      for (const item of collectExperienceItems(payload)) {
+        const mapped = mapLinkedInExperienceItem(item);
+        if (mapped) {
+          collected.push(mapped);
+        }
+      }
+    } catch {
+      failedEndpoints += 1;
+      reasons.push("network_or_parse_error");
+      continue;
+    }
+  }
+
+  if (!collected.length) {
+    return {
+      jobs: [] as SeedJob[],
+      diagnostics: {
+        attemptedEndpoints: linkedInExperienceApiUrls.length,
+        successfulEndpoints,
+        failedEndpoints,
+        reasons,
+      },
+    };
+  }
+
+  const seen = new Set<string>();
+  const deduped: SeedJob[] = [];
+
+  for (const job of collected) {
+    const key = `${job.company.toLowerCase()}::${job.title.toLowerCase()}::${job.date.toLowerCase()}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push(job);
+    if (deduped.length >= 8) {
+      break;
+    }
+  }
+
+  return {
+    jobs: deduped,
+    diagnostics: {
+      attemptedEndpoints: linkedInExperienceApiUrls.length,
+      successfulEndpoints,
+      failedEndpoints,
+      reasons,
+    },
   };
 }
 
@@ -174,12 +415,16 @@ function getLinkedInSeedJobs(
 
 async function seedJobsIfEmpty(userId: string, jobs: SeedJob[]) {
   if (!jobs.length) {
-    return;
+    return { inserted: 0, skipped: true, reason: "no_jobs_to_seed" } as const;
   }
 
   const existingCount = await prisma.cvJob.count({ where: { userId } });
   if (existingCount > 0) {
-    return;
+    return {
+      inserted: 0,
+      skipped: true,
+      reason: "existing_jobs_present",
+    } as const;
   }
 
   await prisma.$transaction(async (tx) => {
@@ -216,6 +461,12 @@ async function seedJobsIfEmpty(userId: string, jobs: SeedJob[]) {
       }
     }
   });
+
+  return {
+    inserted: jobs.length,
+    skipped: false,
+    reason: "seeded",
+  } as const;
 }
 
 function getOAuthFallbackEmail(
@@ -421,7 +672,7 @@ if (linkedInClientId && linkedInClientSecret) {
         "https://www.linkedin.com/oauth/.well-known/openid-configuration",
       authorization: {
         params: {
-          scope: "openid profile email",
+          scope: linkedInScope,
         },
       },
       profile(profile) {
@@ -491,14 +742,67 @@ export const authOptions: NextAuthOptions = {
       sessionUser.username = persistedUser.username;
 
       if (account?.provider === "linkedin") {
-        const linkedInJobs = getLinkedInSeedJobs(
-          (profile as Record<string, unknown> | null | undefined) ?? null,
-          {
-            headline: linkedInSeed?.headline,
-            bio: linkedInSeed?.bio,
-          },
+        logLinkedInImport("sign_in_started", {
+          userId: persistedUser.id,
+          configuredEndpoints: linkedInExperienceApiUrls.length,
+          scope: linkedInScope,
+        });
+
+        const linkedInAccessToken = toTrimmedString(
+          (account as Record<string, unknown> | null | undefined)?.access_token,
         );
-        await seedJobsIfEmpty(persistedUser.id, linkedInJobs);
+
+        const linkedInApiResult = linkedInAccessToken
+          ? await fetchLinkedInExperienceWithAccessToken(linkedInAccessToken)
+          : {
+              jobs: [] as SeedJob[],
+              diagnostics: {
+                attemptedEndpoints: linkedInExperienceApiUrls.length,
+                successfulEndpoints: 0,
+                failedEndpoints: linkedInExperienceApiUrls.length,
+                reasons: ["missing_access_token"],
+              },
+            };
+
+        logLinkedInImport("api_fetch_complete", {
+          userId: persistedUser.id,
+          importedJobs: linkedInApiResult.jobs.length,
+          attemptedEndpoints: linkedInApiResult.diagnostics.attemptedEndpoints,
+          successfulEndpoints:
+            linkedInApiResult.diagnostics.successfulEndpoints,
+          failedEndpoints: linkedInApiResult.diagnostics.failedEndpoints,
+          reasons: linkedInApiResult.diagnostics.reasons.slice(0, 5),
+        });
+
+        const linkedInJobs =
+          linkedInApiResult.jobs.length > 0
+            ? linkedInApiResult.jobs
+            : getLinkedInSeedJobs(
+                (profile as Record<string, unknown> | null | undefined) ?? null,
+                {
+                  headline: linkedInSeed?.headline,
+                  bio: linkedInSeed?.bio,
+                },
+              );
+
+        if (linkedInApiResult.jobs.length === 0) {
+          logLinkedInImport("fallback_profile_claims_used", {
+            userId: persistedUser.id,
+            fallbackJobs: linkedInJobs.length,
+          });
+        }
+
+        const seedResult = await seedJobsIfEmpty(
+          persistedUser.id,
+          linkedInJobs,
+        );
+
+        logLinkedInImport("seed_complete", {
+          userId: persistedUser.id,
+          inserted: seedResult.inserted,
+          skipped: seedResult.skipped,
+          reason: seedResult.reason,
+        });
       }
 
       return true;

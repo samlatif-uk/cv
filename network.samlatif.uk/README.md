@@ -44,6 +44,17 @@ AUTH_GOOGLE_SECRET=...
 
 AUTH_LINKEDIN_ID=...
 AUTH_LINKEDIN_SECRET=...
+
+# Optional: override or extend LinkedIn scopes
+# AUTH_LINKEDIN_SCOPE="openid profile email r_liteprofile r_emailaddress"
+# AUTH_LINKEDIN_EXTRA_SCOPES="r_liteprofile r_emailaddress"
+
+# Optional: comma-separated LinkedIn APIs for explicit experience import
+# Uses Bearer access token from OAuth callback
+# AUTH_LINKEDIN_EXPERIENCE_API_URLS="https://api.linkedin.com/v2/positions"
+
+# Optional: lightweight import diagnostics in server logs (1 = enabled)
+# AUTH_LINKEDIN_IMPORT_LOG=1
 ```
 
 If one provider is missing, only the configured provider button is shown.
