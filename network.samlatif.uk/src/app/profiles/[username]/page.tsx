@@ -1,11 +1,5 @@
 import { notFound } from "next/navigation";
-import { EducationEditorForm } from "@/components/EducationEditorForm";
-import { JobsEditorForm } from "@/components/JobsEditorForm";
-import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
 import { ProfileCv } from "@/components/CvProfile";
-import { ProfileEditorForm } from "@/components/ProfileEditorForm";
-import { SkillsEditorForm } from "@/components/SkillsEditorForm";
-import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import { getCurrentUsername } from "@/lib/auth";
 import { getCvProfilePayload } from "@/lib/cvProfileData";
 
@@ -26,131 +20,20 @@ export default async function ProfilePage({
   }
 
   const canEdit = currentUsername === payload.profile.username;
-  const showEditFirst =
-    canEdit &&
-    payload.data.TECH_ROWS.length === 0 &&
-    payload.data.SKILLS.length === 0 &&
-    payload.data.JOBS.length === 0 &&
-    (payload.data.EDUCATION ?? []).length === 0;
-
-  const editPanel = canEdit ? (
-    <main className="mx-auto w-full max-w-4xl space-y-4 p-4 md:p-8">
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            06
-          </span>
-          <h2 className="cv-title text-xl font-semibold">Edit Profile</h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <ProfileEditorForm
-          username={payload.profile.username}
-          initialName={payload.profile.name}
-          initialHeadline={payload.profile.headline}
-          initialLocation={payload.profile.location}
-          initialBio={payload.profile.bio}
-          initialAvatarUrl={payload.profile.avatarUrl}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            07
-          </span>
-          <h2 className="cv-title text-xl font-semibold">
-            Edit Technical Skills
-          </h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <TechRowsEditorForm
-          username={payload.profile.username}
-          initialTechRows={payload.data.TECH_ROWS}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            08
-          </span>
-          <h2 className="cv-title text-xl font-semibold">
-            Edit Stack at a Glance
-          </h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <SkillsEditorForm
-          username={payload.profile.username}
-          initialSkills={payload.data.SKILLS}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            09
-          </span>
-          <h2 className="cv-title text-xl font-semibold">
-            Edit Job Experience
-          </h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <JobsEditorForm
-          username={payload.profile.username}
-          initialJobs={payload.data.JOBS}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            10
-          </span>
-          <h2 className="cv-title text-xl font-semibold">
-            Edit Overview Stats
-          </h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <OverviewStatsEditorForm
-          username={payload.profile.username}
-          initialOverviewStats={payload.data.OVERVIEW_STATS ?? []}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="cv-kicker text-xs font-semibold uppercase tracking-widest">
-            11
-          </span>
-          <h2 className="cv-title text-xl font-semibold">Edit Education</h2>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-        <EducationEditorForm
-          username={payload.profile.username}
-          initialEducation={payload.data.EDUCATION ?? []}
-        />
-      </section>
-    </main>
-  ) : null;
-
   return (
-    <>
-      {showEditFirst ? editPanel : null}
-
-      <ProfileCv
-        data={payload.data}
-        profile={{
-          username: payload.profile.username,
-          name: payload.profile.name,
-          email: payload.profile.email,
-          headline: payload.profile.headline,
-          location: payload.profile.location,
-          bio: payload.profile.bio,
-          summary: payload.profile.summary,
-        }}
-      />
-
-      {!showEditFirst ? editPanel : null}
-    </>
+    <ProfileCv
+      data={payload.data}
+      canEdit={canEdit}
+      profile={{
+        username: payload.profile.username,
+        name: payload.profile.name,
+        email: payload.profile.email,
+        headline: payload.profile.headline,
+        location: payload.profile.location,
+        bio: payload.profile.bio,
+        summary: payload.profile.summary,
+        avatarUrl: payload.profile.avatarUrl,
+      }}
+    />
   );
 }

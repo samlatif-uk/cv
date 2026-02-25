@@ -159,6 +159,20 @@
   background: var(--accent-light);
 }
 
+.navInner a.editLink {
+  font-size: 10px;
+  letter-spacing: normal;
+  text-transform: none;
+  padding: 14px 10px;
+  color: var(--accent);
+  border-right: 1px solid var(--border);
+}
+
+.navInner a.editLink:hover {
+  color: var(--bg);
+  background: var(--accent);
+}
+
 .section {
   padding: 60px 0;
   border-bottom: 1px solid var(--border);

@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./CvProfile.module.css";
 import type { CvData } from "@/lib/cvData";
+import { EducationEditorForm } from "@/components/EducationEditorForm";
+import { JobsEditorForm } from "@/components/JobsEditorForm";
+import { OverviewStatsEditorForm } from "@/components/OverviewStatsEditorForm";
+import { ProfileEditorForm } from "@/components/ProfileEditorForm";
+import { SkillsEditorForm } from "@/components/SkillsEditorForm";
+import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 
 const SECTION_IDS = [
   "overview",
@@ -142,14 +148,17 @@ type ProfileIdentity = {
   location: string;
   bio: string;
   summary: string[];
+  avatarUrl?: string | null;
 };
 
 export function ProfileCv({
   data,
   profile,
+  canEdit,
 }: {
   data: CvData;
   profile: ProfileIdentity;
+  canEdit?: boolean;
 }) {
   const [firstName, ...restNameParts] = profile.name.split(" ");
   const lastName = restNameParts.join(" ");
@@ -438,6 +447,18 @@ export function ProfileCv({
               ),
             )}
           </ul>
+          {canEdit ? (
+            <div className="mt-4">
+              <ProfileEditorForm
+                username={profile.username}
+                initialName={profile.name}
+                initialHeadline={profile.headline}
+                initialLocation={profile.location}
+                initialBio={profile.bio}
+                initialAvatarUrl={profile.avatarUrl ?? null}
+              />
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -450,24 +471,44 @@ export function ProfileCv({
             >
               Overview
             </a>
+            {canEdit ? (
+              <a href="#edit-overview" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
             <a
               href="#techskills"
               className={activeNav === "techskills" ? styles.active : ""}
             >
               Tech Skills
             </a>
+            {canEdit ? (
+              <a href="#edit-techskills" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
             <a
               href="#skills"
               className={activeNav === "skills" ? styles.active : ""}
             >
               Stack Tags
             </a>
+            {canEdit ? (
+              <a href="#edit-skills" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
             <a
               href="#experience"
               className={activeNav === "experience" ? styles.active : ""}
             >
               Experience
             </a>
+            {canEdit ? (
+              <a href="#edit-experience" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
             <a
               href="#recommendations"
               className={activeNav === "recommendations" ? styles.active : ""}
@@ -480,6 +521,11 @@ export function ProfileCv({
             >
               Education
             </a>
+            {canEdit ? (
+              <a href="#edit-education" className={styles.editLink}>
+                Edit
+              </a>
+            ) : null}
           </div>
         </div>
       </nav>
@@ -497,6 +543,14 @@ export function ProfileCv({
               </div>
             ))}
           </div>
+          {canEdit ? (
+            <div id="edit-overview" className="mt-4">
+              <OverviewStatsEditorForm
+                username={profile.username}
+                initialOverviewStats={data.OVERVIEW_STATS ?? []}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -536,6 +590,14 @@ export function ProfileCv({
               })}
             </tbody>
           </table>
+          {canEdit ? (
+            <div id="edit-techskills" className="mt-4">
+              <TechRowsEditorForm
+                username={profile.username}
+                initialTechRows={data.TECH_ROWS}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -582,6 +644,14 @@ export function ProfileCv({
           ) : (
             <p className={styles.emptyState}>No stack tags added yet.</p>
           )}
+          {canEdit ? (
+            <div id="edit-skills" className="mt-4">
+              <SkillsEditorForm
+                username={profile.username}
+                initialSkills={data.SKILLS}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -672,6 +742,14 @@ export function ProfileCv({
               );
             })}
           </div>
+          {canEdit ? (
+            <div id="edit-experience" className="mt-4">
+              <JobsEditorForm
+                username={profile.username}
+                initialJobs={data.JOBS}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -735,6 +813,14 @@ export function ProfileCv({
               </div>
             ))}
           </div>
+          {canEdit ? (
+            <div id="edit-education" className="mt-4">
+              <EducationEditorForm
+                username={profile.username}
+                initialEducation={data.EDUCATION ?? []}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
