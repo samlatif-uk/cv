@@ -2,7 +2,7 @@
   "TECH_ROWS": [
     {
       "cat": "Front End",
-      "items": "HTML5, CSS / SCSS / SASS / LESS, JS (OOP, Functional, FRP)",
+      "items": "HTML5, HTML, CSS, CSS3, CSS Modules, CSS / SCSS / SASS / LESS, JS (OOP, Functional, FRP), CoffeeScript",
       "yrs": "15+"
     },
     {
@@ -12,8 +12,8 @@
     },
     {
       "cat": "JS Frameworks",
-      "items": "React, React Native, Redux, TypeScript, Next.js",
-      "yrs": "13+"
+      "items": "React, React Native, React Router, react-router-dom, Reach Router, Redux, Redux Toolkit, TypeScript, Next.js, AngularJS",
+      "yrs": "14+"
     },
     {
       "cat": "Testing",
@@ -37,17 +37,22 @@
     },
     {
       "cat": "State Mgmt",
-      "items": "Redux, Redux Toolkit, Context API, Zustand, React Query, TRPC",
-      "yrs": "12+"
+      "items": "Redux, Redux Toolkit, Redux-Saga, Redux Form, Redux-Form, Context API, Zustand, React Query, TRPC, Apollo Client, Reselect, Formik, Yup",
+      "yrs": "13+"
     },
     {
       "cat": "Backend / DB",
-      "items": "Node.js, MongoDB, MySQL, PHP, GraphQL",
-      "yrs": "11+"
+      "items": "Node.js, Express.js, NestJS, GraphQL, RESTful APIs, MongoDB, MySQL, PostgreSQL, Redis, PHP, PHP (Zend), CakePHP, Symfony2, Ruby on Rails, Meteor, Java Spring MVC, Azure/.NET",
+      "yrs": "12+"
+    },
+    {
+      "cat": "Cloud / DevOps",
+      "items": "AWS, Docker, Kubernetes, CI/CD, Prisma ORM, PostCSS",
+      "yrs": "9+"
     },
     {
       "cat": "Visualisation",
-      "items": "D3.js, Three.js, Highcharts, Canvas (FabricJS, PixiJS)",
+      "items": "D3.js, Three.js, Highcharts, Canvas (FabricJS, PixiJS), HTML5 Canvas, react-spring, GSAP, Google Maps API, ReactGrid",
       "yrs": "10+"
     }
   ],
@@ -58,6 +63,30 @@
     },
     {
       "n": "React Native",
+      "c": "core"
+    },
+    {
+      "n": "React 0.13/14",
+      "c": "core"
+    },
+    {
+      "n": "React 0.15",
+      "c": "core"
+    },
+    {
+      "n": "React 15/16",
+      "c": "core"
+    },
+    {
+      "n": "React 16",
+      "c": "core"
+    },
+    {
+      "n": "React 18",
+      "c": "core"
+    },
+    {
+      "n": "React 19",
       "c": "core"
     },
     {
@@ -73,7 +102,27 @@
       "c": "core"
     },
     {
+      "n": "CoffeeScript",
+      "c": "core"
+    },
+    {
       "n": "HTML5",
+      "c": "core"
+    },
+    {
+      "n": "HTML",
+      "c": "core"
+    },
+    {
+      "n": "CSS",
+      "c": "core"
+    },
+    {
+      "n": "CSS3",
+      "c": "core"
+    },
+    {
+      "n": "CSS Modules",
       "c": "core"
     },
     {
@@ -81,7 +130,23 @@
       "c": "core"
     },
     {
+      "n": "SCSS",
+      "c": "core"
+    },
+    {
+      "n": "SASS",
+      "c": "core"
+    },
+    {
+      "n": "LESS",
+      "c": "core"
+    },
+    {
       "n": "Next.js",
+      "c": "core"
+    },
+    {
+      "n": "AngularJS",
       "c": "core"
     },
     {
@@ -94,6 +159,62 @@
     },
     {
       "n": "RESTful APIs",
+      "c": "core"
+    },
+    {
+      "n": "MongoDB",
+      "c": "core"
+    },
+    {
+      "n": "MySQL",
+      "c": "core"
+    },
+    {
+      "n": "PHP",
+      "c": "core"
+    },
+    {
+      "n": "PHP (Zend)",
+      "c": "core"
+    },
+    {
+      "n": "CakePHP",
+      "c": "core"
+    },
+    {
+      "n": "Symfony2",
+      "c": "core"
+    },
+    {
+      "n": "Ruby on Rails",
+      "c": "core"
+    },
+    {
+      "n": "Meteor",
+      "c": "core"
+    },
+    {
+      "n": "Java Spring MVC",
+      "c": "core"
+    },
+    {
+      "n": "Azure/.NET",
+      "c": "core"
+    },
+    {
+      "n": "Express.js",
+      "c": "core"
+    },
+    {
+      "n": "NestJS",
+      "c": "core"
+    },
+    {
+      "n": "PostgreSQL",
+      "c": "core"
+    },
+    {
+      "n": "Redis",
       "c": "core"
     },
     {
@@ -118,6 +239,34 @@
     },
     {
       "n": "Context API",
+      "c": "state"
+    },
+    {
+      "n": "Redux Form",
+      "c": "state"
+    },
+    {
+      "n": "Redux-Form",
+      "c": "state"
+    },
+    {
+      "n": "Redux-Saga",
+      "c": "state"
+    },
+    {
+      "n": "Reselect",
+      "c": "state"
+    },
+    {
+      "n": "Formik",
+      "c": "state"
+    },
+    {
+      "n": "Yup",
+      "c": "state"
+    },
+    {
+      "n": "Apollo Client",
       "c": "state"
     },
     {
@@ -189,6 +338,50 @@
       "c": "ui"
     },
     {
+      "n": "Canvas",
+      "c": "ui"
+    },
+    {
+      "n": "HTML5 Canvas",
+      "c": "ui"
+    },
+    {
+      "n": "ReactGrid",
+      "c": "ui"
+    },
+    {
+      "n": "react-spring",
+      "c": "ui"
+    },
+    {
+      "n": "GSAP",
+      "c": "ui"
+    },
+    {
+      "n": "Google Maps API",
+      "c": "ui"
+    },
+    {
+      "n": "Bootstrap",
+      "c": "ui"
+    },
+    {
+      "n": "Bootstrap 3",
+      "c": "ui"
+    },
+    {
+      "n": "Axure",
+      "c": "ui"
+    },
+    {
+      "n": "Balsamiq",
+      "c": "ui"
+    },
+    {
+      "n": "InVision",
+      "c": "ui"
+    },
+    {
       "n": "Webpack",
       "c": "tooling"
     },
@@ -209,6 +402,50 @@
       "c": "tooling"
     },
     {
+      "n": "PostCSS",
+      "c": "tooling"
+    },
+    {
+      "n": "HAML",
+      "c": "tooling"
+    },
+    {
+      "n": "React Router",
+      "c": "tooling"
+    },
+    {
+      "n": "react-router-dom",
+      "c": "tooling"
+    },
+    {
+      "n": "Reach Router",
+      "c": "tooling"
+    },
+    {
+      "n": "jQuery",
+      "c": "tooling"
+    },
+    {
+      "n": "Prisma ORM",
+      "c": "tooling"
+    },
+    {
+      "n": "Docker",
+      "c": "tooling"
+    },
+    {
+      "n": "Kubernetes",
+      "c": "tooling"
+    },
+    {
+      "n": "AWS",
+      "c": "tooling"
+    },
+    {
+      "n": "CI/CD",
+      "c": "tooling"
+    },
+    {
       "n": "WordPress",
       "c": "cms"
     },
@@ -222,6 +459,14 @@
     },
     {
       "n": "Adobe CQ5",
+      "c": "cms"
+    },
+    {
+      "n": "Gigya",
+      "c": "cms"
+    },
+    {
+      "n": "Ignite",
       "c": "cms"
     }
   ],

@@ -1,32 +1,8 @@
 (function (globalScope) {
-  const splitSkillTokens = (skill) => {
-    return skill
-      .toLowerCase()
-      .split("/")
-      .map((token) => token.trim())
-      .filter(Boolean);
-  };
+  const normalizeSkillValue = (skill) => String(skill || "").trim();
 
   const isSkillMatch = (filterSkill, jobSkill) => {
-    if (filterSkill === "React") {
-      return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
-    }
-
-    if (filterSkill === jobSkill) {
-      return true;
-    }
-
-    const filterTokens = splitSkillTokens(filterSkill);
-    const jobTokens = splitSkillTokens(jobSkill);
-
-    return filterTokens.some((filterToken) =>
-      jobTokens.some(
-        (jobToken) =>
-          jobToken === filterToken ||
-          jobToken.includes(filterToken) ||
-          filterToken.includes(jobToken),
-      ),
-    );
+    return normalizeSkillValue(filterSkill) === normalizeSkillValue(jobSkill);
   };
 
   const splitTechItems = (items) => {
@@ -79,7 +55,7 @@
   };
 
   globalScope.CVFilterUtils = {
-    splitSkillTokens,
+    normalizeSkillValue,
     isSkillMatch,
     splitTechItems,
     normalizeTechToken,

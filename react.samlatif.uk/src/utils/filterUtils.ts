@@ -1,30 +1,10 @@
-const splitSkillTokensFallback = (skill: string) => {
-  return skill
-    .toLowerCase()
-    .split("/")
-    .map((token) => token.trim())
-    .filter(Boolean);
-};
+const normalizeSkillValueFallback = (skill: string) =>
+  String(skill || "").trim();
 
 const isSkillMatchFallback = (filterSkill: string, jobSkill: string) => {
-  if (filterSkill === "React") {
-    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
-  }
-
-  if (filterSkill === jobSkill) {
-    return true;
-  }
-
-  const filterTokens = splitSkillTokensFallback(filterSkill);
-  const jobTokens = splitSkillTokensFallback(jobSkill);
-
-  return filterTokens.some((filterToken) =>
-    jobTokens.some(
-      (jobToken) =>
-        jobToken === filterToken ||
-        jobToken.includes(filterToken) ||
-        filterToken.includes(jobToken),
-    ),
+  return (
+    normalizeSkillValueFallback(filterSkill) ===
+    normalizeSkillValueFallback(jobSkill)
   );
 };
 

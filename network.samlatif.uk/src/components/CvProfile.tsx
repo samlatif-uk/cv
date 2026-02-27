@@ -30,33 +30,10 @@ const getCategoryLabel = (category: Category) => {
   return category[0].toUpperCase() + category.slice(1);
 };
 
-const splitSkillTokens = (skill: string) =>
-  skill
-    .toLowerCase()
-    .split("/")
-    .map((token) => token.trim())
-    .filter(Boolean);
+const normalizeSkillValue = (skill: string) => String(skill || "").trim();
 
 const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  if (filterSkill === "React") {
-    return /^React(?:\s|$)/.test(jobSkill) && jobSkill !== "React Native";
-  }
-
-  if (filterSkill === jobSkill) {
-    return true;
-  }
-
-  const filterTokens = splitSkillTokens(filterSkill);
-  const jobTokens = splitSkillTokens(jobSkill);
-
-  return filterTokens.some((filterToken) =>
-    jobTokens.some(
-      (jobToken) =>
-        jobToken === filterToken ||
-        jobToken.includes(filterToken) ||
-        filterToken.includes(jobToken),
-    ),
-  );
+  return normalizeSkillValue(filterSkill) === normalizeSkillValue(jobSkill);
 };
 
 const splitTechItems = (items: string) => {
