@@ -118,16 +118,6 @@ async function loadSharedCvData() {
     }
   };
 
-  const apiData = await fetchJson(
-    "https://network.samlatif.uk/api/cv/samlatif",
-    3500,
-  );
-
-  if (apiData) {
-    applyData(apiData);
-    return true;
-  }
-
   const candidates = [
     "/shared/cv-data.json",
     "./shared/cv-data.json",

@@ -56,30 +56,6 @@ export let GLOBAL_STACK_DEFAULTS: string[] = CV_DATA.GLOBAL_STACK_DEFAULTS;
 export let TESTIMONIALS: Testimonial[] = CV_DATA.TESTIMONIALS;
 export let JOBS: Job[] = CV_DATA.JOBS;
 
-export async function loadCvDataFromCraftfolio(username = "samlatif") {
-  const apiBase =
-    import.meta.env.VITE_CRAFTFOLIO_API_BASE ?? "https://network.samlatif.uk";
-
-  try {
-    const response = await fetch(`${apiBase}/api/cv/${username}`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return;
-    }
-
-    const data = (await response.json()) as SharedCvData;
-
-    PROFILE = data.profile ?? PROFILE;
-    TECH_ROWS = data.TECH_ROWS ?? TECH_ROWS;
-    SKILLS = data.SKILLS ?? SKILLS;
-    DATE_BASED_STACK_DEFAULTS =
-      data.DATE_BASED_STACK_DEFAULTS ?? DATE_BASED_STACK_DEFAULTS;
-    GLOBAL_STACK_DEFAULTS = data.GLOBAL_STACK_DEFAULTS ?? GLOBAL_STACK_DEFAULTS;
-    TESTIMONIALS = data.TESTIMONIALS ?? TESTIMONIALS;
-    JOBS = data.JOBS ?? JOBS;
-  } catch {
-    return;
-  }
+export async function loadCvDataFromCraftfolio() {
+  return;
 }
