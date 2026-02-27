@@ -50,6 +50,7 @@ A minimal personal CV / portfolio website for Sam Latif.
 
 - Workflow file: `.github/workflows/deploy-react-vps.yml`
 - Trigger: push to `main` when React, static site, shared data/assets, or workflow files change
+- Shared static assets synced include: `shared/cv-data.json`, `shared/filter-utils.js`, `shared/vanilla-site.js`, `shared/site.css`, `shared/ui-shared.css`
 - Required GitHub repository secrets:
   - `VPS_HOST` (example: `your-server.example.com`)
   - `VPS_USER` (example: `deploy`)

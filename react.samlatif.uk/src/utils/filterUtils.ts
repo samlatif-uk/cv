@@ -1,10 +1,21 @@
 const normalizeSkillValueFallback = (skill: string) =>
   String(skill || "").trim();
 
+const splitSkillTokens = (skill: string) => {
+  return normalizeSkillValueFallback(skill)
+    .split(/[/|]/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+};
+
 const isSkillMatchFallback = (filterSkill: string, jobSkill: string) => {
-  return (
-    normalizeSkillValueFallback(filterSkill) ===
-    normalizeSkillValueFallback(jobSkill)
+  const filterTokens = splitSkillTokens(filterSkill);
+  const jobTokens = splitSkillTokens(jobSkill);
+
+  return filterTokens.some(
+    (token) =>
+      jobTokens.includes(token) ||
+      jobTokens.some((item) => item.includes(token) || token.includes(item)),
   );
 };
 
@@ -57,33 +68,14 @@ const normalizeTechTokenFallback = (token: string) => {
   return aliasMap[token] ?? [token];
 };
 
-const getUtils = () => {
-  return window.CVFilterUtils;
-};
-
 export const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  const utils = getUtils();
-  if (utils) {
-    return utils.isSkillMatch(filterSkill, jobSkill);
-  }
-
   return isSkillMatchFallback(filterSkill, jobSkill);
 };
 
 export const splitTechItems = (items: string) => {
-  const utils = getUtils();
-  if (utils) {
-    return utils.splitTechItems(items);
-  }
-
   return splitTechItemsFallback(items);
 };
 
 export const normalizeTechToken = (token: string) => {
-  const utils = getUtils();
-  if (utils) {
-    return utils.normalizeTechToken(token);
-  }
-
   return normalizeTechTokenFallback(token);
 };

@@ -1,50 +1,21 @@
-# React + TypeScript + Vite
+# react.samlatif.uk
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React CV site for samlatif.uk, built with Vite + TypeScript.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `npm run dev` — start local dev server
+- `npm run build` — type-check and create production build
+- `npm run preview` — preview the production build locally
+- `npm run lint` — run ESLint
 
-## Expanding the ESLint configuration
+## Data and shared assets
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- CV content is sourced from `../shared/cv-data.json` via `src/data/cv.ts`.
+- Runtime filter helpers are loaded from `/filter-utils.js` and used when available.
+- Static styles are served from `public/site.css` and `public/ui-shared.css`.
 
-- Configure the top-level `parserOptions` property like this:
+## Notes
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- The app can run with API data (`https://network.samlatif.uk/api/cv/:username`) and falls back to local shared JSON.
+- Keep schema/content shape aligned with `shared/cv-data.json` when editing CV fields.
