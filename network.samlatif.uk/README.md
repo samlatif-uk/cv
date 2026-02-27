@@ -37,7 +37,9 @@ Open http://localhost:3000
 ### Required Environment Variables
 
 ```bash
+NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-long-random-secret
+AUTH_SECRET=your-long-random-secret
 
 AUTH_GOOGLE_ID=...
 AUTH_GOOGLE_SECRET=...
@@ -69,8 +71,9 @@ If one provider is missing, only the configured provider button is shown.
 
 ### Auth
 
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
+- `GET|POST /api/auth/[...nextauth]`
+- `GET /api/auth/providers`
+- `POST /api/auth/email-signup`
 
 ### Feed / Posts
 

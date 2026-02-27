@@ -43,6 +43,17 @@ type CvEducationRecord = {
   note: string;
 };
 
+type RecommendationRecord = {
+  recommenderName: string;
+  recommenderRole: string;
+  relationshipLabel: string;
+  recommendationAt: Date | string | null;
+  content: string;
+  isPublic: boolean;
+};
+
+const SPECIAL_PROFILE_EMAIL = "hello@samlatif.uk";
+
 const toNumeric = (value: string) => {
   const match = value.match(/\d+/);
   return match ? Number(match[0]) : 0;
@@ -77,40 +88,51 @@ export type CvProfilePayload = {
   data: CvData;
 };
 
+const getRecommendationsByUsername = async (
+  username: string,
+): Promise<RecommendationRecord[]> => {
+  const isSamLatif = username.trim().toLowerCase() === "samlatif";
+
+  return prisma.recommendation.findMany({
+    where: {
+      recipient: isSamLatif
+        ? { OR: [{ username }, { email: SPECIAL_PROFILE_EMAIL }] }
+        : { username },
+    },
+    orderBy: { recommendationAt: "desc" },
+    select: {
+      recommenderName: true,
+      recommenderRole: true,
+      relationshipLabel: true,
+      recommendationAt: true,
+      content: true,
+      isPublic: true,
+    },
+  });
+};
+
 export async function getCvProfilePayload(
   username: string,
 ): Promise<CvProfilePayload | null> {
-  const [profile, recommendations] = await Promise.all([
-    prisma.user.findUnique({
-      where: { username },
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        email: true,
-        headline: true,
-        location: true,
-        bio: true,
-        avatarUrl: true,
-      },
-    }),
-    prisma.recommendation.findMany({
-      where: { recipient: { username } },
-      orderBy: { recommendationAt: "desc" },
-      select: {
-        recommenderName: true,
-        recommenderRole: true,
-        relationshipLabel: true,
-        recommendationAt: true,
-        content: true,
-        isPublic: true,
-      },
-    }),
-  ]);
+  const profile = await prisma.user.findUnique({
+    where: { username },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      email: true,
+      headline: true,
+      location: true,
+      bio: true,
+      avatarUrl: true,
+    },
+  });
 
   if (!profile) {
     return null;
   }
+
+  const recommendations = await getRecommendationsByUsername(username);
 
   let dbTechRows: CvTechRowRecord[] = [];
   let dbOverviewStats: CvOverviewStatRecord[] = [];
