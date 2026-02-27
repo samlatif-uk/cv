@@ -10,17 +10,31 @@ type RecommendationInput = {
   visibility?: "public" | "private";
 };
 
-const toDate = (value: string | undefined) => {
+const ISO_DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const parseRecommendationDate = (value: string | undefined) => {
   if (!value) {
-    return new Date();
+    return { value: new Date() } as const;
   }
 
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return new Date();
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return { value: new Date() } as const;
   }
 
-  return parsed;
+  if (ISO_DATE_ONLY_PATTERN.test(trimmed)) {
+    const parsed = new Date(`${trimmed}T00:00:00.000Z`);
+    if (!Number.isNaN(parsed.getTime())) {
+      return { value: parsed } as const;
+    }
+  }
+
+  const parsed = new Date(trimmed);
+  if (!Number.isNaN(parsed.getTime())) {
+    return { value: parsed } as const;
+  }
+
+  return { error: `Invalid date: ${value}` } as const;
 };
 
 export async function PATCH(
@@ -48,22 +62,41 @@ export async function PATCH(
     );
   }
 
-  const parsedRecommendations = body.recommendations
-    .map((recommendation) => ({
-      by: recommendation.by?.trim() ?? "",
-      role: recommendation.role?.trim() ?? "",
-      date: toDate(recommendation.date?.trim()),
-      relationship: recommendation.relationship?.trim() ?? "",
-      quote: recommendation.quote?.trim() ?? "",
+  const parsedRecommendations = [] as Array<{
+    by: string;
+    role: string;
+    date: Date;
+    relationship: string;
+    quote: string;
+    visibility: "public" | "private";
+  }>;
+
+  for (const recommendation of body.recommendations) {
+    const by = recommendation.by?.trim() ?? "";
+    const quote = recommendation.quote?.trim() ?? "";
+
+    if (!by || !quote) {
+      continue;
+    }
+
+    const dateParse = parseRecommendationDate(recommendation.date);
+    if ("error" in dateParse) {
+      return Response.json(
+        { error: "Recommendation dates must be valid ISO dates or datetimes." },
+        { status: 400 },
+      );
+    }
+
+    parsedRecommendations.push({
+      by,
+      role: recommendation.role?.trim() || "Colleague",
+      date: dateParse.value,
+      relationship: recommendation.relationship?.trim() || "Worked together",
+      quote,
       visibility:
         recommendation.visibility === "private" ? "private" : "public",
-    }))
-    .filter((recommendation) => recommendation.by && recommendation.quote)
-    .map((recommendation) => ({
-      ...recommendation,
-      role: recommendation.role || "Colleague",
-      relationship: recommendation.relationship || "Worked together",
-    }));
+    });
+  }
 
   const profile = await prisma.user.findUnique({
     where: { username },
