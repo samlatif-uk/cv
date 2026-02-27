@@ -621,6 +621,19 @@ h2 {
   flex-wrap: wrap;
   gap: 6px;
 }
+.fmatch-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fmatch-pos {
+  min-width: 36px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
 .fchip {
   background: var(--bg2);
   border: 1px solid var(--accent);
@@ -636,6 +649,26 @@ h2 {
 .fchip:hover {
   background: var(--accent);
   color: var(--bg);
+}
+.fnavbtn {
+  background: var(--bg2);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.18s;
+}
+.fnavbtn:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--bg);
+}
+.fnavbtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .fclear {
   background: none;

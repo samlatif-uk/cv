@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DATE_BASED_STACK_DEFAULTS,
   GLOBAL_STACK_DEFAULTS,
@@ -102,13 +102,21 @@ const scrollWithDynamicOffset = (
   target: HTMLElement,
   includeSectionAboveContent = false,
 ) => {
-  const targetY =
+  const targetY = getTargetScrollTop(target, includeSectionAboveContent);
+
+  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+};
+
+const getTargetScrollTop = (
+  target: HTMLElement,
+  includeSectionAboveContent = false,
+) => {
+  return (
     target.getBoundingClientRect().top +
     window.scrollY -
     getStickyNavOffset() -
-    (includeSectionAboveContent ? getSectionAboveContentHeight(target) : 0);
-
-  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+    (includeSectionAboveContent ? getSectionAboveContentHeight(target) : 0)
+  );
 };
 
 interface ExperienceProps {
@@ -123,6 +131,116 @@ export const Experience = ({
   onClearTech,
 }: ExperienceProps) => {
   const previousFilterCount = useRef(activeTechs.length);
+  const [matchPositionLabel, setMatchPositionLabel] = useState("0/0");
+
+  const matchingJobIndexes = useMemo(() => {
+    if (!activeTechs.length) {
+      return [];
+    }
+
+    return JOBS.reduce<number[]>((indexes, job, index) => {
+      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+      const matched = activeTechs.some((activeTech) =>
+        stackWithDefaults.some((stackTech) =>
+          isSkillMatch(activeTech, stackTech),
+        ),
+      );
+
+      if (matched) {
+        indexes.push(index);
+      }
+
+      return indexes;
+    }, []);
+  }, [activeTechs]);
+
+  const getMatchedJobTargets = useCallback(() => {
+    const allJobs = Array.from(
+      document.querySelectorAll("#experience .job"),
+    ) as HTMLElement[];
+
+    return matchingJobIndexes
+      .map((index) => allJobs[index])
+      .filter(Boolean)
+      .map((job) => {
+        return (job.querySelector(".jhead") as HTMLElement | null) ?? job;
+      });
+  }, [matchingJobIndexes]);
+
+  const getCurrentMatchPosition = useCallback((targets: HTMLElement[]) => {
+    if (!targets.length) {
+      return 0;
+    }
+
+    const positions = targets.map((target) => getTargetScrollTop(target, true));
+    const currentY = window.scrollY;
+    const threshold = 6;
+    let currentIndex = positions.findIndex(
+      (position) => position >= currentY - threshold,
+    );
+
+    if (currentIndex === -1) {
+      currentIndex = positions.length - 1;
+    }
+
+    return currentIndex + 1;
+  }, []);
+
+  const updateMatchPositionLabel = useCallback(() => {
+    const targets = getMatchedJobTargets();
+    const total = targets.length;
+
+    if (!activeTechs.length || !total) {
+      setMatchPositionLabel("0/0");
+      return;
+    }
+
+    setMatchPositionLabel(`${getCurrentMatchPosition(targets)}/${total}`);
+  }, [activeTechs.length, getCurrentMatchPosition, getMatchedJobTargets]);
+
+  const scrollToRelativeMatch = useCallback(
+    (direction: 1 | -1) => {
+      if (!activeTechs.length) {
+        return;
+      }
+
+      const targets = getMatchedJobTargets();
+      if (!targets.length) {
+        return;
+      }
+
+      const currentY = window.scrollY;
+      const threshold = 6;
+      const positions = targets.map((target) =>
+        getTargetScrollTop(target, true),
+      );
+
+      let nextIndex = 0;
+
+      if (direction > 0) {
+        nextIndex = positions.findIndex(
+          (position) => position > currentY + threshold,
+        );
+
+        if (nextIndex === -1) {
+          nextIndex = 0;
+        }
+      } else {
+        nextIndex = positions.length - 1;
+
+        for (let index = positions.length - 1; index >= 0; index -= 1) {
+          if (positions[index] < currentY - threshold) {
+            nextIndex = index;
+            break;
+          }
+        }
+      }
+
+      scrollWithDynamicOffset(targets[nextIndex], true);
+      window.setTimeout(updateMatchPositionLabel, 250);
+    },
+    [activeTechs.length, getMatchedJobTargets, updateMatchPositionLabel],
+  );
 
   useEffect(() => {
     if (!activeTechs.length) {
@@ -186,6 +304,22 @@ export const Experience = ({
     previousFilterCount.current = activeTechs.length;
   }, [activeTechs]);
 
+  useEffect(() => {
+    updateMatchPositionLabel();
+  }, [updateMatchPositionLabel]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      updateMatchPositionLabel();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [updateMatchPositionLabel]);
+
+  const canJumpMatches =
+    activeTechs.length > 0 && matchingJobIndexes.length > 0;
+
   return (
     <section id="experience">
       <div className="container">
@@ -207,6 +341,27 @@ export const Experience = ({
                 {tech} ×
               </button>
             ))}
+          </div>
+          <div className="fmatch-nav">
+            <button
+              className="fnavbtn"
+              onClick={() => scrollToRelativeMatch(-1)}
+              type="button"
+              disabled={!canJumpMatches}
+            >
+              ↑ Prev match
+            </button>
+            <button
+              className="fnavbtn"
+              onClick={() => scrollToRelativeMatch(1)}
+              type="button"
+              disabled={!canJumpMatches}
+            >
+              ↓ Next match
+            </button>
+            <span className="fmatch-pos" aria-live="polite">
+              {matchPositionLabel}
+            </span>
           </div>
           <button className="fclear" onClick={onClearTech} type="button">
             Clear ×
