@@ -62,22 +62,60 @@ const withJobStackDefaults = (stack: string[], date: string) => {
   }, stackWithGlobalDefaults);
 };
 
+const getElementOuterHeight = (element: Element | null) => {
+  if (!element) {
+    return 0;
+  }
+
+  const styles = window.getComputedStyle(element);
+  const marginTop = parseFloat(styles.marginTop) || 0;
+  const marginBottom = parseFloat(styles.marginBottom) || 0;
+  return element.clientHeight + marginTop + marginBottom;
+};
+
+const getStickyNavOffset = () =>
+  getElementOuterHeight(document.querySelector("nav"));
+
+const getSectionAboveContentHeight = (target: HTMLElement) => {
+  const section = target.closest("section");
+  const container = target.closest(".container");
+
+  if (!section || !container || container.parentElement !== section) {
+    return 0;
+  }
+
+  let height = 0;
+  const children = Array.from(container.children);
+
+  for (const child of children) {
+    if (child.contains(target)) {
+      break;
+    }
+
+    height += getElementOuterHeight(child);
+  }
+
+  return height;
+};
+
+const scrollWithDynamicOffset = (
+  target: HTMLElement,
+  includeSectionAboveContent = false,
+) => {
+  const targetY =
+    target.getBoundingClientRect().top +
+    window.scrollY -
+    getStickyNavOffset() -
+    (includeSectionAboveContent ? getSectionAboveContentHeight(target) : 0);
+
+  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+};
+
 interface ExperienceProps {
   activeTechs: string[];
   onTechClick: (tech: string) => void;
   onClearTech: () => void;
 }
-
-const getFilterBarHeight = () => {
-  const filterBar = document.getElementById("fbar");
-  if (!filterBar || !filterBar.classList.contains("show")) {
-    return 0;
-  }
-
-  const styles = window.getComputedStyle(filterBar);
-  const marginBottom = parseFloat(styles.marginBottom) || 0;
-  return filterBar.offsetHeight + marginBottom;
-};
 
 export const Experience = ({
   activeTechs,
@@ -90,10 +128,9 @@ export const Experience = ({
     if (!activeTechs.length) {
       if (previousFilterCount.current > 0) {
         const experienceSection = document.getElementById("experience");
-        experienceSection?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        if (experienceSection) {
+          scrollWithDynamicOffset(experienceSection);
+        }
       }
 
       previousFilterCount.current = 0;
@@ -143,11 +180,7 @@ export const Experience = ({
       const target =
         (firstMatch.querySelector(".jhead") as HTMLElement | null) ??
         firstMatch;
-      const targetY =
-        target.getBoundingClientRect().top +
-        window.scrollY -
-        (120 + getFilterBarHeight());
-      window.scrollTo({ top: targetY, behavior: "smooth" });
+      scrollWithDynamicOffset(target, true);
     }
 
     previousFilterCount.current = activeTechs.length;

@@ -123,15 +123,53 @@ const getJavaScriptVersionedSkill = (startYear: number | null) => {
     : "JavaScript (ES6+)";
 };
 
-const getFilterBarHeight = () => {
-  const filterBar = document.getElementById("fbar");
-  if (!filterBar || !filterBar.classList.contains(styles.show)) {
+const getElementOuterHeight = (element: Element | null) => {
+  if (!element) {
     return 0;
   }
 
-  const margins = window.getComputedStyle(filterBar);
-  const marginBottom = parseFloat(margins.marginBottom) || 0;
-  return filterBar.offsetHeight + marginBottom;
+  const stylesForElement = window.getComputedStyle(element);
+  const marginTop = parseFloat(stylesForElement.marginTop) || 0;
+  const marginBottom = parseFloat(stylesForElement.marginBottom) || 0;
+  return element.clientHeight + marginTop + marginBottom;
+};
+
+const getStickyNavOffset = () =>
+  getElementOuterHeight(document.querySelector("nav"));
+
+const getSectionAboveContentHeight = (target: HTMLElement) => {
+  const section = target.closest("section");
+  const container = target.closest(".container");
+
+  if (!section || !container || container.parentElement !== section) {
+    return 0;
+  }
+
+  let height = 0;
+  const children = Array.from(container.children);
+
+  for (const child of children) {
+    if (child.contains(target)) {
+      break;
+    }
+
+    height += getElementOuterHeight(child);
+  }
+
+  return height;
+};
+
+const scrollWithDynamicOffset = (
+  target: HTMLElement,
+  includeSectionAboveContent = false,
+) => {
+  const targetY =
+    target.getBoundingClientRect().top +
+    window.scrollY -
+    getStickyNavOffset() -
+    (includeSectionAboveContent ? getSectionAboveContentHeight(target) : 0);
+
+  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
 };
 
 const toCompanyKey = (value: string) =>
@@ -195,7 +233,7 @@ export function ProfileCv({
         const sectionElement = document.getElementById(id);
         if (
           sectionElement &&
-          window.scrollY >= sectionElement.offsetTop - 120
+          window.scrollY >= sectionElement.offsetTop - getStickyNavOffset()
         ) {
           return id;
         }
@@ -210,6 +248,35 @@ export function ProfileCv({
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const navLinks = Array.from(
+      document.querySelectorAll('nav a[href^="#"]'),
+    ) as HTMLAnchorElement[];
+
+    const unsubs = navLinks.map((link) => {
+      const onClick = (event: MouseEvent) => {
+        const href = link.getAttribute("href") || "";
+        const id = href.replace("#", "");
+        const target = document.getElementById(id);
+
+        if (!target || !SECTION_IDS.includes(id)) {
+          return;
+        }
+
+        event.preventDefault();
+        scrollWithDynamicOffset(target);
+        window.history.replaceState(null, "", `#${id}`);
+      };
+
+      link.addEventListener("click", onClick);
+      return () => link.removeEventListener("click", onClick);
+    });
+
+    return () => {
+      unsubs.forEach((unsub) => unsub());
+    };
   }, []);
 
   useEffect(() => {
@@ -250,10 +317,9 @@ export function ProfileCv({
     if (!activeTechs.length) {
       if (previousFilterCount.current > 0) {
         const experienceSection = document.getElementById("experience");
-        experienceSection?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        if (experienceSection) {
+          scrollWithDynamicOffset(experienceSection);
+        }
       }
 
       previousFilterCount.current = 0;
@@ -304,11 +370,7 @@ export function ProfileCv({
         (firstMatch.querySelector(
           '[data-jhead="true"]',
         ) as HTMLElement | null) ?? firstMatch;
-      const targetY =
-        target.getBoundingClientRect().top +
-        window.scrollY -
-        (140 + getFilterBarHeight());
-      window.scrollTo({ top: targetY, behavior: "smooth" });
+      scrollWithDynamicOffset(target, true);
     }
 
     previousFilterCount.current = activeTechs.length;
@@ -377,7 +439,7 @@ export function ProfileCv({
     }
 
     if (!jobCompany) {
-      experienceSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollWithDynamicOffset(experienceSection);
       return;
     }
 
@@ -389,12 +451,7 @@ export function ProfileCv({
       (jobCard?.querySelector('[data-jhead="true"]') as HTMLElement | null) ??
       jobCard ??
       experienceSection;
-    const targetY =
-      target.getBoundingClientRect().top +
-      window.scrollY -
-      (140 + getFilterBarHeight());
-
-    window.scrollTo({ top: targetY, behavior: "smooth" });
+    scrollWithDynamicOffset(target, target !== experienceSection);
   };
 
   const resolveJobCompany = (testimonial: CvData["TESTIMONIALS"][number]) => {

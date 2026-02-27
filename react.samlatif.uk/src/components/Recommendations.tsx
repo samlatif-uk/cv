@@ -7,15 +7,53 @@ const toCompanyKey = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const getFilterBarHeight = () => {
-  const filterBar = document.getElementById("fbar");
-  if (!filterBar || !filterBar.classList.contains("show")) {
+const getElementOuterHeight = (element: Element | null) => {
+  if (!element) {
     return 0;
   }
 
-  const styles = window.getComputedStyle(filterBar);
+  const styles = window.getComputedStyle(element);
+  const marginTop = parseFloat(styles.marginTop) || 0;
   const marginBottom = parseFloat(styles.marginBottom) || 0;
-  return filterBar.offsetHeight + marginBottom;
+  return element.clientHeight + marginTop + marginBottom;
+};
+
+const getStickyNavOffset = () =>
+  getElementOuterHeight(document.querySelector("nav"));
+
+const getSectionAboveContentHeight = (target: HTMLElement) => {
+  const section = target.closest("section");
+  const container = target.closest(".container");
+
+  if (!section || !container || container.parentElement !== section) {
+    return 0;
+  }
+
+  let height = 0;
+  const children = Array.from(container.children);
+
+  for (const child of children) {
+    if (child.contains(target)) {
+      break;
+    }
+
+    height += getElementOuterHeight(child);
+  }
+
+  return height;
+};
+
+const scrollWithDynamicOffset = (
+  target: HTMLElement,
+  includeSectionAboveContent = false,
+) => {
+  const targetY =
+    target.getBoundingClientRect().top +
+    window.scrollY -
+    getStickyNavOffset() -
+    (includeSectionAboveContent ? getSectionAboveContentHeight(target) : 0);
+
+  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
 };
 
 const formatRelationship = (relationship: string, jobCompany?: string) => {
@@ -70,7 +108,7 @@ export const Recommendations = () => {
     }
 
     if (!jobCompany) {
-      experienceSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollWithDynamicOffset(experienceSection);
       return;
     }
 
@@ -82,12 +120,7 @@ export const Recommendations = () => {
       (jobCard?.querySelector(".jhead") as HTMLElement | null) ??
       jobCard ??
       experienceSection;
-    const targetY =
-      target.getBoundingClientRect().top +
-      window.scrollY -
-      (120 + getFilterBarHeight());
-
-    window.scrollTo({ top: targetY, behavior: "smooth" });
+    scrollWithDynamicOffset(target, target !== experienceSection);
   };
 
   return (

@@ -18,6 +18,27 @@ const SECTION_IDS = [
   "education",
 ];
 
+const getElementOuterHeight = (element: Element | null) => {
+  if (!element) {
+    return 0;
+  }
+
+  const styles = window.getComputedStyle(element);
+  const marginTop = parseFloat(styles.marginTop) || 0;
+  const marginBottom = parseFloat(styles.marginBottom) || 0;
+  return element.clientHeight + marginTop + marginBottom;
+};
+
+const getStickyNavOffset = () =>
+  getElementOuterHeight(document.querySelector("nav"));
+
+const scrollWithDynamicOffset = (target: HTMLElement) => {
+  const targetY =
+    target.getBoundingClientRect().top + window.scrollY - getStickyNavOffset();
+
+  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+};
+
 function App() {
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
@@ -27,7 +48,10 @@ function App() {
     const handleScroll = () => {
       const currentSection = SECTION_IDS.reduce((current, id) => {
         const sectionElement = document.getElementById(id);
-        if (sectionElement && window.scrollY >= sectionElement.offsetTop - 80) {
+        if (
+          sectionElement &&
+          window.scrollY >= sectionElement.offsetTop - getStickyNavOffset()
+        ) {
           return id;
         }
 
@@ -41,6 +65,35 @@ function App() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const navLinks = Array.from(
+      document.querySelectorAll('nav a[href^="#"]'),
+    ) as HTMLAnchorElement[];
+
+    const unsubs = navLinks.map((link) => {
+      const onClick = (event: MouseEvent) => {
+        const href = link.getAttribute("href") || "";
+        const id = href.replace("#", "");
+        const target = document.getElementById(id);
+
+        if (!target || !SECTION_IDS.includes(id)) {
+          return;
+        }
+
+        event.preventDefault();
+        scrollWithDynamicOffset(target);
+        window.history.replaceState(null, "", `#${id}`);
+      };
+
+      link.addEventListener("click", onClick);
+      return () => link.removeEventListener("click", onClick);
+    });
+
+    return () => {
+      unsubs.forEach((unsub) => unsub());
+    };
   }, []);
 
   const handleTechClick = (tech: string) => {

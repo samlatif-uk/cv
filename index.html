@@ -88,6 +88,7 @@
             high-performance, scalable web applications for blue-chip clients —
             from Goldman Sachs and Bank of America to Visa and Deutsche Bank.
           </p>
+
           <p>
             An early adopter of React, with deep expertise spanning every major
             version from 0.13 to 18, and a track record of bringing it into
@@ -202,6 +203,27 @@
         <div class="fbar" id="fbar">
           <span>Filtering by:</span>
           <div class="fchips" id="fchips"></div>
+          <div class="fmatch-nav">
+            <button
+              class="fnavbtn"
+              type="button"
+              id="fprev"
+              onclick="scrollToRelativeMatch(-1)"
+            >
+              ↑ Prev match
+            </button>
+            <button
+              class="fnavbtn"
+              type="button"
+              id="fnext"
+              onclick="scrollToRelativeMatch(1)"
+            >
+              ↓ Next match
+            </button>
+            <span class="fmatch-pos" id="fmatchpos" aria-live="polite"
+              >0/0</span
+            >
+          </div>
           <button class="fclear" onclick="clearF()">Clear ×</button>
         </div>
         <div class="tl" id="tl"></div>
@@ -696,9 +718,9 @@
 
       function addTechFilters(techs) {
         activeTechs = Array.from(new Set([...activeTechs, ...techs]));
+        renderJobs();
         renderFilterBar();
         renderSkills();
-        renderJobs();
 
         if (activeTechs.length) {
           scrollToBestMatchingJob();
@@ -781,17 +803,193 @@
               `<button class="fchip" type="button" onclick="filterTech('${t.replace(/'/g, "\\'")}')">${t} ×</button>`,
           )
           .join("");
+
+        const matchCount = getMatchingJobIndexes().length;
+        const canJumpMatches = activeTechs.length > 0 && matchCount > 0;
+
+        ["fprev", "fnext"].forEach((id) => {
+          const button = document.getElementById(id);
+          if (!button) {
+            return;
+          }
+
+          button.disabled = !canJumpMatches;
+        });
+
+        updateMatchPositionLabel();
       }
 
-      function getFilterBarHeight() {
-        const filterBar = document.getElementById("fbar");
-        if (!filterBar || !filterBar.classList.contains("show")) {
+      function getElementOuterHeight(element) {
+        if (!element) {
           return 0;
         }
 
-        const styles = window.getComputedStyle(filterBar);
+        const styles = window.getComputedStyle(element);
+        const marginTop = parseFloat(styles.marginTop) || 0;
         const marginBottom = parseFloat(styles.marginBottom) || 0;
-        return filterBar.offsetHeight + marginBottom;
+        return element.offsetHeight + marginTop + marginBottom;
+      }
+
+      function getStickyNavOffset() {
+        return getElementOuterHeight(document.querySelector("nav"));
+      }
+
+      function getSectionAboveContentHeight(target) {
+        const section = target?.closest("section");
+        const container = target?.closest(".container");
+
+        if (!section || !container || container.parentElement !== section) {
+          return 0;
+        }
+
+        let height = 0;
+        const children = Array.from(container.children);
+
+        for (const child of children) {
+          if (child.contains(target)) {
+            break;
+          }
+          height += getElementOuterHeight(child);
+        }
+
+        return height;
+      }
+
+      function scrollWithDynamicOffset(
+        target,
+        includeSectionAboveContent = false,
+      ) {
+        if (!target) {
+          return;
+        }
+
+        const targetY = getTargetScrollTop(target, includeSectionAboveContent);
+
+        window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+      }
+
+      function getTargetScrollTop(target, includeSectionAboveContent = false) {
+        if (!target) {
+          return 0;
+        }
+
+        return (
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          getStickyNavOffset() -
+          (includeSectionAboveContent
+            ? getSectionAboveContentHeight(target)
+            : 0)
+        );
+      }
+
+      function getMatchedJobTargets() {
+        const allJobs = Array.from(
+          document.querySelectorAll("#experience .job"),
+        );
+
+        return getMatchingJobIndexes()
+          .map((index) => allJobs[index])
+          .filter(Boolean)
+          .map((job) => job.querySelector(".jhead") || job);
+      }
+
+      function getCurrentMatchPosition(targets) {
+        if (!targets.length) {
+          return 0;
+        }
+
+        const positions = targets.map((target) =>
+          getTargetScrollTop(target, true),
+        );
+        const currentY = window.scrollY;
+        const threshold = 6;
+        let currentIndex = positions.findIndex(
+          (position) => position >= currentY - threshold,
+        );
+
+        if (currentIndex === -1) {
+          currentIndex = positions.length - 1;
+        }
+
+        return currentIndex + 1;
+      }
+
+      function updateMatchPositionLabel() {
+        const label = document.getElementById("fmatchpos");
+        if (!label) {
+          return;
+        }
+
+        const targets = getMatchedJobTargets();
+        const total = targets.length;
+
+        if (!activeTechs.length || !total) {
+          label.textContent = "0/0";
+          return;
+        }
+
+        label.textContent = `${getCurrentMatchPosition(targets)}/${total}`;
+      }
+
+      function getMatchingJobIndexes() {
+        if (!activeTechs.length) {
+          return [];
+        }
+
+        return JOBS.reduce((indexes, job, index) => {
+          const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+          const matched = activeTechs.some((activeTech) =>
+            stackWithDefaults.some((stackTech) =>
+              isSkillMatch(activeTech, stackTech),
+            ),
+          );
+
+          if (matched) {
+            indexes.push(index);
+          }
+
+          return indexes;
+        }, []);
+      }
+
+      function scrollToRelativeMatch(direction) {
+        if (!activeTechs.length) {
+          return;
+        }
+
+        const targets = getMatchedJobTargets();
+        if (!targets.length) {
+          return;
+        }
+
+        const currentY = window.scrollY;
+        const threshold = 6;
+        const positions = targets.map((target) =>
+          getTargetScrollTop(target, true),
+        );
+
+        let nextIndex = 0;
+
+        if (direction > 0) {
+          nextIndex = positions.findIndex(
+            (position) => position > currentY + threshold,
+          );
+          if (nextIndex === -1) {
+            nextIndex = 0;
+          }
+        } else {
+          nextIndex = positions.length - 1;
+          for (let index = positions.length - 1; index >= 0; index -= 1) {
+            if (positions[index] < currentY - threshold) {
+              nextIndex = index;
+              break;
+            }
+          }
+        }
+
+        scrollWithDynamicOffset(targets[nextIndex], true);
+        window.setTimeout(updateMatchPositionLabel, 250);
       }
 
       function scrollToBestMatchingJob() {
@@ -838,19 +1036,11 @@
 
         if (firstMatch) {
           const target = firstMatch.querySelector(".jhead") || firstMatch;
-          const targetY =
-            target.getBoundingClientRect().top +
-            window.scrollY -
-            (70 + getFilterBarHeight());
-          window.scrollTo({ top: targetY, behavior: "smooth" });
+          scrollWithDynamicOffset(target, true);
         } else {
           const experience = document.getElementById("experience");
           if (experience) {
-            const targetY =
-              experience.getBoundingClientRect().top +
-              window.scrollY -
-              getFilterBarHeight();
-            window.scrollTo({ top: targetY, behavior: "smooth" });
+            scrollWithDynamicOffset(experience);
           }
         }
       }
@@ -862,7 +1052,7 @@
         }
 
         if (!companyKey) {
-          experience.scrollIntoView({ behavior: "smooth", block: "start" });
+          scrollWithDynamicOffset(experience);
           return;
         }
 
@@ -870,39 +1060,46 @@
           `#experience .job[data-job-company="${companyKey}"]`,
         );
         const target = job?.querySelector(".jhead") || job || experience;
-        const targetY =
-          target.getBoundingClientRect().top +
-          window.scrollY -
-          (70 + getFilterBarHeight());
-
-        window.scrollTo({ top: targetY, behavior: "smooth" });
+        scrollWithDynamicOffset(target, target !== experience);
       }
 
       function filterTech(t) {
         activeTechs = activeTechs.includes(t)
           ? activeTechs.filter((x) => x !== t)
           : [...activeTechs, t];
+        renderJobs();
         renderFilterBar();
         renderSkills();
-        renderJobs();
         if (activeTechs.length) {
           scrollToBestMatchingJob();
         } else {
-          document
-            .getElementById("experience")
-            .scrollIntoView({ behavior: "smooth", block: "start" });
+          scrollWithDynamicOffset(document.getElementById("experience"));
         }
       }
 
       function clearF() {
         activeTechs = [];
+        renderJobs();
         renderFilterBar();
         renderSkills();
-        renderJobs();
-        document
-          .getElementById("experience")
-          .scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollWithDynamicOffset(document.getElementById("experience"));
       }
+
+      document.querySelectorAll('nav a[href^="#"]').forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const href = link.getAttribute("href") || "";
+          const id = href.replace("#", "");
+          const target = document.getElementById(id);
+
+          if (!target) {
+            return;
+          }
+
+          event.preventDefault();
+          scrollWithDynamicOffset(target);
+          window.history.replaceState(null, "", `#${id}`);
+        });
+      });
 
       const SIDS = [
         "overview",
@@ -916,13 +1113,16 @@
         let cur = "";
         SIDS.forEach((id) => {
           const el = document.getElementById(id);
-          if (el && window.scrollY >= el.offsetTop - 80) cur = id;
+          if (el && window.scrollY >= el.offsetTop - getStickyNavOffset()) {
+            cur = id;
+          }
         });
         document
           .querySelectorAll("nav a")
           .forEach((a) =>
             a.classList.toggle("act", a.getAttribute("href") === "#" + cur),
           );
+        updateMatchPositionLabel();
       });
 
       function setActiveSiteLink() {
