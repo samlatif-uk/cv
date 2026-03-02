@@ -1,3 +1,4 @@
+import React from "react";
 import { PROFILE } from "../data/cv";
 
 export const Header = () => {
@@ -37,10 +38,18 @@ export const Header = () => {
           >
             <em>◆</em>React Site
           </a>
-          <a href="https://uk.linkedin.com/in/samlatifuk" target="_blank">
+          <a
+            href="https://uk.linkedin.com/in/samlatifuk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <em>◆</em>LinkedIn
           </a>
-          <a href="https://github.com/samlatif-uk" target="_blank">
+          <a
+            href="https://github.com/samlatif-uk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <em>◆</em>GitHub
           </a>
           <button

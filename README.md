@@ -14,10 +14,11 @@ A minimal personal CV / portfolio website for Sam Latif.
 
 ### Static HTML Version
 
-- To view locally, open `index.html` in your browser or run a simple HTTP server:
+- To run the vanilla site locally using `serve`:
 
   ```bash
-  python3 -m http.server
+  npm install
+  npm run dev
   ```
 
 ### React Version
