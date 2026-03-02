@@ -1,4 +1,3 @@
-import { ConnectionStatus } from "@prisma/client";
 import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -31,18 +30,18 @@ export async function GET(request: Request) {
 
   const [incoming, outgoing, accepted] = await Promise.all([
     prisma.connection.findMany({
-      where: { receiverId: user.id, status: ConnectionStatus.PENDING },
+      where: { receiverId: user.id, status: "PENDING" },
       include: { requester: { select: { username: true, name: true } } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.connection.findMany({
-      where: { requesterId: user.id, status: ConnectionStatus.PENDING },
+      where: { requesterId: user.id, status: "PENDING" },
       include: { receiver: { select: { username: true, name: true } } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.connection.findMany({
       where: {
-        status: ConnectionStatus.ACCEPTED,
+        status: "ACCEPTED",
         OR: [{ requesterId: user.id }, { receiverId: user.id }],
       },
       include: {
@@ -104,7 +103,7 @@ export async function POST(request: Request) {
     data: {
       requesterId: requester.id,
       receiverId: receiver.id,
-      status: ConnectionStatus.PENDING,
+      status: "PENDING",
     },
   });
 

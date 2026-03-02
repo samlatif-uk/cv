@@ -8,7 +8,19 @@ export const dynamic = "force-dynamic";
 export default async function PeoplePage() {
   const currentUsername = await getCurrentUsername();
 
-  const users = await prisma.user.findMany({
+  const users: Array<{
+    id: string;
+    username: string;
+    name: string;
+    headline: string;
+    location: string;
+    bio: string;
+    _count: {
+      posts: number;
+      sentConnections: number;
+      receivedConnections: number;
+    };
+  }> = await prisma.user.findMany({
     where: currentUsername ? { username: { not: currentUsername } } : undefined,
     orderBy: { createdAt: "desc" },
     select: {

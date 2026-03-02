@@ -1,5 +1,6 @@
 import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 type JobInput = {
   co?: string;
@@ -54,7 +55,7 @@ export async function PATCH(
     return Response.json({ error: "Profile not found." }, { status: 404 });
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.cvJob.deleteMany({ where: { userId: profile.id } });
 
     for (const [jobIndex, job] of parsedJobs.entries()) {

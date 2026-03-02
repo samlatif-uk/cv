@@ -32,7 +32,27 @@ export default async function MessagesPage() {
     );
   }
 
-  const [recipients, conversations] = await Promise.all([
+  const [recipients, conversations]: [
+    Array<{ username: string; name: string }>,
+    Array<{
+      id: string;
+      members: Array<{
+        user: {
+          id: string;
+          username: string;
+          name: string;
+        };
+      }>;
+      messages: Array<{
+        id: string;
+        content: string;
+        sender: {
+          username: string;
+          name: string;
+        };
+      }>;
+    }>,
+  ] = await Promise.all([
     prisma.user.findMany({
       where: { username: { not: currentUser.username } },
       select: { username: true, name: true },

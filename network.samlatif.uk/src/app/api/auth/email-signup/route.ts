@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
 import { generateUniqueUsername } from "@/lib/usernames";
+import type { Prisma } from "@prisma/client";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
   const username = await generateUniqueUsername(baseSource);
   const name = rawName || username;
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.create({
       data: {
         email,

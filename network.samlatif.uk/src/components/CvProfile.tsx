@@ -213,6 +213,43 @@ export function ProfileCv({
     return techSet;
   }, [data]);
 
+  const withJobStackDefaults = useCallback(
+    (stack: string[], date: string) => {
+      const startYear = getJobStartYear(date);
+      const normalizedStack = stack.map((skill) =>
+        skill === "JavaScript" ? getJavaScriptVersionedSkill(startYear) : skill,
+      );
+      const stackWithGlobalDefaults = data.GLOBAL_STACK_DEFAULTS.reduce(
+        (nextStack, skill) => {
+          if (!nextStack.includes(skill)) {
+            return [skill, ...nextStack];
+          }
+
+          return nextStack;
+        },
+        normalizedStack,
+      );
+
+      if (startYear === null) {
+        return stackWithGlobalDefaults;
+      }
+
+      return data.DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
+        const aboveMin =
+          rule.minStartYear === undefined || startYear >= rule.minStartYear;
+        const belowMax =
+          rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
+
+        if (aboveMin && belowMax && !nextStack.includes(rule.skill)) {
+          return [rule.skill, ...nextStack];
+        }
+
+        return nextStack;
+      }, stackWithGlobalDefaults);
+    },
+    [data.DATE_BASED_STACK_DEFAULTS, data.GLOBAL_STACK_DEFAULTS],
+  );
+
   const matchingJobIndexes = useMemo(() => {
     if (!activeTechs.length) {
       return [];
@@ -232,7 +269,7 @@ export function ProfileCv({
 
       return indexes;
     }, []);
-  }, [activeTechs, data.JOBS]);
+  }, [activeTechs, data.JOBS, withJobStackDefaults]);
 
   const getMatchedJobTargets = useCallback(() => {
     const allJobs = Array.from(
@@ -378,40 +415,6 @@ export function ProfileCv({
   }, []);
 
   useEffect(() => {
-    const withJobStackDefaults = (stack: string[], date: string) => {
-      const startYear = getJobStartYear(date);
-      const normalizedStack = stack.map((skill) =>
-        skill === "JavaScript" ? getJavaScriptVersionedSkill(startYear) : skill,
-      );
-      const stackWithGlobalDefaults = data.GLOBAL_STACK_DEFAULTS.reduce(
-        (nextStack, skill) => {
-          if (!nextStack.includes(skill)) {
-            return [skill, ...nextStack];
-          }
-
-          return nextStack;
-        },
-        normalizedStack,
-      );
-
-      if (startYear === null) {
-        return stackWithGlobalDefaults;
-      }
-
-      return data.DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
-        const aboveMin =
-          rule.minStartYear === undefined || startYear >= rule.minStartYear;
-        const belowMax =
-          rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
-
-        if (aboveMin && belowMax && !nextStack.includes(rule.skill)) {
-          return [rule.skill, ...nextStack];
-        }
-
-        return nextStack;
-      }, stackWithGlobalDefaults);
-    };
-
     if (!activeTechs.length) {
       if (previousFilterCount.current > 0) {
         const experienceSection = document.getElementById("experience");
@@ -472,10 +475,14 @@ export function ProfileCv({
     }
 
     previousFilterCount.current = activeTechs.length;
-  }, [activeTechs, data]);
+  }, [activeTechs, data.JOBS, withJobStackDefaults]);
 
   useEffect(() => {
-    updateMatchPositionLabel();
+    const frame = window.requestAnimationFrame(() => {
+      updateMatchPositionLabel();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [updateMatchPositionLabel]);
 
   useEffect(() => {
@@ -501,40 +508,6 @@ export function ProfileCv({
 
   const canJumpMatches =
     activeTechs.length > 0 && matchingJobIndexes.length > 0;
-
-  const withJobStackDefaults = (stack: string[], date: string) => {
-    const startYear = getJobStartYear(date);
-    const normalizedStack = stack.map((skill) =>
-      skill === "JavaScript" ? getJavaScriptVersionedSkill(startYear) : skill,
-    );
-    const stackWithGlobalDefaults = data.GLOBAL_STACK_DEFAULTS.reduce(
-      (nextStack, skill) => {
-        if (!nextStack.includes(skill)) {
-          return [skill, ...nextStack];
-        }
-
-        return nextStack;
-      },
-      normalizedStack,
-    );
-
-    if (startYear === null) {
-      return stackWithGlobalDefaults;
-    }
-
-    return data.DATE_BASED_STACK_DEFAULTS.reduce((nextStack, rule) => {
-      const aboveMin =
-        rule.minStartYear === undefined || startYear >= rule.minStartYear;
-      const belowMax =
-        rule.maxStartYear === undefined || startYear <= rule.maxStartYear;
-
-      if (aboveMin && belowMax && !nextStack.includes(rule.skill)) {
-        return [rule.skill, ...nextStack];
-      }
-
-      return nextStack;
-    }, stackWithGlobalDefaults);
-  };
 
   const handleRowClick = (items: string) => {
     const parsedTechs = splitTechItems(items)

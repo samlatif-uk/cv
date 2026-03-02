@@ -55,13 +55,11 @@ export async function PATCH(
     return Response.json({ error: "Profile not found." }, { status: 404 });
   }
 
-  const prismaAny = prisma as any;
-
-  await prismaAny.$transaction([
-    prismaAny.cvOverviewStat.deleteMany({
+  await prisma.$transaction([
+    prisma.cvOverviewStat.deleteMany({
       where: { userId: profile.id },
     }),
-    prismaAny.cvOverviewStat.createMany({
+    prisma.cvOverviewStat.createMany({
       data: parsedStats.map((stat, index) => ({
         userId: profile.id,
         value: stat.value,

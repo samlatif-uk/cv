@@ -31,8 +31,23 @@ export function CreatePostForm({ currentUser }: { currentUser: CurrentUser }) {
       });
 
       if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? "Could not create post.");
+        const raw = await response.text();
+        let errorMessage = "Could not create post.";
+
+        if (raw) {
+          try {
+            const data = JSON.parse(raw) as { error?: string };
+            if (typeof data.error === "string" && data.error.trim()) {
+              errorMessage = data.error;
+            }
+          } catch {
+            if (!raw.trim().startsWith("<")) {
+              errorMessage = raw;
+            }
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       setContent("");

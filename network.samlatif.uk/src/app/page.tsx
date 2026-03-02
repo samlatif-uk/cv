@@ -8,7 +8,19 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const currentUsername = await getCurrentUsername();
 
-  const [currentUser, posts] = await Promise.all([
+  const [currentUser, posts]: [
+    { username: string; name: string } | null,
+    Array<{
+      id: string;
+      content: string;
+      createdAt: Date;
+      author: {
+        username: string;
+        name: string;
+        headline: string;
+      };
+    }>,
+  ] = await Promise.all([
     currentUsername
       ? prisma.user.findUnique({
           where: { username: currentUsername },

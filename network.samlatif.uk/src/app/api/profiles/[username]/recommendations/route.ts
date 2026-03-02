@@ -1,5 +1,6 @@
 import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 type RecommendationInput = {
   by?: string;
@@ -107,7 +108,7 @@ export async function PATCH(
     return Response.json({ error: "Profile not found." }, { status: 404 });
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.recommendation.deleteMany({
       where: { recipientId: profile.id },
     });

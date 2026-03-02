@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import LinkedInProvider from "next-auth/providers/linkedin";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { verifyPassword } from "@/lib/password";
 import { generateUniqueUsername } from "@/lib/usernames";
 
@@ -450,7 +451,7 @@ async function seedJobsIfEmpty(userId: string, jobs: SeedJob[]) {
     } as const;
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     for (const [jobIndex, job] of jobs.entries()) {
       const createdJob = await tx.cvJob.create({
         data: {

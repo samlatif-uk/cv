@@ -1,5 +1,6 @@
 import { getCurrentUsername } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 type EducationInput = {
   degree?: string;
@@ -66,7 +67,7 @@ export async function PATCH(
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.$executeRaw`
         DELETE FROM "CvEducation"
         WHERE "userId" = ${profile.id}
