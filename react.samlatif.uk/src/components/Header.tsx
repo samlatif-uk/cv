@@ -1,4 +1,3 @@
-import React from "react";
 import { PROFILE } from "../data/cv";
 
 export const Header = () => {

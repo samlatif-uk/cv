@@ -47,14 +47,14 @@ const DEFAULT_PROFILE: Profile = {
   avatarUrl: null,
 };
 
-export let PROFILE: Profile = CV_DATA.profile ?? DEFAULT_PROFILE;
-export let TECH_ROWS: TechRow[] = CV_DATA.TECH_ROWS;
-export let SKILLS: Skill[] = CV_DATA.SKILLS;
-export let DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[] =
+export const PROFILE: Profile = CV_DATA.profile ?? DEFAULT_PROFILE;
+export const TECH_ROWS: TechRow[] = CV_DATA.TECH_ROWS;
+export const SKILLS: Skill[] = CV_DATA.SKILLS;
+export const DATE_BASED_STACK_DEFAULTS: DateBasedStackDefault[] =
   CV_DATA.DATE_BASED_STACK_DEFAULTS;
-export let GLOBAL_STACK_DEFAULTS: string[] = CV_DATA.GLOBAL_STACK_DEFAULTS;
-export let TESTIMONIALS: Testimonial[] = CV_DATA.TESTIMONIALS;
-export let JOBS: Job[] = CV_DATA.JOBS;
+export const GLOBAL_STACK_DEFAULTS: string[] = CV_DATA.GLOBAL_STACK_DEFAULTS;
+export const TESTIMONIALS: Testimonial[] = CV_DATA.TESTIMONIALS;
+export const JOBS: Job[] = CV_DATA.JOBS;
 
 export async function loadCvDataFromCraftfolio() {
   return;
