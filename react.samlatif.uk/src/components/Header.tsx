@@ -3,7 +3,11 @@ import { PROFILE } from "../data/cv";
 export const Header = () => {
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "";
-  const activeSite = hostname.startsWith("react.") ? "react" : "vanilla";
+  const activeSite = hostname.startsWith("react.")
+    ? "react"
+    : hostname.startsWith("network.")
+      ? "network"
+      : "vanilla";
 
   const nameParts = PROFILE.name.trim().split(" ");
   const firstName = nameParts.slice(0, -1).join(" ") || PROFILE.name;
@@ -36,6 +40,12 @@ export const Header = () => {
             href="https://react.samlatif.uk"
           >
             <em>◆</em>React Site
+          </a>
+          <a
+            className={`site-link${activeSite === "network" ? " active" : ""}`}
+            href="https://network.samlatif.uk"
+          >
+            <em>◆</em>Network Site
           </a>
           <a
             href="https://uk.linkedin.com/in/samlatifuk"
