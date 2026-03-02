@@ -21,9 +21,6 @@ export const Header = () => {
         </h1>
         <div className="role">{PROFILE.headline}</div>
         <div className="hcontact">
-          <a href="tel:07851885776">
-            <em>◆</em>07851 885 776
-          </a>
           <a href={`mailto:${PROFILE.email}`}>
             <em>◆</em>
             {PROFILE.email}

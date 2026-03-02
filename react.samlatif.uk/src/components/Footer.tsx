@@ -13,8 +13,6 @@ export const Footer = () => {
         <div className="finfo">
           <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
           &nbsp;·&nbsp;
-          <a href="tel:07851885776">07851 885 776</a>
-          &nbsp;·&nbsp;
           <a
             className={`site-link${activeSite === "vanilla" ? " active" : ""}`}
             href="https://samlatif.uk"
