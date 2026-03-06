@@ -931,7 +931,7 @@ export const authOptions: NextAuthOptions = {
         return mutableToken;
       }
 
-      const profile = await prisma.user.findFirst({
+      const userProfile = await prisma.user.findFirst({
         where: mutableToken.appUserId
           ? { id: mutableToken.appUserId }
           : mutableToken.email
@@ -940,9 +940,9 @@ export const authOptions: NextAuthOptions = {
         select: { username: true, name: true },
       });
 
-      if (profile) {
-        mutableToken.username = profile.username;
-        mutableToken.name = profile.name;
+      if (userProfile) {
+        mutableToken.username = userProfile.username;
+        mutableToken.name = userProfile.name;
       }
 
       return mutableToken;
