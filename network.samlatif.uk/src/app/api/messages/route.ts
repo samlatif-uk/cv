@@ -105,17 +105,78 @@ export async function POST(request: Request) {
 
   let conversationId = body.conversationId;
 
-  if (!conversationId) {
-    const conversation = await prisma.conversation.create({ data: {} });
-
-    await prisma.conversationMember.createMany({
-      data: [
-        { conversationId: conversation.id, userId: sender.id },
-        { conversationId: conversation.id, userId: recipient.id },
-      ],
+  if (conversationId) {
+    const existingConversation = await prisma.conversation.findFirst({
+      where: {
+        id: conversationId,
+        members: {
+          some: {
+            userId: sender.id,
+          },
+        },
+      },
+      select: {
+        id: true,
+        members: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
 
-    conversationId = conversation.id;
+    if (!existingConversation) {
+      return Response.json({ error: "Forbidden." }, { status: 403 });
+    }
+
+    const participantIds = new Set(
+      existingConversation.members.map((member) => member.userId),
+    );
+
+    if (!participantIds.has(recipient.id)) {
+      return Response.json(
+        { error: "Recipient is not part of this conversation." },
+        { status: 400 },
+      );
+    }
+  } else {
+    const existingConversation = await prisma.conversation.findFirst({
+      where: {
+        AND: [
+          {
+            members: {
+              some: {
+                userId: sender.id,
+              },
+            },
+          },
+          {
+            members: {
+              some: {
+                userId: recipient.id,
+              },
+            },
+          },
+        ],
+      },
+      select: { id: true },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    if (existingConversation) {
+      conversationId = existingConversation.id;
+    } else {
+      const conversation = await prisma.conversation.create({ data: {} });
+
+      await prisma.conversationMember.createMany({
+        data: [
+          { conversationId: conversation.id, userId: sender.id },
+          { conversationId: conversation.id, userId: recipient.id },
+        ],
+      });
+
+      conversationId = conversation.id;
+    }
   }
 
   const message = await prisma.message.create({

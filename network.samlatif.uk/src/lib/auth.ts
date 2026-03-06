@@ -531,6 +531,27 @@ function getAuthEmail(
   return getOAuthFallbackEmail(provider, providerAccountId);
 }
 
+function isTrustedOAuthEmail(
+  provider?: string | null,
+  userEmail?: string | null,
+  profile?: Record<string, unknown> | null,
+) {
+  if (!provider || provider === "credentials") {
+    return true;
+  }
+
+  const normalizedEmail = userEmail?.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    return false;
+  }
+
+  const emailVerifiedValue =
+    profile?.email_verified ?? profile?.verified_email ?? null;
+
+  return emailVerifiedValue === true;
+}
+
 async function ensureAppUser(
   user: { email?: string | null; name?: string | null },
   account?: {
@@ -747,12 +768,18 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account, profile }) {
+      const normalizedProfile =
+        (profile as Record<string, unknown> | null | undefined) ?? null;
+
+      if (
+        !isTrustedOAuthEmail(account?.provider, user.email, normalizedProfile)
+      ) {
+        return false;
+      }
+
       const linkedInSeed =
         account?.provider === "linkedin"
-          ? getLinkedInProfileSeed(
-              (profile as Record<string, unknown> | null | undefined) ?? null,
-              user,
-            )
+          ? getLinkedInProfileSeed(normalizedProfile, user)
           : undefined;
 
       const persistedUser = await ensureAppUser(user, account, linkedInSeed);
@@ -838,7 +865,7 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
       const sessionUser = user as
         | (typeof user & {
             appUserId?: string;
@@ -849,6 +876,8 @@ export const authOptions: NextAuthOptions = {
         appUserId?: string;
         username?: string;
       };
+      const normalizedProfile =
+        (profile as Record<string, unknown> | null | undefined) ?? null;
 
       if (sessionUser?.appUserId) {
         mutableToken.appUserId = sessionUser.appUserId;
@@ -858,7 +887,17 @@ export const authOptions: NextAuthOptions = {
         mutableToken.username = sessionUser.username;
       }
 
-      if (account) {
+      if (
+        account &&
+        isTrustedOAuthEmail(
+          account.provider,
+          sessionUser?.email ||
+            (typeof mutableToken.email === "string"
+              ? mutableToken.email
+              : null),
+          normalizedProfile,
+        )
+      ) {
         const persistedUser = await ensureAppUser(
           {
             email:

@@ -35,25 +35,17 @@ export async function POST(request: Request) {
     include: { localAuth: true },
   });
 
-  if (existingUser?.localAuth) {
+  if (existingUser) {
     return Response.json(
-      { error: "An account with this email already exists." },
+      {
+        error:
+          "An account with this email already exists. Sign in with the existing method instead.",
+      },
       { status: 409 },
     );
   }
 
   const passwordHash = hashPassword(password);
-
-  if (existingUser) {
-    await prisma.localAuth.create({
-      data: {
-        userId: existingUser.id,
-        passwordHash,
-      },
-    });
-
-    return Response.json({ ok: true }, { status: 201 });
-  }
 
   const baseSource = email.split("@")[0] || rawName || "member";
   const username = await generateUniqueUsername(baseSource);

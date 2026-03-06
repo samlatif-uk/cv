@@ -27,7 +27,7 @@ export default async function RootLayout({
 }>) {
   const currentUsername = await getCurrentUsername();
   const googleEnabled = Boolean(
-    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,  
   );
   const linkedInEnabled = Boolean(
     process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET,
