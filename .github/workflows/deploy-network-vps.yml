@@ -47,6 +47,11 @@ jobs:
         working-directory: network.samlatif.uk
         run: npm run build
 
+      - name: Stage one-off production DB seed
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sync_local_db == 'true' }}
+        working-directory: network.samlatif.uk
+        run: npm run db:stage-prod-seed
+
       - name: Prune to production dependencies
         working-directory: network.samlatif.uk
         run: npm prune --omit=dev
