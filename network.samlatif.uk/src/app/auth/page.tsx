@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AuthFlow } from "@/components/AuthFlow";
 
 export default function AuthPage() {
@@ -17,10 +18,12 @@ export default function AuthPage() {
           Account
         </div>
       </section>
-      <AuthFlow
-        googleEnabled={googleEnabled}
-        linkedInEnabled={linkedInEnabled}
-      />
+      <Suspense>
+        <AuthFlow
+          googleEnabled={googleEnabled}
+          linkedInEnabled={linkedInEnabled}
+        />
+      </Suspense>
     </main>
   );
 }

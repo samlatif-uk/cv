@@ -8,6 +8,8 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const currentUsername = await getCurrentUsername();
 
+  let feedUnavailable = false;
+
   const [currentUser, posts]: [
     { username: string; name: string } | null,
     Array<{
@@ -22,27 +24,39 @@ export default async function Home() {
     }>,
   ] = await Promise.all([
     currentUsername
-      ? prisma.user.findUnique({
-          where: { username: currentUsername },
-          select: {
-            username: true,
-            name: true,
-          },
-        })
+      ? prisma.user
+          .findUnique({
+            where: { username: currentUsername },
+            select: {
+              username: true,
+              name: true,
+            },
+          })
+          .catch((error) => {
+            feedUnavailable = true;
+            console.error("[home] Failed to load current user", error);
+            return null;
+          })
       : Promise.resolve(null),
-    prisma.post.findMany({
-      include: {
-        author: {
-          select: {
-            username: true,
-            name: true,
-            headline: true,
+    prisma.post
+      .findMany({
+        include: {
+          author: {
+            select: {
+              username: true,
+              name: true,
+              headline: true,
+            },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 30,
-    }),
+        orderBy: { createdAt: "desc" },
+        take: 30,
+      })
+      .catch((error) => {
+        feedUnavailable = true;
+        console.error("[home] Failed to load feed", error);
+        return [];
+      }),
   ]);
 
   return (
@@ -77,7 +91,13 @@ export default async function Home() {
       )}
 
       <section className="space-y-3">
-        {posts.length === 0 ? (
+        {feedUnavailable ? (
+          <article className="cv-card rounded-xl p-4">
+            <p className="cv-muted text-sm">
+              Feed temporarily unavailable.
+            </p>
+          </article>
+        ) : posts.length === 0 ? (
           <article className="cv-card rounded-xl p-4">
             <p className="cv-muted text-sm">No posts yet.</p>
           </article>
