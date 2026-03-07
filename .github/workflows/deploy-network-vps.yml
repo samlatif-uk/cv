@@ -8,6 +8,12 @@ on:
       - shared/cv-data.json
       - .github/workflows/deploy-network-vps.yml
   workflow_dispatch:
+    inputs:
+      sync_local_db:
+        description: "One-off: overwrite production SQLite DB with the staged local DB"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: deploy-network-${{ github.ref }}
@@ -117,6 +123,27 @@ jobs:
             -e "ssh -p $PORT" \
             "shared/cv-data.json" \
             "$USER@$HOST:$SHARED_PATH/"
+      - name: One-off sync staged local DB
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sync_local_db == 'true' }}
+        run: |
+          HOST="${{ secrets.VPS_HOST }}"
+          HOST="${HOST:-79.99.45.146}"
+          USER="${{ secrets.VPS_USER }}"
+          USER="${USER:-root}"
+          PORT="${{ secrets.VPS_PORT }}"
+          PORT="${PORT:-22}"
+          DATA_PATH="${{ secrets.NETWORK_VPS_DATA_PATH }}"
+          DATA_PATH="${DATA_PATH:-/var/www/network.samlatif.uk/data}"
+          if [ ! -f "network.samlatif.uk/.next/prisma/dev.db" ]; then
+            echo "Missing staged DB: network.samlatif.uk/.next/prisma/dev.db"
+            echo "Run 'npm run build; npm run db:stage-prod-seed' before triggering this workflow."
+            exit 1
+          fi
+          ssh -p "$PORT" "$USER@$HOST" "set -e; mkdir -p '$DATA_PATH'; if [ -f '$DATA_PATH/dev.db' ]; then cp '$DATA_PATH/dev.db' '$DATA_PATH/dev.db.backup-$(date +%Y%m%d-%H%M%S)'; fi"
+          rsync -az \
+            -e "ssh -p $PORT" \
+            "network.samlatif.uk/.next/prisma/dev.db" \
+            "$USER@$HOST:$DATA_PATH/dev.db"
       - name: Migrate, restart service, and reload nginx
         run: |
           HOST="${{ secrets.VPS_HOST }}"

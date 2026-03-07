@@ -102,3 +102,5 @@ If one provider is missing, only the configured provider button is shown.
 - Production runtime uses `systemd` service `network-samlatif-uk` with Next.js on port `3100`.
 - Nginx reverse proxy serves `https://network.samlatif.uk` and forwards to `127.0.0.1:3100`.
 - Because the VPS is resource-constrained, deployments are done by building locally and syncing `.next` artifacts to the server.
+- To do a one-off production seed from local data, run `npm run db:stage-prod-seed` after `npm run build`, then deploy `.next/prisma/dev.db` with the rest of `.next`.
+- `src/lib/prisma.ts` prefers a real local DB at `prisma/dev.db`, but falls back to the bundled `.next/prisma/dev.db` copy when that is the only deployed database.

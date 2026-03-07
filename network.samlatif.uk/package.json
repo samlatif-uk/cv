@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev --name init",
     "db:seed": "node prisma/seed.mjs",
-    "db:reset": "prisma migrate reset --force && npm run db:seed"
+    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "db:stage-prod-seed": "node scripts/copy-local-sqlite-for-deploy.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.16.0",
