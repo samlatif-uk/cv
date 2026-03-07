@@ -295,6 +295,9 @@ function getJavaScriptVersionedSkill(startYear) {
 const isSkillMatch = (filterSkill, jobSkill) =>
   window.CVFilterUtils.isSkillMatch(filterSkill, jobSkill);
 
+const getSkillMatchStrength = (filterSkill, jobSkill) =>
+  window.CVFilterUtils.getSkillMatchStrength(filterSkill, jobSkill);
+
 function withJobStackDefaults(stack, date) {
   const startYear = getJobStartYear(date);
   const normalizedStack = stack.map((skill) =>
@@ -548,6 +551,76 @@ function updateMatchPositionLabel() {
   label.textContent = `${getCurrentMatchPosition(targets)}/${total}`;
 }
 
+function getBestMatchingJob() {
+  if (!activeTechs.length) {
+    return null;
+  }
+
+  const latestSelectedTech = activeTechs[activeTechs.length - 1];
+  let bestMatchIndex = -1;
+  let bestLatestMatchStrength = -1;
+  let bestMatchCount = -1;
+  let bestTotalMatchStrength = -1;
+
+  JOBS.forEach((job, index) => {
+    const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+    const techMatchStrengths = activeTechs.map((activeTech) =>
+      stackWithDefaults.reduce(
+        (bestStrength, stackTech) =>
+          Math.max(bestStrength, getSkillMatchStrength(activeTech, stackTech)),
+        0,
+      ),
+    );
+    const matchCount = techMatchStrengths.filter(
+      (strength) => strength > 0,
+    ).length;
+
+    if (matchCount === 0) {
+      return;
+    }
+
+    const latestMatchStrength = latestSelectedTech
+      ? stackWithDefaults.reduce(
+          (bestStrength, stackTech) =>
+            Math.max(
+              bestStrength,
+              getSkillMatchStrength(latestSelectedTech, stackTech),
+            ),
+          0,
+        )
+      : 0;
+    const totalMatchStrength = techMatchStrengths.reduce(
+      (sum, strength) => sum + strength,
+      0,
+    );
+
+    const shouldReplaceBest =
+      latestMatchStrength > bestLatestMatchStrength ||
+      (latestMatchStrength === bestLatestMatchStrength &&
+        matchCount > bestMatchCount) ||
+      (latestMatchStrength === bestLatestMatchStrength &&
+        matchCount === bestMatchCount &&
+        totalMatchStrength > bestTotalMatchStrength);
+
+    if (shouldReplaceBest) {
+      bestMatchIndex = index;
+      bestLatestMatchStrength = latestMatchStrength;
+      bestMatchCount = matchCount;
+      bestTotalMatchStrength = totalMatchStrength;
+    }
+  });
+
+  if (bestMatchIndex < 0) {
+    return null;
+  }
+
+  const bestJob = JOBS[bestMatchIndex];
+  return {
+    index: bestMatchIndex,
+    label: `${bestJob.co} · ${bestJob.title}`,
+  };
+}
+
 function getMatchingJobIndexes() {
   if (!activeTechs.length) {
     return [];
@@ -610,43 +683,9 @@ function scrollToBestMatchingJob() {
   const allJobElements = Array.from(
     document.querySelectorAll("#experience .job"),
   );
-  const latestSelectedTech = activeTechs[activeTechs.length - 1];
+  const bestMatch = getBestMatchingJob();
 
-  let bestMatchIndex = -1;
-  let bestMatchCount = -1;
-  let bestHasLatest = false;
-
-  JOBS.forEach((job, index) => {
-    const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-    const matchCount = activeTechs.filter((activeTech) =>
-      stackWithDefaults.some((stackTech) =>
-        isSkillMatch(activeTech, stackTech),
-      ),
-    ).length;
-
-    if (matchCount === 0) {
-      return;
-    }
-
-    const hasLatest = latestSelectedTech
-      ? stackWithDefaults.some((stackTech) =>
-          isSkillMatch(latestSelectedTech, stackTech),
-        )
-      : false;
-
-    const shouldReplaceBest =
-      matchCount > bestMatchCount ||
-      (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
-
-    if (shouldReplaceBest) {
-      bestMatchIndex = index;
-      bestMatchCount = matchCount;
-      bestHasLatest = hasLatest;
-    }
-  });
-
-  const firstMatch =
-    bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
+  const firstMatch = bestMatch ? allJobElements[bestMatch.index] : null;
 
   if (firstMatch) {
     const target = firstMatch.querySelector(".jhead") || firstMatch;

@@ -4,7 +4,7 @@ import {
   GLOBAL_STACK_DEFAULTS,
   JOBS,
 } from "../data/cv";
-import { isSkillMatch } from "../utils/filterUtils";
+import { getSkillMatchStrength, isSkillMatch } from "../utils/filterUtils";
 
 const toCompanyKey = (value: string) =>
   value
@@ -154,6 +154,76 @@ export const Experience = ({
     }, []);
   }, [activeTechs]);
 
+  const bestMatchingJob = useMemo(() => {
+    if (!activeTechs.length) {
+      return null;
+    }
+
+    const latestSelectedTech = activeTechs[activeTechs.length - 1];
+    let bestMatchIndex = -1;
+    let bestLatestMatchStrength = -1;
+    let bestMatchCount = -1;
+    let bestTotalMatchStrength = -1;
+
+    JOBS.forEach((job, index) => {
+      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+      const techMatchStrengths = activeTechs.map((activeTech) =>
+        stackWithDefaults.reduce(
+          (bestStrength, tech) =>
+            Math.max(bestStrength, getSkillMatchStrength(activeTech, tech)),
+          0,
+        ),
+      );
+      const matchCount = techMatchStrengths.filter(
+        (strength) => strength > 0,
+      ).length;
+
+      if (matchCount === 0) {
+        return;
+      }
+
+      const latestMatchStrength = latestSelectedTech
+        ? stackWithDefaults.reduce(
+            (bestStrength, tech) =>
+              Math.max(
+                bestStrength,
+                getSkillMatchStrength(latestSelectedTech, tech),
+              ),
+            0,
+          )
+        : 0;
+      const totalMatchStrength = techMatchStrengths.reduce(
+        (sum, strength) => sum + strength,
+        0,
+      );
+
+      const shouldReplaceBest =
+        latestMatchStrength > bestLatestMatchStrength ||
+        (latestMatchStrength === bestLatestMatchStrength &&
+          matchCount > bestMatchCount) ||
+        (latestMatchStrength === bestLatestMatchStrength &&
+          matchCount === bestMatchCount &&
+          totalMatchStrength > bestTotalMatchStrength);
+
+      if (shouldReplaceBest) {
+        bestMatchIndex = index;
+        bestLatestMatchStrength = latestMatchStrength;
+        bestMatchCount = matchCount;
+        bestTotalMatchStrength = totalMatchStrength;
+      }
+    });
+
+    if (bestMatchIndex < 0) {
+      return null;
+    }
+
+    const bestJob = JOBS[bestMatchIndex];
+    return {
+      index: bestMatchIndex,
+      label: `${bestJob.co} · ${bestJob.title}`,
+    };
+  }, [activeTechs]);
+
   const getMatchedJobTargets = useCallback(() => {
     const allJobs = Array.from(
       document.querySelectorAll("#experience .job"),
@@ -258,41 +328,10 @@ export const Experience = ({
     const allJobElements = Array.from(
       document.querySelectorAll("#experience .job"),
     ) as HTMLElement[];
-    const latestSelectedTech = activeTechs[activeTechs.length - 1];
 
-    let bestMatchIndex = -1;
-    let bestMatchCount = -1;
-    let bestHasLatest = false;
-
-    JOBS.forEach((job, index) => {
-      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-      const matchCount = activeTechs.filter((activeTech) =>
-        stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)),
-      ).length;
-
-      if (matchCount === 0) {
-        return;
-      }
-
-      const hasLatest = latestSelectedTech
-        ? stackWithDefaults.some((tech) =>
-            isSkillMatch(latestSelectedTech, tech),
-          )
-        : false;
-
-      const shouldReplaceBest =
-        matchCount > bestMatchCount ||
-        (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
-
-      if (shouldReplaceBest) {
-        bestMatchIndex = index;
-        bestMatchCount = matchCount;
-        bestHasLatest = hasLatest;
-      }
-    });
-
-    const firstMatch =
-      bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
+    const firstMatch = bestMatchingJob
+      ? allJobElements[bestMatchingJob.index]
+      : null;
 
     if (firstMatch) {
       const target =
@@ -302,7 +341,7 @@ export const Experience = ({
     }
 
     previousFilterCount.current = activeTechs.length;
-  }, [activeTechs]);
+  }, [activeTechs, bestMatchingJob]);
 
   useEffect(() => {
     updateMatchPositionLabel();

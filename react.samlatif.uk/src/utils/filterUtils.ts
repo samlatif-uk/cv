@@ -1,4 +1,5 @@
 export {
+  getSkillMatchStrength,
   isSkillMatch,
   normalizeTechToken,
   splitTechItems,

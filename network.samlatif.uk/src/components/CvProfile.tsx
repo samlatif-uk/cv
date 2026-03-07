@@ -11,6 +11,7 @@ import { RecommendationsEditorForm } from "@/components/RecommendationsEditorFor
 import { SkillsEditorForm } from "@/components/SkillsEditorForm";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
 import {
+  getSkillMatchStrength,
   isSkillMatch,
   normalizeTechToken,
   splitTechItems,
@@ -221,6 +222,76 @@ export function ProfileCv({
     }, []);
   }, [activeTechs, data.JOBS, withJobStackDefaults]);
 
+  const bestMatchingJob = useMemo(() => {
+    if (!activeTechs.length) {
+      return null;
+    }
+
+    const latestSelectedTech = activeTechs[activeTechs.length - 1];
+    let bestMatchIndex = -1;
+    let bestLatestMatchStrength = -1;
+    let bestMatchCount = -1;
+    let bestTotalMatchStrength = -1;
+
+    data.JOBS.forEach((job, index) => {
+      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
+      const techMatchStrengths = activeTechs.map((activeTech) =>
+        stackWithDefaults.reduce(
+          (bestStrength, tech) =>
+            Math.max(bestStrength, getSkillMatchStrength(activeTech, tech)),
+          0,
+        ),
+      );
+      const matchCount = techMatchStrengths.filter(
+        (strength) => strength > 0,
+      ).length;
+
+      if (matchCount === 0) {
+        return;
+      }
+
+      const latestMatchStrength = latestSelectedTech
+        ? stackWithDefaults.reduce(
+            (bestStrength, tech) =>
+              Math.max(
+                bestStrength,
+                getSkillMatchStrength(latestSelectedTech, tech),
+              ),
+            0,
+          )
+        : 0;
+      const totalMatchStrength = techMatchStrengths.reduce(
+        (sum, strength) => sum + strength,
+        0,
+      );
+
+      const shouldReplaceBest =
+        latestMatchStrength > bestLatestMatchStrength ||
+        (latestMatchStrength === bestLatestMatchStrength &&
+          matchCount > bestMatchCount) ||
+        (latestMatchStrength === bestLatestMatchStrength &&
+          matchCount === bestMatchCount &&
+          totalMatchStrength > bestTotalMatchStrength);
+
+      if (shouldReplaceBest) {
+        bestMatchIndex = index;
+        bestLatestMatchStrength = latestMatchStrength;
+        bestMatchCount = matchCount;
+        bestTotalMatchStrength = totalMatchStrength;
+      }
+    });
+
+    if (bestMatchIndex < 0) {
+      return null;
+    }
+
+    const bestJob = data.JOBS[bestMatchIndex];
+    return {
+      index: bestMatchIndex,
+      label: `${bestJob.co} · ${bestJob.title}`,
+    };
+  }, [activeTechs, data.JOBS, withJobStackDefaults]);
+
   const getMatchedJobTargets = useCallback(() => {
     const allJobs = Array.from(
       document.querySelectorAll('[data-job="true"]'),
@@ -380,41 +451,10 @@ export function ProfileCv({
     const allJobElements = Array.from(
       document.querySelectorAll('[data-job="true"]'),
     ) as HTMLElement[];
-    const latestSelectedTech = activeTechs[activeTechs.length - 1];
 
-    let bestMatchIndex = -1;
-    let bestMatchCount = -1;
-    let bestHasLatest = false;
-
-    data.JOBS.forEach((job, index) => {
-      const stackWithDefaults = withJobStackDefaults(job.stack, job.date);
-      const matchCount = activeTechs.filter((activeTech) =>
-        stackWithDefaults.some((tech) => isSkillMatch(activeTech, tech)),
-      ).length;
-
-      if (matchCount === 0) {
-        return;
-      }
-
-      const hasLatest = latestSelectedTech
-        ? stackWithDefaults.some((tech) =>
-            isSkillMatch(latestSelectedTech, tech),
-          )
-        : false;
-
-      const shouldReplaceBest =
-        matchCount > bestMatchCount ||
-        (matchCount === bestMatchCount && hasLatest && !bestHasLatest);
-
-      if (shouldReplaceBest) {
-        bestMatchIndex = index;
-        bestMatchCount = matchCount;
-        bestHasLatest = hasLatest;
-      }
-    });
-
-    const firstMatch =
-      bestMatchIndex >= 0 ? allJobElements[bestMatchIndex] : null;
+    const firstMatch = bestMatchingJob
+      ? allJobElements[bestMatchingJob.index]
+      : null;
 
     if (firstMatch) {
       const target =
@@ -425,7 +465,7 @@ export function ProfileCv({
     }
 
     previousFilterCount.current = activeTechs.length;
-  }, [activeTechs, data.JOBS, withJobStackDefaults]);
+  }, [activeTechs, bestMatchingJob]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {

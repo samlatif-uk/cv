@@ -4,7 +4,7 @@
   const exports = module.exports;
   "use strict";
   Object.defineProperty(exports, "__esModule", { value: true });
-  exports.CVFilterUtils = exports.normalizeTechToken = exports.splitTechItems = exports.isSkillMatch = exports.normalizeSkillValue = void 0;
+  exports.CVFilterUtils = exports.normalizeTechToken = exports.splitTechItems = exports.isSkillMatch = exports.getSkillMatchStrength = exports.normalizeSkillValue = void 0;
   const TECH_TOKEN_ALIASES = {
       "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
       "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
@@ -30,19 +30,30 @@
   const normalizeSkillValue = (skill) => String(skill || "").trim();
   exports.normalizeSkillValue = normalizeSkillValue;
   const normalizeSkillKey = (skill) => (0, exports.normalizeSkillValue)(skill).toLowerCase();
+  const hasSubstringSkillMatch = (filterSkill, jobSkill) => {
+      return jobSkill.includes(filterSkill) || filterSkill.includes(jobSkill);
+  };
   const FUZZY_SKILL_LOOKUP = new Map(FUZZY_SKILL_GROUPS.flatMap((group) => {
       const normalizedGroup = group.map(normalizeSkillKey);
       return normalizedGroup.map((skill) => [skill, normalizedGroup]);
   }));
-  const isSkillMatch = (filterSkill, jobSkill) => {
-      var _a;
+  const getSkillMatchStrength = (filterSkill, jobSkill) => {
       const normalizedFilterSkill = normalizeSkillKey(filterSkill);
       const normalizedJobSkill = normalizeSkillKey(jobSkill);
       if (normalizedFilterSkill === normalizedJobSkill) {
-          return true;
+          return 3;
       }
       const fuzzyMatches = FUZZY_SKILL_LOOKUP.get(normalizedFilterSkill);
-      return (_a = fuzzyMatches === null || fuzzyMatches === void 0 ? void 0 : fuzzyMatches.includes(normalizedJobSkill)) !== null && _a !== void 0 ? _a : false;
+      if (fuzzyMatches === null || fuzzyMatches === void 0 ? void 0 : fuzzyMatches.includes(normalizedJobSkill)) {
+          return 2;
+      }
+      return hasSubstringSkillMatch(normalizedFilterSkill, normalizedJobSkill)
+          ? 1
+          : 0;
+  };
+  exports.getSkillMatchStrength = getSkillMatchStrength;
+  const isSkillMatch = (filterSkill, jobSkill) => {
+      return (0, exports.getSkillMatchStrength)(filterSkill, jobSkill) > 0;
   };
   exports.isSkillMatch = isSkillMatch;
   const splitTechItems = (items) => {
@@ -83,6 +94,7 @@
   };
   exports.normalizeTechToken = normalizeTechToken;
   exports.CVFilterUtils = {
+      getSkillMatchStrength: exports.getSkillMatchStrength,
       normalizeSkillValue: exports.normalizeSkillValue,
       isSkillMatch: exports.isSkillMatch,
       splitTechItems: exports.splitTechItems,

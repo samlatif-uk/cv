@@ -28,6 +28,10 @@ export const normalizeSkillValue = (skill: string) =>
 const normalizeSkillKey = (skill: string) =>
   normalizeSkillValue(skill).toLowerCase();
 
+const hasSubstringSkillMatch = (filterSkill: string, jobSkill: string) => {
+  return jobSkill.includes(filterSkill) || filterSkill.includes(jobSkill);
+};
+
 const FUZZY_SKILL_LOOKUP = new Map(
   FUZZY_SKILL_GROUPS.flatMap((group) => {
     const normalizedGroup = group.map(normalizeSkillKey);
@@ -35,16 +39,29 @@ const FUZZY_SKILL_LOOKUP = new Map(
   }),
 );
 
-export const isSkillMatch = (filterSkill: string, jobSkill: string) => {
+export const getSkillMatchStrength = (
+  filterSkill: string,
+  jobSkill: string,
+) => {
   const normalizedFilterSkill = normalizeSkillKey(filterSkill);
   const normalizedJobSkill = normalizeSkillKey(jobSkill);
 
   if (normalizedFilterSkill === normalizedJobSkill) {
-    return true;
+    return 3;
   }
 
   const fuzzyMatches = FUZZY_SKILL_LOOKUP.get(normalizedFilterSkill);
-  return fuzzyMatches?.includes(normalizedJobSkill) ?? false;
+  if (fuzzyMatches?.includes(normalizedJobSkill)) {
+    return 2;
+  }
+
+  return hasSubstringSkillMatch(normalizedFilterSkill, normalizedJobSkill)
+    ? 1
+    : 0;
+};
+
+export const isSkillMatch = (filterSkill: string, jobSkill: string) => {
+  return getSkillMatchStrength(filterSkill, jobSkill) > 0;
 };
 
 export const splitTechItems = (items: string) => {
@@ -90,6 +107,7 @@ export const normalizeTechToken = (token: string) => {
 };
 
 export const CVFilterUtils = {
+  getSkillMatchStrength,
   normalizeSkillValue,
   isSkillMatch,
   splitTechItems,
