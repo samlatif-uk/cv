@@ -1,63 +1,96 @@
+// Generated from shared/src/filter-utils.ts. Do not edit directly.
 (function (globalScope) {
-  const normalizeSkillValue = (skill) => String(skill || "").trim();
-
-  const isSkillMatch = (filterSkill, jobSkill) => {
-    return normalizeSkillValue(filterSkill) === normalizeSkillValue(jobSkill);
-  };
-
-  const splitTechItems = (items) => {
-    const parts = [];
-    let current = "";
-    let depth = 0;
-
-    for (const char of items) {
-      if (char === "(") {
-        depth += 1;
-        current += char;
-        continue;
-      }
-
-      if (char === ")") {
-        depth = Math.max(0, depth - 1);
-        current += char;
-        continue;
-      }
-
-      if (char === "," && depth === 0) {
-        const token = current.trim();
-        if (token) {
-          parts.push(token);
-        }
-        current = "";
-        continue;
-      }
-
-      current += char;
-    }
-
-    const last = current.trim();
-    if (last) {
-      parts.push(last);
-    }
-
-    return parts;
-  };
-
-  const normalizeTechToken = (token) => {
-    const aliasMap = {
+  const module = { exports: {} };
+  const exports = module.exports;
+  "use strict";
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.CVFilterUtils = exports.normalizeTechToken = exports.splitTechItems = exports.isSkillMatch = exports.normalizeSkillValue = void 0;
+  const TECH_TOKEN_ALIASES = {
       "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
       "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
       "Magento/OSCommerce": ["Magento"],
       "Canvas (FabricJS, PixiJS)": ["Canvas"],
-    };
-
-    return aliasMap[token] || [token];
   };
-
-  globalScope.CVFilterUtils = {
-    normalizeSkillValue,
-    isSkillMatch,
-    splitTechItems,
-    normalizeTechToken,
+  const FUZZY_SKILL_GROUPS = [
+      [
+          "React",
+          "React 0.13/14",
+          "React 0.15",
+          "React 15/16",
+          "React 16",
+          "React 18",
+          "React 19",
+      ],
+      ["CSS", "CSS3", "SASS", "SCSS", "LESS"],
+      ["HTML", "HTML5"],
+      ["JavaScript", "JavaScript (ES5)", "JavaScript (ES6+)"],
+      ["Bootstrap", "Bootstrap 3"],
+      ["Redux Form", "Redux-Form"],
+  ];
+  const normalizeSkillValue = (skill) => String(skill || "").trim();
+  exports.normalizeSkillValue = normalizeSkillValue;
+  const normalizeSkillKey = (skill) => (0, exports.normalizeSkillValue)(skill).toLowerCase();
+  const FUZZY_SKILL_LOOKUP = new Map(FUZZY_SKILL_GROUPS.flatMap((group) => {
+      const normalizedGroup = group.map(normalizeSkillKey);
+      return normalizedGroup.map((skill) => [skill, normalizedGroup]);
+  }));
+  const isSkillMatch = (filterSkill, jobSkill) => {
+      var _a;
+      const normalizedFilterSkill = normalizeSkillKey(filterSkill);
+      const normalizedJobSkill = normalizeSkillKey(jobSkill);
+      if (normalizedFilterSkill === normalizedJobSkill) {
+          return true;
+      }
+      const fuzzyMatches = FUZZY_SKILL_LOOKUP.get(normalizedFilterSkill);
+      return (_a = fuzzyMatches === null || fuzzyMatches === void 0 ? void 0 : fuzzyMatches.includes(normalizedJobSkill)) !== null && _a !== void 0 ? _a : false;
   };
+  exports.isSkillMatch = isSkillMatch;
+  const splitTechItems = (items) => {
+      const parts = [];
+      let current = "";
+      let depth = 0;
+      for (const char of items) {
+          if (char === "(") {
+              depth += 1;
+              current += char;
+              continue;
+          }
+          if (char === ")") {
+              depth = Math.max(0, depth - 1);
+              current += char;
+              continue;
+          }
+          if (char === "," && depth === 0) {
+              const token = current.trim();
+              if (token) {
+                  parts.push(token);
+              }
+              current = "";
+              continue;
+          }
+          current += char;
+      }
+      const last = current.trim();
+      if (last) {
+          parts.push(last);
+      }
+      return parts;
+  };
+  exports.splitTechItems = splitTechItems;
+  const normalizeTechToken = (token) => {
+      var _a;
+      return (_a = TECH_TOKEN_ALIASES[token]) !== null && _a !== void 0 ? _a : [token];
+  };
+  exports.normalizeTechToken = normalizeTechToken;
+  exports.CVFilterUtils = {
+      normalizeSkillValue: exports.normalizeSkillValue,
+      isSkillMatch: exports.isSkillMatch,
+      splitTechItems: exports.splitTechItems,
+      normalizeTechToken: exports.normalizeTechToken,
+  };
+  if (typeof window !== "undefined") {
+      Object.assign(window, { CVFilterUtils: exports.CVFilterUtils });
+  }
+
+  globalScope.CVFilterUtils = module.exports.CVFilterUtils || exports.CVFilterUtils;
 })(typeof window !== "undefined" ? window : globalThis);

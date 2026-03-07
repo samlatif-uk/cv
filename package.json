@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "serve ."
+    "dev": "serve .",
+    "build": "node ./scripts/build-filter-utils.mjs"
   },
   "devDependencies": {
     "serve": "^14.2.5"

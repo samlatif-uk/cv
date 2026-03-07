@@ -10,6 +10,11 @@ import { ProfileEditorForm } from "@/components/ProfileEditorForm";
 import { RecommendationsEditorForm } from "@/components/RecommendationsEditorForm";
 import { SkillsEditorForm } from "@/components/SkillsEditorForm";
 import { TechRowsEditorForm } from "@/components/TechRowsEditorForm";
+import {
+  isSkillMatch,
+  normalizeTechToken,
+  splitTechItems,
+} from "../../../shared/src/filter-utils";
 
 const SECTION_IDS = [
   "overview",
@@ -28,61 +33,6 @@ const getCategoryLabel = (category: Category) => {
   if (category === "ui") return "UI & Design";
   if (category === "cms") return "CMS / Other";
   return category[0].toUpperCase() + category.slice(1);
-};
-
-const normalizeSkillValue = (skill: string) => String(skill || "").trim();
-
-const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  return normalizeSkillValue(filterSkill) === normalizeSkillValue(jobSkill);
-};
-
-const splitTechItems = (items: string) => {
-  const parts: string[] = [];
-  let current = "";
-  let depth = 0;
-
-  for (const char of items) {
-    if (char === "(") {
-      depth += 1;
-      current += char;
-      continue;
-    }
-
-    if (char === ")") {
-      depth = Math.max(0, depth - 1);
-      current += char;
-      continue;
-    }
-
-    if (char === "," && depth === 0) {
-      const token = current.trim();
-      if (token) {
-        parts.push(token);
-      }
-      current = "";
-      continue;
-    }
-
-    current += char;
-  }
-
-  const last = current.trim();
-  if (last) {
-    parts.push(last);
-  }
-
-  return parts;
-};
-
-const normalizeTechToken = (token: string) => {
-  const aliasMap: Record<string, string[]> = {
-    "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
-    "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
-    "Magento/OSCommerce": ["Magento"],
-    "Canvas (FabricJS, PixiJS)": ["Canvas"],
-  };
-
-  return aliasMap[token] ?? [token];
 };
 
 const getJobStartYear = (date: string) => {
