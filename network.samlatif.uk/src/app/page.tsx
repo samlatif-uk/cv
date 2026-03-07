@@ -1,12 +1,12 @@
 import { CreatePostForm } from "@/components/CreatePostForm";
 import Link from "next/link";
-import { getCurrentUsername } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getCurrentUsernameSafe, getPrismaSafe } from "@/lib/runtimeSafe";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const currentUsername = await getCurrentUsername();
+  const currentUsername = await getCurrentUsernameSafe();
+  const prisma = await getPrismaSafe();
 
   let feedUnavailable = false;
 
@@ -23,7 +23,7 @@ export default async function Home() {
       };
     }>,
   ] = await Promise.all([
-    currentUsername
+    currentUsername && prisma
       ? prisma.user
           .findUnique({
             where: { username: currentUsername },
@@ -38,25 +38,27 @@ export default async function Home() {
             return null;
           })
       : Promise.resolve(null),
-    prisma.post
-      .findMany({
-        include: {
-          author: {
-            select: {
-              username: true,
-              name: true,
-              headline: true,
+    prisma
+      ? prisma.post
+          .findMany({
+            include: {
+              author: {
+                select: {
+                  username: true,
+                  name: true,
+                  headline: true,
+                },
+              },
             },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 30,
-      })
-      .catch((error) => {
-        feedUnavailable = true;
-        console.error("[home] Failed to load feed", error);
-        return [];
-      }),
+            orderBy: { createdAt: "desc" },
+            take: 30,
+          })
+          .catch((error) => {
+            feedUnavailable = true;
+            console.error("[home] Failed to load feed", error);
+            return [];
+          })
+      : Promise.resolve(((feedUnavailable = true), [])),
   ]);
 
   return (

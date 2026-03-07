@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppNav } from "@/components/AppNav";
-import { getCurrentUsername } from "@/lib/auth";
+import { getCurrentUsernameSafe } from "@/lib/runtimeSafe";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,9 +25,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const currentUsername = await getCurrentUsername();
+  const currentUsername = await getCurrentUsernameSafe();
   const googleEnabled = Boolean(
-    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,  
+    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
   );
   const linkedInEnabled = Boolean(
     process.env.AUTH_LINKEDIN_ID && process.env.AUTH_LINKEDIN_SECRET,

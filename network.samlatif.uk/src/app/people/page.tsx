@@ -1,14 +1,16 @@
 import { ConnectButton } from "@/components/ConnectButton";
 import Link from "next/link";
-import { getCurrentUsername } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getCurrentUsernameSafe, getPrismaSafe } from "@/lib/runtimeSafe";
 
 export const dynamic = "force-dynamic";
 
 export default async function PeoplePage() {
-  const currentUsername = await getCurrentUsername();
+  const [currentUsername, prisma] = await Promise.all([
+    getCurrentUsernameSafe(),
+    getPrismaSafe(),
+  ]);
 
-  const users: Array<{
+  let users: Array<{
     id: string;
     username: string;
     name: string;
@@ -20,25 +22,40 @@ export default async function PeoplePage() {
       sentConnections: number;
       receivedConnections: number;
     };
-  }> = await prisma.user.findMany({
-    where: currentUsername ? { username: { not: currentUsername } } : undefined,
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      username: true,
-      name: true,
-      headline: true,
-      location: true,
-      bio: true,
-      _count: {
+  }> = [];
+  let peopleUnavailable = false;
+
+  if (prisma) {
+    users = await prisma.user
+      .findMany({
+        where: currentUsername
+          ? { username: { not: currentUsername } }
+          : undefined,
+        orderBy: { createdAt: "desc" },
         select: {
-          posts: true,
-          sentConnections: true,
-          receivedConnections: true,
+          id: true,
+          username: true,
+          name: true,
+          headline: true,
+          location: true,
+          bio: true,
+          _count: {
+            select: {
+              posts: true,
+              sentConnections: true,
+              receivedConnections: true,
+            },
+          },
         },
-      },
-    },
-  });
+      })
+      .catch((error) => {
+        peopleUnavailable = true;
+        console.error("[people] Failed to load people", error);
+        return [];
+      });
+  } else {
+    peopleUnavailable = true;
+  }
 
   return (
     <main className="mx-auto w-full max-w-4xl space-y-6 p-4 md:p-8">
@@ -55,37 +72,48 @@ export default async function PeoplePage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        {users.map((user) => (
-          <article key={user.id} className="cv-card rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <Link
-                  href={`/profiles/${user.username}`}
-                  className="cv-link font-medium"
-                >
-                  {user.name}
-                </Link>
-                <p className="cv-muted text-sm">
-                  <Link href={`/profiles/${user.username}`} className="cv-link">
-                    @{user.username}
-                  </Link>
-                </p>
-              </div>
-              <ConnectButton
-                isAuthenticated={Boolean(currentUsername)}
-                receiverUsername={user.username}
-              />
-            </div>
-            <p className="mt-2 text-sm text-[var(--text-dim)]">
-              {user.headline}
+        {peopleUnavailable ? (
+          <article className="cv-card rounded-xl p-4 md:col-span-2">
+            <p className="cv-muted text-sm">
+              People directory temporarily unavailable.
             </p>
-            <p className="cv-muted mt-1 text-xs">{user.location}</p>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-dim)]">
-              {user.bio}
-            </p>
-            <p className="cv-muted mt-3 text-xs">{user._count.posts} posts</p>
           </article>
-        ))}
+        ) : (
+          users.map((user) => (
+            <article key={user.id} className="cv-card rounded-xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Link
+                    href={`/profiles/${user.username}`}
+                    className="cv-link font-medium"
+                  >
+                    {user.name}
+                  </Link>
+                  <p className="cv-muted text-sm">
+                    <Link
+                      href={`/profiles/${user.username}`}
+                      className="cv-link"
+                    >
+                      @{user.username}
+                    </Link>
+                  </p>
+                </div>
+                <ConnectButton
+                  isAuthenticated={Boolean(currentUsername)}
+                  receiverUsername={user.username}
+                />
+              </div>
+              <p className="mt-2 text-sm text-[var(--text-dim)]">
+                {user.headline}
+              </p>
+              <p className="cv-muted mt-1 text-xs">{user.location}</p>
+              <p className="mt-3 text-sm leading-6 text-[var(--text-dim)]">
+                {user.bio}
+              </p>
+              <p className="cv-muted mt-3 text-xs">{user._count.posts} posts</p>
+            </article>
+          ))
+        )}
       </section>
     </main>
   );

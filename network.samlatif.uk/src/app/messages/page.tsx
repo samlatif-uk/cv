@@ -1,10 +1,12 @@
 import { MessageComposer } from "@/components/MessageComposer";
 import Link from "next/link";
-import { getCurrentUsername } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getCurrentUsernameSafe, getPrismaSafe } from "@/lib/runtimeSafe";
 
 export default async function MessagesPage() {
-  const currentUsername = await getCurrentUsername();
+  const [currentUsername, prisma] = await Promise.all([
+    getCurrentUsernameSafe(),
+    getPrismaSafe(),
+  ]);
 
   if (!currentUsername) {
     return (
@@ -14,6 +16,16 @@ export default async function MessagesPage() {
             Log in
           </Link>{" "}
           to view messages.
+        </p>
+      </main>
+    );
+  }
+
+  if (!prisma) {
+    return (
+      <main className="mx-auto w-full max-w-4xl p-4 md:p-8">
+        <p className="cv-subtitle text-sm">
+          Messaging is temporarily unavailable.
         </p>
       </main>
     );

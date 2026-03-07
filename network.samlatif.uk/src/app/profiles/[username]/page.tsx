@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProfileCv } from "@/components/CvProfile";
-import { getCurrentUsername } from "@/lib/auth";
-import { getCvProfilePayload } from "@/lib/cvProfileData";
+import { getCurrentUsernameSafe } from "@/lib/runtimeSafe";
+import { getFallbackCvProfilePayload } from "@/lib/fallbackCvProfile";
 
 export default async function ProfilePage({
   params,
@@ -11,8 +11,13 @@ export default async function ProfilePage({
   const { username } = await params;
 
   const [payload, currentUsername] = await Promise.all([
-    getCvProfilePayload(username),
-    getCurrentUsername(),
+    import("@/lib/cvProfileData")
+      .then(({ getCvProfilePayload }) => getCvProfilePayload(username))
+      .catch((error) => {
+        console.error("[profile] Failed to load DB profile payload", error);
+        return getFallbackCvProfilePayload(username);
+      }),
+    getCurrentUsernameSafe(),
   ]);
 
   if (!payload) {
