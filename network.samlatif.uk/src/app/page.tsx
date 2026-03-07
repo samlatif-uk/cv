@@ -93,9 +93,7 @@ export default async function Home() {
       <section className="space-y-3">
         {feedUnavailable ? (
           <article className="cv-card rounded-xl p-4">
-            <p className="cv-muted text-sm">
-              Feed temporarily unavailable.
-            </p>
+            <p className="cv-muted text-sm">Feed temporarily unavailable.</p>
           </article>
         ) : posts.length === 0 ? (
           <article className="cv-card rounded-xl p-4">

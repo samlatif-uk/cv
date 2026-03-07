@@ -967,7 +967,9 @@ export const authOptions: NextAuthOptions = {
 export async function getCurrentUsername() {
   try {
     const session = await getServerSession(authOptions);
-    return (session?.user as { username?: string } | undefined)?.username ?? null;
+    return (
+      (session?.user as { username?: string } | undefined)?.username ?? null
+    );
   } catch (error) {
     console.error("[auth] Failed to resolve current username", error);
     return null;
