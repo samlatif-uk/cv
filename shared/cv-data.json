@@ -480,7 +480,7 @@
       "maxStartYear": 2014
     }
   ],
-  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS3", "Git"],
+  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS3"],
   "TESTIMONIALS": [
     {
       "by": "Mark Hollands",
@@ -580,6 +580,9 @@
         "React 19",
         "TypeScript",
         "GraphQL",
+        "Git",
+        "Node.js",
+        "RESTful APIs",
         "Material-UI",
         "Jest",
         "React Testing Library"
@@ -596,11 +599,14 @@
         "Implemented state management using TRPC and React Query, optimising data flow and performance"
       ],
       "stack": [
+        "Git",
         "Next.js",
         "React 18",
+        "TypeScript",
         "TRPC",
         "Mantine UI",
         "React Query",
+        "Figma",
         "React Testing Library",
         "Jest"
       ]
@@ -620,8 +626,11 @@
         "ReactGrid",
         "TypeScript",
         "Redux",
+        "Redux Toolkit",
+        "Reselect",
         "Jest",
-        "React Testing Library"
+        "React Testing Library",
+        "Git"
       ]
     },
     {
@@ -640,8 +649,11 @@
         "Chakra UI",
         "react-router-dom",
         "react-spring",
+        "Figma",
+        "CSS Modules",
         "React Testing Library",
-        "Jest"
+        "Jest",
+        "Git"
       ]
     },
     {
@@ -656,12 +668,14 @@
       ],
       "stack": [
         "React",
+        "TypeScript",
         "react-router-dom",
         "styled-components",
         "Zustand",
         "GSAP",
         "React Testing Library",
-        "Jest"
+        "Jest",
+        "Git"
       ]
     },
     {
@@ -676,12 +690,15 @@
       ],
       "stack": [
         "React",
+        "TypeScript",
         "Chakra UI",
         "react-router-dom",
         "Formik",
         "Yup",
+        "Figma",
         "React Testing Library",
-        "Jest"
+        "Jest",
+        "Git"
       ]
     },
     {
@@ -697,11 +714,14 @@
       "stack": [
         "TypeScript",
         "React",
+        "AngularJS",
         "Redux",
         "Redux Toolkit",
         "styled-components",
+        "CSS Modules",
         "Jest",
-        "React Testing Library"
+        "React Testing Library",
+        "Git"
       ]
     },
     {
@@ -712,8 +732,10 @@
       "bullets": [],
       "stack": [
         "React",
+        "TypeScript",
         "SCSS",
         "Formik",
+        "Yup",
         "Reach Router",
         "React Testing Library",
         "Jest"
@@ -732,7 +754,9 @@
         "TypeScript",
         "GraphQL",
         "Apollo Client",
+        "React Router",
         "Material-UI",
+        "Webpack",
         "Jest",
         "React Testing Library"
       ]
@@ -748,13 +772,16 @@
       ],
       "stack": [
         "React 16",
+        "TypeScript",
         "Storybook",
         "React Testing Library",
         "Jest",
         "Ag-grid",
         "Highcharts",
         "LESS",
-        "CSS Modules"
+        "Webpack",
+        "CSS Modules",
+        "Git"
       ]
     },
     {
@@ -770,14 +797,17 @@
         "React 15/16",
         "TypeScript",
         "GraphQL",
+        "Apollo Client",
         "Redux",
         "Redux-Form",
+        "React Router",
         "SCSS",
         "Webpack",
         "Babel",
         "React Testing Library",
         "Enzyme",
-        "Mocha"
+        "Mocha",
+        "Git"
       ]
     },
     {
@@ -788,7 +818,18 @@
       "bullets": [
         "Built startupgarage.fb.com in 10 days — both English and French versions, fully responsive"
       ],
-      "stack": ["WordPress", "HTML", "jQuery", "SCSS", "Rollup", "Bootstrap 3"]
+      "stack": [
+        "WordPress",
+        "HTML",
+        "HTML5",
+        "CSS3",
+        "jQuery",
+        "SCSS",
+        "Rollup",
+        "Bootstrap 3",
+        "JavaScript (ES6+)",
+        "Git"
+      ]
     },
     {
       "co": "Goldman Sachs",
@@ -808,11 +849,14 @@
         "Redux-Saga",
         "Reselect",
         "Redux Form",
+        "React Router",
         "Material-UI",
+        "Highcharts",
         "Webpack",
         "Karma",
         "Mocha",
-        "Enzyme"
+        "Enzyme",
+        "Git"
       ]
     },
     {
@@ -821,7 +865,7 @@
       "title": "Contract React Native Developer",
       "desc": "Built a cross-platform iOS and Android app (\"Carillion Pulse\") using React Native, replacing a bug-ridden legacy version.",
       "bullets": [],
-      "stack": ["React Native", "Ignite"]
+      "stack": ["React Native", "React", "Redux", "Jest", "Ignite", "Git"]
     },
     {
       "co": "Future Platforms",
@@ -840,8 +884,11 @@
         "Webpack",
         "SASS",
         "PostCSS",
+        "HTML5",
+        "CSS3",
         "jQuery",
-        "Azure/.NET"
+        "Azure/.NET",
+        "Git"
       ]
     },
     {
@@ -854,9 +901,12 @@
         "React 0.13/14",
         "Redux",
         "Node.js",
+        "JavaScript (ES6+)",
+        "SCSS",
         "Webpack",
         "Babel",
-        "React Router"
+        "React Router",
+        "Git"
       ]
     },
     {
@@ -874,12 +924,15 @@
         "Three.js",
         "D3.js",
         "Canvas",
+        "HTML5 Canvas",
         "React",
         "AngularJS",
         "Meteor",
         "MongoDB",
         "Node.js",
-        "SCSS"
+        "HTML5",
+        "SCSS",
+        "Git"
       ]
     },
     {
@@ -888,7 +941,7 @@
       "title": "Contract Creative Technologist",
       "desc": "Developed rapid prototypes from UX research through to Axure/Balsamiq and Sketch to InVision.",
       "bullets": [],
-      "stack": ["Axure", "Balsamiq", "Sketch", "InVision"]
+      "stack": ["Axure", "Balsamiq", "Sketch", "InVision", "HTML5", "CSS3"]
     },
     {
       "co": "CACI / Chelsea FC",
@@ -901,8 +954,10 @@
       ],
       "stack": [
         "HTML5",
+        "HTML",
         "CSS",
         "jQuery",
+        "JavaScript (ES5)",
         "Adobe CQ5",
         "Java Spring MVC",
         "Gigya"
@@ -914,7 +969,15 @@
       "title": "Contract JavaScript Developer",
       "desc": "Integrated front-end WordPress HTML templates to a CakePHP-driven backend using a bespoke JS MVC framework.",
       "bullets": [],
-      "stack": ["JavaScript (ES5)", "jQuery", "WordPress", "CakePHP", "PHP"]
+      "stack": [
+        "JavaScript (ES5)",
+        "HTML5",
+        "SCSS",
+        "jQuery",
+        "WordPress",
+        "CakePHP",
+        "PHP"
+      ]
     },
     {
       "co": "Paper",
@@ -922,7 +985,15 @@
       "title": "Contract Frontend Developer",
       "desc": "Front-end work for a high-profile project for Macmillan Cancer Support on a .NET/Umbraco stack.",
       "bullets": ["Focused on highly modular and reusable design patterns"],
-      "stack": ["HTML5", "SCSS", "jQuery", "Umbraco"]
+      "stack": [
+        "HTML5",
+        "CSS3",
+        "JavaScript (ES5)",
+        "SCSS",
+        "jQuery",
+        "Umbraco",
+        "Git"
+      ]
     },
     {
       "co": "RehabStudio",
@@ -930,7 +1001,14 @@
       "title": "Contract Frontend Developer",
       "desc": "Short-term engagement with a leading creative tech team on a project for Google.",
       "bullets": [],
-      "stack": ["Node.js", "Three.js", "HTML5 Canvas", "JavaScript (ES5)"]
+      "stack": [
+        "Node.js",
+        "Three.js",
+        "HTML5",
+        "CSS3",
+        "HTML5 Canvas",
+        "JavaScript (ES5)"
+      ]
     },
     {
       "co": "Quill Content",
@@ -944,10 +1022,13 @@
       "stack": [
         "Ruby on Rails",
         "HAML",
+        "HTML5",
+        "CSS3",
         "SCSS",
         "CoffeeScript",
         "jQuery",
-        "D3.js"
+        "D3.js",
+        "Git"
       ]
     },
     {
@@ -956,7 +1037,15 @@
       "title": "Contract Frontend Developer",
       "desc": "Delivered a responsive microsite (Millionaire Quiz) for The Sunday Times – The Rich List 2014.",
       "bullets": [],
-      "stack": ["Node.js", "AngularJS", "HTML5", "SASS", "JavaScript (ES5)"]
+      "stack": [
+        "Node.js",
+        "AngularJS",
+        "HTML5",
+        "CSS3",
+        "SASS",
+        "Bootstrap",
+        "JavaScript (ES5)"
+      ]
     },
     {
       "co": "Fox Parrack Singapour",
@@ -967,7 +1056,15 @@
         "Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables",
         "HTML5 Video full-page background changing by time of day"
       ],
-      "stack": ["HTML5", "SASS", "JavaScript (ES5)", "jQuery"]
+      "stack": [
+        "HTML5",
+        "CSS3",
+        "CSS",
+        "SASS",
+        "JavaScript (ES5)",
+        "jQuery",
+        "Git"
+      ]
     },
     {
       "co": "Redbox Digital",
@@ -984,8 +1081,11 @@
         "MySQL",
         "HTML5",
         "CSS",
+        "SCSS",
+        "JavaScript (ES5)",
         "jQuery",
-        "Google Maps API"
+        "Google Maps API",
+        "Git"
       ]
     },
     {
@@ -997,7 +1097,15 @@
         "Rewrote significant portions of the inherited codebase for long-term maintainability",
         "New features prototyped from hand-drawn wireframes to working code within a day"
       ],
-      "stack": ["PHP (Zend)", "Bootstrap", "HTML5", "CSS3", "jQuery"]
+      "stack": [
+        "PHP (Zend)",
+        "Bootstrap",
+        "HTML5",
+        "CSS3",
+        "JavaScript (ES5)",
+        "Git",
+        "jQuery"
+      ]
     },
     {
       "co": "HeathWallace / HSBC",
@@ -1008,7 +1116,7 @@
         "Parsed large dataset and updated the site using CakePHP/MySQL",
         "Wrote unit tests for each criterion dataset, matched against raw YouGov data"
       ],
-      "stack": ["PHP", "MySQL", "CakePHP"]
+      "stack": ["PHP", "MySQL", "CakePHP", "HTML5", "jQuery", "Git"]
     },
     {
       "co": "Vaultigo",
@@ -1016,7 +1124,17 @@
       "title": "Contract Frontend Developer",
       "desc": "Built on a LAMP/Symfony2 stack. Spearheaded adoption of HAML/SCSS for maintainable, modular code.",
       "bullets": [],
-      "stack": ["PHP", "Symfony2", "HAML", "SCSS", "jQuery", "Highcharts"]
+      "stack": [
+        "PHP",
+        "Symfony2",
+        "MySQL",
+        "HAML",
+        "HTML5",
+        "SCSS",
+        "jQuery",
+        "Highcharts",
+        "Git"
+      ]
     },
     {
       "co": "Goldsmiths, University of London",
@@ -1026,7 +1144,7 @@
       "bullets": [
         "Communicated technical concepts to a diverse group in an accessible, clear manner"
       ],
-      "stack": []
+      "stack": ["HTML5", "CSS", "JavaScript (ES5)", "Git", "SVN"]
     }
   ]
 }
