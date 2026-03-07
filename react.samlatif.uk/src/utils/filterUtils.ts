@@ -1,14 +1,21 @@
-const normalizeSkillValueFallback = (skill: string) =>
-  String(skill || "").trim();
+const SKILL_TOKEN_SEPARATOR = /[/|]/;
 
-const splitSkillTokens = (skill: string) => {
-  return normalizeSkillValueFallback(skill)
-    .split(/[/|]/)
-    .map((token) => token.trim())
-    .filter(Boolean);
+const TECH_TOKEN_ALIASES: Record<string, string[]> = {
+  "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
+  "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
+  "Magento/OSCommerce": ["Magento"],
+  "Canvas (FabricJS, PixiJS)": ["Canvas"],
 };
 
-const isSkillMatchFallback = (filterSkill: string, jobSkill: string) => {
+const normalizeSkillValue = (skill: string) => String(skill || "").trim();
+
+const splitSkillTokens = (skill: string) =>
+  normalizeSkillValue(skill)
+    .split(SKILL_TOKEN_SEPARATOR)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+export const isSkillMatch = (filterSkill: string, jobSkill: string) => {
   const filterTokens = splitSkillTokens(filterSkill);
   const jobTokens = splitSkillTokens(jobSkill);
 
@@ -19,7 +26,7 @@ const isSkillMatchFallback = (filterSkill: string, jobSkill: string) => {
   );
 };
 
-const splitTechItemsFallback = (items: string) => {
+export const splitTechItems = (items: string) => {
   const parts: string[] = [];
   let current = "";
   let depth = 0;
@@ -57,25 +64,6 @@ const splitTechItemsFallback = (items: string) => {
   return parts;
 };
 
-const normalizeTechTokenFallback = (token: string) => {
-  const aliasMap: Record<string, string[]> = {
-    "JS (OOP, Functional, FRP)": ["JavaScript (ES5)", "JavaScript (ES6+)"],
-    "CSS / SCSS / SASS / LESS": ["CSS3 / SCSS / LESS"],
-    "Magento/OSCommerce": ["Magento"],
-    "Canvas (FabricJS, PixiJS)": ["Canvas"],
-  };
-
-  return aliasMap[token] ?? [token];
-};
-
-export const isSkillMatch = (filterSkill: string, jobSkill: string) => {
-  return isSkillMatchFallback(filterSkill, jobSkill);
-};
-
-export const splitTechItems = (items: string) => {
-  return splitTechItemsFallback(items);
-};
-
 export const normalizeTechToken = (token: string) => {
-  return normalizeTechTokenFallback(token);
+  return TECH_TOKEN_ALIASES[token] ?? [token];
 };

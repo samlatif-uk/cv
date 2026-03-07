@@ -17,7 +17,7 @@
     },
     {
       "cat": "Testing",
-      "items": "React Testing Library, Cypress, Jest, Enzyme, Mocha, Karma, Istanbul",
+      "items": "React Testing Library, Cypress, Jest, Enzyme, Mocha, Karma, Jasmine, PHPUnit, RSpec, Detox, Istanbul",
       "yrs": "13+"
     },
     {
@@ -294,6 +294,22 @@
       "c": "testing"
     },
     {
+      "n": "Jasmine",
+      "c": "testing"
+    },
+    {
+      "n": "PHPUnit",
+      "c": "testing"
+    },
+    {
+      "n": "RSpec",
+      "c": "testing"
+    },
+    {
+      "n": "Detox",
+      "c": "testing"
+    },
+    {
       "n": "Figma",
       "c": "ui"
     },
@@ -480,7 +496,7 @@
       "maxStartYear": 2014
     }
   ],
-  "GLOBAL_STACK_DEFAULTS": ["HTML5", "CSS3"],
+  "GLOBAL_STACK_DEFAULTS": ["Git", "CSS3", "HTML5"],
   "TESTIMONIALS": [
     {
       "by": "Mark Hollands",
@@ -580,10 +596,10 @@
         "React 19",
         "TypeScript",
         "GraphQL",
-        "Git",
         "Node.js",
         "RESTful APIs",
         "Material-UI",
+        "Cypress",
         "Jest",
         "React Testing Library"
       ]
@@ -599,7 +615,6 @@
         "Implemented state management using TRPC and React Query, optimising data flow and performance"
       ],
       "stack": [
-        "Git",
         "Next.js",
         "React 18",
         "TypeScript",
@@ -607,6 +622,7 @@
         "Mantine UI",
         "React Query",
         "Figma",
+        "Cypress",
         "React Testing Library",
         "Jest"
       ]
@@ -628,9 +644,9 @@
         "Redux",
         "Redux Toolkit",
         "Reselect",
+        "Cypress",
         "Jest",
-        "React Testing Library",
-        "Git"
+        "React Testing Library"
       ]
     },
     {
@@ -651,9 +667,9 @@
         "react-spring",
         "Figma",
         "CSS Modules",
+        "Cypress",
         "React Testing Library",
-        "Jest",
-        "Git"
+        "Jest"
       ]
     },
     {
@@ -673,9 +689,9 @@
         "styled-components",
         "Zustand",
         "GSAP",
+        "Cypress",
         "React Testing Library",
-        "Jest",
-        "Git"
+        "Jest"
       ]
     },
     {
@@ -696,9 +712,9 @@
         "Formik",
         "Yup",
         "Figma",
+        "Cypress",
         "React Testing Library",
-        "Jest",
-        "Git"
+        "Jest"
       ]
     },
     {
@@ -719,9 +735,9 @@
         "Redux Toolkit",
         "styled-components",
         "CSS Modules",
+        "Cypress",
         "Jest",
-        "React Testing Library",
-        "Git"
+        "React Testing Library"
       ]
     },
     {
@@ -737,6 +753,7 @@
         "Formik",
         "Yup",
         "Reach Router",
+        "Cypress",
         "React Testing Library",
         "Jest"
       ]
@@ -757,6 +774,7 @@
         "React Router",
         "Material-UI",
         "Webpack",
+        "Cypress",
         "Jest",
         "React Testing Library"
       ]
@@ -774,14 +792,15 @@
         "React 16",
         "TypeScript",
         "Storybook",
+        "Cypress",
         "React Testing Library",
         "Jest",
+        "Enzyme",
         "Ag-grid",
         "Highcharts",
         "LESS",
         "Webpack",
-        "CSS Modules",
-        "Git"
+        "CSS Modules"
       ]
     },
     {
@@ -807,7 +826,7 @@
         "React Testing Library",
         "Enzyme",
         "Mocha",
-        "Git"
+        "Karma"
       ]
     },
     {
@@ -821,14 +840,12 @@
       "stack": [
         "WordPress",
         "HTML",
-        "HTML5",
-        "CSS3",
         "jQuery",
         "SCSS",
         "Rollup",
         "Bootstrap 3",
         "JavaScript (ES6+)",
-        "Git"
+        "Cypress"
       ]
     },
     {
@@ -842,8 +859,6 @@
         "Platform supported the full trading lifecycle: idea generation, price discovery, primary/secondary trading"
       ],
       "stack": [
-        "HTML5",
-        "CSS3",
         "React",
         "Redux",
         "Redux-Saga",
@@ -853,10 +868,10 @@
         "Material-UI",
         "Highcharts",
         "Webpack",
+        "Cypress",
         "Karma",
         "Mocha",
-        "Enzyme",
-        "Git"
+        "Enzyme"
       ]
     },
     {
@@ -865,7 +880,15 @@
       "title": "Contract React Native Developer",
       "desc": "Built a cross-platform iOS and Android app (\"Carillion Pulse\") using React Native, replacing a bug-ridden legacy version.",
       "bullets": [],
-      "stack": ["React Native", "React", "Redux", "Jest", "Ignite", "Git"]
+      "stack": [
+        "React Native",
+        "React",
+        "Redux",
+        "Jest",
+        "Enzyme",
+        "Detox",
+        "Ignite"
+      ]
     },
     {
       "co": "Future Platforms",
@@ -884,11 +907,10 @@
         "Webpack",
         "SASS",
         "PostCSS",
-        "HTML5",
-        "CSS3",
         "jQuery",
-        "Azure/.NET",
-        "Git"
+        "Jest",
+        "Enzyme",
+        "Azure/.NET"
       ]
     },
     {
@@ -906,7 +928,8 @@
         "Webpack",
         "Babel",
         "React Router",
-        "Git"
+        "Mocha",
+        "Karma"
       ]
     },
     {
@@ -932,7 +955,8 @@
         "Node.js",
         "HTML5",
         "SCSS",
-        "Git"
+        "Mocha",
+        "Karma"
       ]
     },
     {
@@ -941,7 +965,7 @@
       "title": "Contract Creative Technologist",
       "desc": "Developed rapid prototypes from UX research through to Axure/Balsamiq and Sketch to InVision.",
       "bullets": [],
-      "stack": ["Axure", "Balsamiq", "Sketch", "InVision", "HTML5", "CSS3"]
+      "stack": ["Axure", "Balsamiq", "Sketch", "InVision", "Cypress"]
     },
     {
       "co": "CACI / Chelsea FC",
@@ -953,14 +977,13 @@
         "Implemented social and gamification integration via Gigya"
       ],
       "stack": [
-        "HTML5",
-        "HTML",
-        "CSS",
         "jQuery",
         "JavaScript (ES5)",
         "Adobe CQ5",
         "Java Spring MVC",
-        "Gigya"
+        "Gigya",
+        "Jasmine",
+        "Karma"
       ]
     },
     {
@@ -971,12 +994,13 @@
       "bullets": [],
       "stack": [
         "JavaScript (ES5)",
-        "HTML5",
         "SCSS",
         "jQuery",
         "WordPress",
         "CakePHP",
-        "PHP"
+        "PHP",
+        "Jasmine",
+        "Karma"
       ]
     },
     {
@@ -985,15 +1009,7 @@
       "title": "Contract Frontend Developer",
       "desc": "Front-end work for a high-profile project for Macmillan Cancer Support on a .NET/Umbraco stack.",
       "bullets": ["Focused on highly modular and reusable design patterns"],
-      "stack": [
-        "HTML5",
-        "CSS3",
-        "JavaScript (ES5)",
-        "SCSS",
-        "jQuery",
-        "Umbraco",
-        "Git"
-      ]
+      "stack": ["JavaScript (ES5)", "SCSS", "jQuery", "Umbraco", "Jasmine"]
     },
     {
       "co": "RehabStudio",
@@ -1004,10 +1020,9 @@
       "stack": [
         "Node.js",
         "Three.js",
-        "HTML5",
-        "CSS3",
         "HTML5 Canvas",
-        "JavaScript (ES5)"
+        "JavaScript (ES5)",
+        "Mocha"
       ]
     },
     {
@@ -1022,13 +1037,11 @@
       "stack": [
         "Ruby on Rails",
         "HAML",
-        "HTML5",
-        "CSS3",
         "SCSS",
         "CoffeeScript",
         "jQuery",
         "D3.js",
-        "Git"
+        "RSpec"
       ]
     },
     {
@@ -1040,11 +1053,11 @@
       "stack": [
         "Node.js",
         "AngularJS",
-        "HTML5",
-        "CSS3",
         "SASS",
         "Bootstrap",
-        "JavaScript (ES5)"
+        "JavaScript (ES5)",
+        "Jasmine",
+        "Karma"
       ]
     },
     {
@@ -1056,15 +1069,7 @@
         "Three distinct visual schemes (morning/afternoon/evening) driven by SCSS variables",
         "HTML5 Video full-page background changing by time of day"
       ],
-      "stack": [
-        "HTML5",
-        "CSS3",
-        "CSS",
-        "SASS",
-        "JavaScript (ES5)",
-        "jQuery",
-        "Git"
-      ]
+      "stack": ["CSS", "SASS", "JavaScript (ES5)", "jQuery", "Jasmine"]
     },
     {
       "co": "Redbox Digital",
@@ -1085,7 +1090,8 @@
         "JavaScript (ES5)",
         "jQuery",
         "Google Maps API",
-        "Git"
+        "PHPUnit",
+        "Jasmine"
       ]
     },
     {
@@ -1100,11 +1106,11 @@
       "stack": [
         "PHP (Zend)",
         "Bootstrap",
-        "HTML5",
-        "CSS3",
         "JavaScript (ES5)",
         "Git",
-        "jQuery"
+        "jQuery",
+        "PHPUnit",
+        "Jasmine"
       ]
     },
     {
@@ -1116,7 +1122,7 @@
         "Parsed large dataset and updated the site using CakePHP/MySQL",
         "Wrote unit tests for each criterion dataset, matched against raw YouGov data"
       ],
-      "stack": ["PHP", "MySQL", "CakePHP", "HTML5", "jQuery", "Git"]
+      "stack": ["PHP", "MySQL", "CakePHP", "HTML5", "jQuery", "PHPUnit"]
     },
     {
       "co": "Vaultigo",
@@ -1133,7 +1139,8 @@
         "SCSS",
         "jQuery",
         "Highcharts",
-        "Git"
+        "PHPUnit",
+        "Jasmine"
       ]
     },
     {
@@ -1144,7 +1151,17 @@
       "bullets": [
         "Communicated technical concepts to a diverse group in an accessible, clear manner"
       ],
-      "stack": ["HTML5", "CSS", "JavaScript (ES5)", "Git", "SVN"]
+      "stack": [
+        "HTML5",
+        "CSS",
+        "JavaScript (ES5)",
+        "jQuery",
+        "PHP",
+        "MySQL",
+        "SVN",
+        "Jasmine",
+        "PHPUnit"
+      ]
     }
   ]
 }
