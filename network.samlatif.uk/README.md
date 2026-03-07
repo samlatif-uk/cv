@@ -37,6 +37,8 @@ Open http://localhost:3000
 ### Required Environment Variables
 
 ```bash
+DATABASE_URL=file:./dev.db
+
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-long-random-secret
 AUTH_SECRET=your-long-random-secret
