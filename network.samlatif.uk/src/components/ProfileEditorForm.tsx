@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput, SafeTextarea } from "./HydrationSafeFormControls";
+
 type ProfileEditorFormProps = {
   username: string;
   initialName: string;
@@ -68,34 +70,34 @@ export function ProfileEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="grid gap-3 md:grid-cols-2">
-        <input
+        <SafeInput
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Full name"
         />
-        <input
+        <SafeInput
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={headline}
           onChange={(event) => setHeadline(event.target.value)}
           placeholder="Headline"
         />
-        <input
+        <SafeInput
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={location}
           onChange={(event) => setLocation(event.target.value)}
           placeholder="Location"
         />
-        <input
+        <SafeInput
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={avatarUrl}
           onChange={(event) => setAvatarUrl(event.target.value)}
           placeholder="Avatar URL (optional)"
         />
       </div>
-      <textarea
+      <SafeTextarea
         className="cv-input min-h-[108px] rounded-md px-3 py-2 text-sm"
         value={bio}
         onChange={(event) => setBio(event.target.value)}
@@ -111,6 +113,6 @@ export function ProfileEditorForm({
           {saving ? "Saving..." : "Save profile"}
         </button>
       </div>
-    </form>
+    </SafeForm>
   );
 }

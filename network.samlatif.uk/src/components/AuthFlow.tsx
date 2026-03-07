@@ -4,6 +4,8 @@ import { signIn } from "next-auth/react";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { SafeForm, SafeInput } from "./HydrationSafeFormControls";
+
 type Mode = "login" | "signup";
 
 export function AuthFlow({
@@ -128,6 +130,7 @@ export function AuthFlow({
           className={`rounded-md px-3 py-1.5 ${mode === "login" ? "cv-btn-primary" : "cv-btn-secondary"}`}
           onClick={() => switchMode("login")}
           disabled={pending}
+          suppressHydrationWarning
         >
           Log in
         </button>
@@ -136,6 +139,7 @@ export function AuthFlow({
           className={`rounded-md px-3 py-1.5 ${mode === "signup" ? "cv-btn-primary" : "cv-btn-secondary"}`}
           onClick={() => switchMode("signup")}
           disabled={pending}
+          suppressHydrationWarning
         >
           Sign up
         </button>
@@ -150,25 +154,24 @@ export function AuthFlow({
           : `Log in with email${googleEnabled || linkedInEnabled ? ` or ${oauthLabel}` : ""} to continue.`}
       </p>
 
-      <form className="mt-5 space-y-3" onSubmit={handleEmailSubmit}>
+      <SafeForm className="mt-5 space-y-3" onSubmit={handleEmailSubmit}>
         {mode === "signup" ? (
           <label className="block space-y-1 text-sm">
             <span className="cv-muted">Name (optional)</span>
-            <input
+            <SafeInput
               type="text"
               className="cv-input w-full rounded-md border px-3 py-2"
               value={name}
               onChange={(event) => setName(event.target.value)}
               disabled={pending}
               autoComplete="name"
-              suppressHydrationWarning
             />
           </label>
         ) : null}
 
         <label className="block space-y-1 text-sm">
           <span className="cv-muted">Email</span>
-          <input
+          <SafeInput
             type="email"
             className="cv-input w-full rounded-md border px-3 py-2"
             value={email}
@@ -176,13 +179,12 @@ export function AuthFlow({
             disabled={pending}
             autoComplete="email"
             required
-            suppressHydrationWarning
           />
         </label>
 
         <label className="block space-y-1 text-sm">
           <span className="cv-muted">Password</span>
-          <input
+          <SafeInput
             type="password"
             className="cv-input w-full rounded-md border px-3 py-2"
             value={password}
@@ -193,7 +195,6 @@ export function AuthFlow({
             }
             minLength={8}
             required
-            suppressHydrationWarning
           />
         </label>
 
@@ -201,10 +202,11 @@ export function AuthFlow({
           type="submit"
           className="cv-btn-primary rounded-md px-4 py-2 text-sm font-medium"
           disabled={pending}
+          suppressHydrationWarning
         >
           {mode === "signup" ? "Sign up with email" : "Log in with email"}
         </button>
-      </form>
+      </SafeForm>
 
       <div className="mt-5 flex flex-wrap gap-3">
         {googleEnabled ? (
@@ -213,6 +215,7 @@ export function AuthFlow({
             className="cv-btn-primary rounded-md px-4 py-2 text-sm font-medium"
             onClick={() => start("google")}
             disabled={pending}
+            suppressHydrationWarning
           >
             Continue with Google
           </button>
@@ -223,6 +226,7 @@ export function AuthFlow({
             className="cv-btn-secondary rounded-md px-4 py-2 text-sm font-medium"
             onClick={() => start("linkedin")}
             disabled={pending}
+            suppressHydrationWarning
           >
             Continue with LinkedIn
           </button>

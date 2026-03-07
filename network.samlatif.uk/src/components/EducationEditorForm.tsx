@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput, SafeTextarea } from "./HydrationSafeFormControls";
+
 type EducationEntry = {
   degree: string;
   institution: string;
@@ -106,7 +108,7 @@ export function EducationEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-3">
         {entries.map((entry, index) => (
           <div
@@ -114,7 +116,7 @@ export function EducationEditorForm({
             className="space-y-2 rounded-md border border-[var(--border)] p-3"
           >
             <div className="grid gap-2 md:grid-cols-2">
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.degree}
                 onChange={(event) =>
@@ -122,7 +124,7 @@ export function EducationEditorForm({
                 }
                 placeholder="Degree"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.institution}
                 onChange={(event) =>
@@ -130,7 +132,7 @@ export function EducationEditorForm({
                 }
                 placeholder="Institution"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.period}
                 onChange={(event) =>
@@ -138,7 +140,7 @@ export function EducationEditorForm({
                 }
                 placeholder="Period (e.g. 2011 – 2012)"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.grade}
                 onChange={(event) =>
@@ -147,7 +149,7 @@ export function EducationEditorForm({
                 placeholder="Grade"
               />
             </div>
-            <textarea
+            <SafeTextarea
               className="cv-input min-h-20 w-full rounded-md px-3 py-2 text-sm"
               value={entry.note}
               onChange={(event) =>
@@ -184,6 +186,6 @@ export function EducationEditorForm({
         </button>
       </div>
       <p className="cv-danger text-sm">{error || message}</p>
-    </form>
+    </SafeForm>
   );
 }

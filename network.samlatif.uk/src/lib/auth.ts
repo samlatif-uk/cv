@@ -971,6 +971,15 @@ export async function getCurrentUsername() {
       (session?.user as { username?: string } | undefined)?.username ?? null
     );
   } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "digest" in error &&
+      error.digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      return null;
+    }
+
     console.error("[auth] Failed to resolve current username", error);
     return null;
   }

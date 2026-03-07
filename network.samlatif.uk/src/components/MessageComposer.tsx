@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput, SafeSelect } from "./HydrationSafeFormControls";
+
 type Recipient = {
   username: string;
   name: string;
@@ -52,9 +54,9 @@ export function MessageComposer({ recipients }: { recipients: Recipient[] }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="grid gap-3 md:grid-cols-[220px_1fr]">
-        <select
+        <SafeSelect
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={recipientUsername}
           onChange={(event) => setRecipientUsername(event.target.value)}
@@ -64,8 +66,8 @@ export function MessageComposer({ recipients }: { recipients: Recipient[] }) {
               {recipient.name} (@{recipient.username})
             </option>
           ))}
-        </select>
-        <input
+        </SafeSelect>
+        <SafeInput
           className="cv-input rounded-md px-3 py-2 text-sm"
           value={content}
           onChange={(event) => setContent(event.target.value)}
@@ -82,6 +84,6 @@ export function MessageComposer({ recipients }: { recipients: Recipient[] }) {
           {sending ? "Sending..." : "Send"}
         </button>
       </div>
-    </form>
+    </SafeForm>
   );
 }

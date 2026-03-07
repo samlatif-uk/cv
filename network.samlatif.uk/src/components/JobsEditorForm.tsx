@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput, SafeTextarea } from "./HydrationSafeFormControls";
+
 type JobEntry = {
   co: string;
   date: string;
@@ -559,12 +561,12 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-2 rounded-md border border-[var(--border)] p-3">
         <p className="text-sm font-medium">
           Import LinkedIn export (CSV or JSON)
         </p>
-        <input
+        <SafeInput
           type="file"
           accept=".csv,text/csv,.json,application/json"
           className="cv-input w-full rounded-md px-3 py-2 text-sm"
@@ -583,13 +585,13 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
             className="space-y-2 rounded-md border border-[var(--border)] p-3"
           >
             <div className="grid gap-2 md:grid-cols-2">
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={job.co}
                 onChange={(event) => updateJob(index, "co", event.target.value)}
                 placeholder="Company"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={job.date}
                 onChange={(event) =>
@@ -597,7 +599,7 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
                 }
                 placeholder="Date range (e.g. 2021 – 2024)"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm md:col-span-2"
                 value={job.title}
                 onChange={(event) =>
@@ -606,13 +608,13 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
                 placeholder="Job title"
               />
             </div>
-            <textarea
+            <SafeTextarea
               className="cv-input min-h-20 w-full rounded-md px-3 py-2 text-sm"
               value={job.desc}
               onChange={(event) => updateJob(index, "desc", event.target.value)}
               placeholder="Role summary"
             />
-            <textarea
+            <SafeTextarea
               className="cv-input min-h-20 w-full rounded-md px-3 py-2 text-sm"
               value={job.bulletsText}
               onChange={(event) =>
@@ -620,7 +622,7 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
               }
               placeholder="Bullet points (one per line)"
             />
-            <input
+            <SafeInput
               className="cv-input w-full rounded-md px-3 py-2 text-sm"
               value={job.stackText}
               onChange={(event) =>
@@ -657,6 +659,6 @@ export function JobsEditorForm({ username, initialJobs }: JobsEditorFormProps) {
         </button>
       </div>
       <p className="cv-danger text-sm">{error || message}</p>
-    </form>
+    </SafeForm>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput } from "./HydrationSafeFormControls";
+
 type TechRow = {
   cat: string;
   items: string;
@@ -81,17 +83,17 @@ export function TechRowsEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-3">
         {rows.map((row, index) => (
           <div key={`tech-row-${index}`} className="grid gap-3 md:grid-cols-12">
-            <input
+            <SafeInput
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-3"
               value={row.cat}
               onChange={(event) => updateRow(index, "cat", event.target.value)}
               placeholder="Category"
             />
-            <input
+            <SafeInput
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-7"
               value={row.items}
               onChange={(event) =>
@@ -100,7 +102,7 @@ export function TechRowsEditorForm({
               placeholder="Skills (comma separated)"
             />
             <div className="flex gap-2 md:col-span-2">
-              <input
+              <SafeInput
                 className="cv-input w-full rounded-md px-3 py-2 text-sm"
                 value={row.yrs}
                 onChange={(event) =>
@@ -137,6 +139,6 @@ export function TechRowsEditorForm({
         </button>
       </div>
       <p className="cv-danger text-sm">{error || message}</p>
-    </form>
+    </SafeForm>
   );
 }

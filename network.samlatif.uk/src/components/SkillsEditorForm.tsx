@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput, SafeSelect } from "./HydrationSafeFormControls";
+
 type Skill = {
   n: string;
   c: string;
@@ -77,20 +79,20 @@ export function SkillsEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-3">
         {skills.map((skill, index) => (
           <div
             key={`stack-skill-${index}`}
             className="grid gap-3 md:grid-cols-12"
           >
-            <input
+            <SafeInput
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-7"
               value={skill.n}
               onChange={(event) => updateSkill(index, "n", event.target.value)}
               placeholder="Skill"
             />
-            <select
+            <SafeSelect
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-4"
               value={skill.c}
               onChange={(event) => updateSkill(index, "c", event.target.value)}
@@ -104,7 +106,7 @@ export function SkillsEditorForm({
                       : category[0].toUpperCase() + category.slice(1)}
                 </option>
               ))}
-            </select>
+            </SafeSelect>
             <button
               type="button"
               className="cv-btn-secondary rounded-md px-2 py-2 text-sm md:col-span-1"
@@ -133,6 +135,6 @@ export function SkillsEditorForm({
         </button>
       </div>
       <p className="cv-danger text-sm">{error || message}</p>
-    </form>
+    </SafeForm>
   );
 }

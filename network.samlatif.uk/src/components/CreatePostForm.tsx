@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeTextarea } from "./HydrationSafeFormControls";
+
 type CurrentUser = {
   username: string;
   name: string;
@@ -64,12 +66,12 @@ export function CreatePostForm({ currentUser }: { currentUser: CurrentUser }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <p className="cv-muted text-xs">
         Posting as {currentUser.name} (@{currentUser.username})
       </p>
       <div className="grid gap-3">
-        <textarea
+        <SafeTextarea
           className="cv-input min-h-[88px] rounded-md px-3 py-2 text-sm"
           placeholder="Share an update"
           value={content}
@@ -86,6 +88,6 @@ export function CreatePostForm({ currentUser }: { currentUser: CurrentUser }) {
           {submitting ? "Posting..." : "Post"}
         </button>
       </div>
-    </form>
+    </SafeForm>
   );
 }

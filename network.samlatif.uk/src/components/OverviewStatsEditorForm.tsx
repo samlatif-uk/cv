@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SafeForm, SafeInput } from "./HydrationSafeFormControls";
+
 type OverviewStat = {
   value: string;
   label: string;
@@ -78,14 +80,14 @@ export function OverviewStatsEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="grid gap-3 md:grid-cols-2">
         {stats.slice(0, 4).map((stat, index) => (
           <div
             key={`overview-stat-${index}`}
             className="grid gap-2 md:grid-cols-5"
           >
-            <input
+            <SafeInput
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-2"
               value={stat.value}
               onChange={(event) =>
@@ -93,7 +95,7 @@ export function OverviewStatsEditorForm({
               }
               placeholder="Value"
             />
-            <input
+            <SafeInput
               className="cv-input rounded-md px-3 py-2 text-sm md:col-span-3"
               value={stat.label}
               onChange={(event) =>
@@ -114,6 +116,6 @@ export function OverviewStatsEditorForm({
           {saving ? "Saving..." : "Save overview stats"}
         </button>
       </div>
-    </form>
+    </SafeForm>
   );
 }

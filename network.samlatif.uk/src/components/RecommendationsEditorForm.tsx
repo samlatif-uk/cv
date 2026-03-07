@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 
+import {
+  SafeForm,
+  SafeInput,
+  SafeSelect,
+  SafeTextarea,
+} from "./HydrationSafeFormControls";
+
 type RecommendationEntry = {
   by: string;
   role: string;
@@ -455,12 +462,12 @@ export function RecommendationsEditorForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
+    <SafeForm onSubmit={onSubmit} className="cv-card space-y-3 rounded-xl p-4">
       <div className="space-y-2 rounded-md border border-[var(--border)] p-3">
         <p className="text-sm font-medium">
           Import LinkedIn export (CSV or JSON)
         </p>
-        <input
+        <SafeInput
           type="file"
           accept=".csv,text/csv,.json,application/json"
           className="cv-input w-full rounded-md px-3 py-2 text-sm"
@@ -479,7 +486,7 @@ export function RecommendationsEditorForm({
             className="space-y-2 rounded-md border border-[var(--border)] p-3"
           >
             <div className="grid gap-2 md:grid-cols-2">
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.by}
                 onChange={(event) =>
@@ -487,7 +494,7 @@ export function RecommendationsEditorForm({
                 }
                 placeholder="Recommender name"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.role}
                 onChange={(event) =>
@@ -495,7 +502,7 @@ export function RecommendationsEditorForm({
                 }
                 placeholder="Recommender role"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.date}
                 onChange={(event) =>
@@ -503,7 +510,7 @@ export function RecommendationsEditorForm({
                 }
                 placeholder="Date (YYYY-MM-DD)"
               />
-              <input
+              <SafeInput
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.relationship}
                 onChange={(event) =>
@@ -512,7 +519,7 @@ export function RecommendationsEditorForm({
                 placeholder="Relationship"
               />
             </div>
-            <textarea
+            <SafeTextarea
               className="cv-input min-h-20 w-full rounded-md px-3 py-2 text-sm"
               value={entry.quote}
               onChange={(event) =>
@@ -521,7 +528,7 @@ export function RecommendationsEditorForm({
               placeholder="Recommendation text"
             />
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <select
+              <SafeSelect
                 className="cv-input rounded-md px-3 py-2 text-sm"
                 value={entry.visibility}
                 onChange={(event) =>
@@ -530,7 +537,7 @@ export function RecommendationsEditorForm({
               >
                 <option value="public">Public</option>
                 <option value="private">Private</option>
-              </select>
+              </SafeSelect>
               <button
                 type="button"
                 className="cv-btn-secondary rounded-md px-3 py-2 text-sm"
@@ -559,6 +566,6 @@ export function RecommendationsEditorForm({
         </button>
       </div>
       <p className="cv-danger text-sm">{error || message}</p>
-    </form>
+    </SafeForm>
   );
 }
