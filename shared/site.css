@@ -394,6 +394,9 @@ h2 {
   font-size: 11px;
   margin-left: 10px;
 }
+.tech-skeleton-row {
+  cursor: default;
+}
 .bar-wrap {
   margin-top: 5px;
 }
@@ -406,6 +409,40 @@ h2 {
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
+}
+.bar-fill-loading {
+  opacity: 0.35;
+}
+
+.skeleton {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(184, 169, 138, 0.12) 0%,
+    rgba(240, 165, 0, 0.18) 50%,
+    rgba(184, 169, 138, 0.12) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-label {
+  height: 12px;
+}
+
+.skeleton-line {
+  height: 12px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* FILTER BTNS */
@@ -463,6 +500,15 @@ h2 {
 }
 .stag.dim {
   opacity: 0.15;
+}
+
+.stag-skeleton {
+  display: inline-flex;
+  min-width: 72px;
+  height: 29px;
+  border-color: rgba(240, 165, 0, 0.16);
+  cursor: default;
+  pointer-events: none;
 }
 
 /* TIMELINE */
@@ -593,6 +639,37 @@ h2 {
 }
 .job.match .jco {
   color: var(--accent);
+}
+
+.job-skeleton {
+  pointer-events: none;
+}
+
+.job-skeleton__body {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.skeleton-company {
+  height: 24px;
+}
+
+.skeleton-date {
+  width: 120px;
+  height: 24px;
+  border-radius: 20px;
+}
+
+.skeleton-title {
+  height: 12px;
+  margin-bottom: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 }
 
 /* FILTER BAR */

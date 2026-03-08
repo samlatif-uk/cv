@@ -13,6 +13,45 @@ const PROFILE = {
   bio: "15+ years delivering high-performance, scalable web applications.",
 };
 
+function renderLoadingPlaceholders() {
+  const techTable = document.getElementById("techTable");
+  const skillsWrap = document.getElementById("swrap");
+  const timeline = document.getElementById("tl");
+
+  if (techTable && !techTable.children.length) {
+    const rowWidths = [92, 88, 86, 82, 78, 84, 90, 80, 94, 76, 72];
+    techTable.innerHTML = rowWidths
+      .map(
+        (width, index) =>
+          `<tr class="tech-skeleton-row" aria-hidden="true"><td><span class="skeleton skeleton-label" style="width:${92 + (index % 3) * 16}px"></span></td><td><div class="skeleton skeleton-line" style="width:${width}%"></div><div class="bar-wrap"><div class="bar"><div class="bar-fill bar-fill-loading" style="width:${Math.max(32, width - 20)}%"></div></div></div></td></tr>`,
+      )
+      .join("");
+  }
+
+  if (skillsWrap && !skillsWrap.children.length) {
+    const chipWidths = [
+      110, 92, 134, 98, 122, 106, 118, 88, 128, 96, 114, 102, 120, 90, 112, 100,
+      126, 94, 108, 116, 98, 124, 104, 130, 86, 118, 96, 122, 110, 92,
+    ];
+    skillsWrap.innerHTML = chipWidths
+      .map(
+        (width) =>
+          `<span class="stag stag-skeleton" aria-hidden="true" style="width:${width}px"></span>`,
+      )
+      .join("");
+  }
+
+  if (timeline && !timeline.children.length) {
+    const companyWidths = [180, 220, 196, 208, 188, 214, 202, 190, 218, 184];
+    timeline.innerHTML = companyWidths
+      .map(
+        (width, index) =>
+          `<div class="job job-skeleton" aria-hidden="true"><div class="jhead"><div class="skeleton skeleton-company" style="width:${width}px"></div><div class="skeleton skeleton-date"></div></div><div class="skeleton skeleton-title" style="width:${160 + (index % 4) * 22}px"></div><div class="job-skeleton__body"><span class="skeleton skeleton-line" style="width:96%"></span><span class="skeleton skeleton-line" style="width:88%"></span><span class="skeleton skeleton-line" style="width:82%"></span></div><div class="jstack">${Array.from({ length: 5 }, (_, chipIndex) => `<span class="stag stag-skeleton" style="width:${72 + ((index + chipIndex) % 4) * 16}px"></span>`).join("")}</div></div>`,
+      )
+      .join("");
+  }
+}
+
 function applyProfileData() {
   const header = document.querySelector("header");
   const footer = document.querySelector("footer");
@@ -790,6 +829,8 @@ function setActiveSiteLink() {
     );
   });
 }
+
+renderLoadingPlaceholders();
 
 loadSharedCvData().then((loaded) => {
   applyProfileData();

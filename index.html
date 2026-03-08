@@ -51,6 +51,9 @@
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/shared/site.css" />
     <link rel="stylesheet" href="/shared/ui-shared.css" />
+    <link rel="preload" href="/shared/filter-utils.js" as="script" />
+    <link rel="preload" href="/shared/vanilla-site.js" as="script" />
+    <link rel="preload" href="/shared/cv-data.json" as="fetch" />
     <script
       async
       src="https://betterlytics.io/analytics.js"
@@ -361,7 +364,7 @@
       </div>
     </footer>
 
-    <script src="/shared/filter-utils.js"></script>
-    <script src="/shared/vanilla-site.js"></script>
+    <script defer src="/shared/filter-utils.js"></script>
+    <script defer src="/shared/vanilla-site.js"></script>
   </body>
 </html>
