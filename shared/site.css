@@ -154,6 +154,7 @@ h1 .acc {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--accent);
