@@ -36,12 +36,6 @@ export const Header = () => {
             <em>◆</em>React Site
           </a>
           <a
-            className={`site-link${activeSite === "network" ? " active" : ""}`}
-            href="https://network.samlatif.uk"
-          >
-            <em>◆</em>Network Site
-          </a>
-          <a
             href="https://uk.linkedin.com/in/samlatifuk"
             target="_blank"
             rel="noopener noreferrer"
