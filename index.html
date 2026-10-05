@@ -60,7 +60,8 @@
       data-site-id="samlatif-mmgqpxlk"
     ></script>
   </head>
-  <body>
+  <body class="portfolio">
+    <a class="skip-link" href="#experience">Skip to experience</a>
     <header>
       <div class="container">
         <div class="eyebrow">
@@ -101,49 +102,34 @@
             <em>◆</em>Export PDF
           </button>
         </div>
-        <div class="summary">
-          <p>
-            A senior fullstack consultant with 15+ years delivering
-            high-performance, scalable web applications for blue-chip clients —
-            from Goldman Sachs and Bank of America to Visa and Deutsche Bank.
-          </p>
-
-          <p>
-            An early adopter of React, with deep expertise spanning every major
-            version from 0.13 to 18, and a track record of bringing it into
-            organisations before it became mainstream.
-          </p>
-          <p>
-            Strong eye for design and UX, with a habit of dogfooding work
-            personally — features are QA'd before they ship, eliminating the
-            "chuck it over the fence" bottleneck and getting polished,
-            production-ready work into users' hands faster.
-          </p>
-          <p>
-            This CV is intentionally published as both Vanilla JS and React
-            versions to demonstrate the same product thinking and UX decisions
-            across different delivery styles — useful when teams need either
-            framework flexibility or zero-dependency performance.
-          </p>
-        </div>
-        <div class="hire-cta">
-          <strong>Available for contract roles from July 2026.</strong>
-          <a
-            class="hire-btn"
-            href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
-            >Hire Me</a
-          >
+        <div class="hero-grid">
+          <div class="hero-intro">
+            <h2 class="hero-title">Complex products.<br><span>Considered experiences.</span></h2>
+            <div class="summary"><p>15+ years delivering high-performance, scalable web applications.</p>
+              <p>I bring frontend engineering and an eye for UX to demanding products — from financial platforms to fast-moving digital businesses.</p></div>
+            <div class="hero-actions">
+              <a class="hire-btn" href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity">Let’s talk <span aria-hidden="true">↗</span></a>
+              <a class="experience-link" href="#experience">Explore my experience <span aria-hidden="true">↓</span></a>
+            </div>
+            <p class="availability">Available for contract roles from July 2026.</p>
+          </div>
+          <aside class="hero-proof" aria-label="Selected client experience">
+            <p class="proof-label">EXPERIENCE THAT DELIVERS</p>
+            <p class="proof-intro">Trusted with complex challenges.</p>
+            <ul class="client-list"><li>Bank of America <span>Engineering</span></li><li>Goldman Sachs <span>Trading platforms</span></li><li>Visa <span>Frontend delivery</span></li><li>Deutsche Bank <span>Modernisation</span></li></ul>
+            <p class="proof-note">React · TypeScript · Fullstack · UX</p>
+          </aside>
         </div>
       </div>
     </header>
 
-    <nav>
+    <nav aria-label="Sections">
       <div class="container">
         <div class="nav-inner">
-          <a href="#overview" class="">Overview</a>
-          <a href="#techskills" class="act">Tech Skills</a>
+          <a href="#overview" class="act">Overview</a>
+          <a href="#experience">Experience</a>
+          <a href="#techskills" class="">Tech Skills</a>
           <a href="#skills" class="">Stack Tags</a>
-          <a href="#experience" class="">Experience</a>
           <a href="#recommendations" class="">Recommendations</a>
           <a href="#education" class="">Education</a>
         </div>
@@ -173,49 +159,10 @@
       </div>
     </section>
 
-    <section id="techskills">
-      <div class="container">
-        <div class="shead">
-          <span class="snum">01</span>
-          <h2>Technical Skills</h2>
-          <div class="sline"></div>
-        </div>
-        <table class="tech-table" id="techTable">
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="skills">
-      <div class="container">
-        <div class="shead">
-          <span class="snum">02</span>
-          <h2>Stack at a Glance</h2>
-          <div class="sline"></div>
-        </div>
-        <p
-          style="font-size: 12px; color: var(--text-muted); margin-bottom: 18px"
-        >
-          Filter by category — or click any tech tag in the timeline to
-          highlight matching roles.
-        </p>
-        <div class="fbtns">
-          <button class="fbtn on" data-cat="all">All</button>
-          <button class="fbtn" data-cat="core">Core</button>
-          <button class="fbtn" data-cat="state">State</button>
-          <button class="fbtn" data-cat="testing">Testing</button>
-          <button class="fbtn" data-cat="ui">UI &amp; Design</button>
-          <button class="fbtn" data-cat="tooling">Tooling</button>
-          <button class="fbtn" data-cat="cms">CMS / Other</button>
-        </div>
-        <div class="swrap" id="swrap"></div>
-      </div>
-    </section>
-
     <section id="experience">
       <div class="container">
         <div class="shead">
-          <span class="snum">03</span>
+          <span class="snum">01</span>
           <h2>Experience</h2>
           <div class="sline"></div>
         </div>
@@ -246,6 +193,45 @@
           <button class="fclear" onclick="clearF()">Clear ×</button>
         </div>
         <div class="tl" id="tl"></div>
+      </div>
+    </section>
+
+    <section id="techskills">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">02</span>
+          <h2>Technical Skills</h2>
+          <div class="sline"></div>
+        </div>
+        <table class="tech-table" id="techTable">
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <div class="shead">
+          <span class="snum">03</span>
+          <h2>Stack at a Glance</h2>
+          <div class="sline"></div>
+        </div>
+        <p
+          style="font-size: 12px; color: var(--text-muted); margin-bottom: 18px"
+        >
+          Filter by category — or click any tech tag in the timeline to
+          highlight matching roles.
+        </p>
+        <div class="fbtns">
+          <button class="fbtn on" data-cat="all">All</button>
+          <button class="fbtn" data-cat="core">Core</button>
+          <button class="fbtn" data-cat="state">State</button>
+          <button class="fbtn" data-cat="testing">Testing</button>
+          <button class="fbtn" data-cat="ui">UI &amp; Design</button>
+          <button class="fbtn" data-cat="tooling">Tooling</button>
+          <button class="fbtn" data-cat="cms">CMS / Other</button>
+        </div>
+        <div class="swrap" id="swrap"></div>
       </div>
     </section>
 

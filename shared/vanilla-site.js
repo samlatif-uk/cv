@@ -795,9 +795,9 @@ document.querySelectorAll('nav a[href^="#"]').forEach((link) => {
 
 const SIDS = [
   "overview",
+  "experience",
   "techskills",
   "skills",
-  "experience",
   "recommendations",
   "education",
 ];
