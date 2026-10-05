@@ -42,7 +42,7 @@ export const TechSkills = ({ onAddTechFilters }: TechSkillsProps) => {
     <section id="techskills">
       <div className="container">
         <div className="shead">
-          <span className="snum">01</span>
+          <span className="snum">02</span>
           <h2>Technical Skills</h2>
           <div className="sline" />
         </div>

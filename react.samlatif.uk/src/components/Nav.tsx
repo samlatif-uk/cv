@@ -3,11 +3,14 @@ interface NavProps {
 }
 
 export const Nav = ({ activeNav }: NavProps) => (
-  <nav>
+  <nav aria-label="Sections">
     <div className="container">
       <div className="nav-inner">
         <a href="#overview" className={activeNav === "overview" ? "act" : ""}>
           Overview
+        </a>
+        <a href="#experience" className={activeNav === "experience" ? "act" : ""}>
+          Experience
         </a>
         <a
           href="#techskills"
@@ -17,12 +20,6 @@ export const Nav = ({ activeNav }: NavProps) => (
         </a>
         <a href="#skills" className={activeNav === "skills" ? "act" : ""}>
           Stack Tags
-        </a>
-        <a
-          href="#experience"
-          className={activeNav === "experience" ? "act" : ""}
-        >
-          Experience
         </a>
         <a
           href="#recommendations"

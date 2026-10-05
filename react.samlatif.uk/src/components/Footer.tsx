@@ -1,13 +1,7 @@
 import { PROFILE } from "../data/cv";
 
 export const Footer = () => {
-  const hostname =
-    typeof window !== "undefined" ? window.location.hostname : "";
-  const activeSite = hostname.startsWith("react.")
-    ? "react"
-    : hostname.startsWith("network.")
-      ? "network"
-      : "vanilla";
+  const activeSite: string = "react";
 
   return (
     <footer>

@@ -363,7 +363,7 @@ export const Experience = ({
     <section id="experience">
       <div className="container">
         <div className="shead">
-          <span className="snum">03</span>
+          <span className="snum">01</span>
           <h2>Experience</h2>
           <div className="sline" />
         </div>
