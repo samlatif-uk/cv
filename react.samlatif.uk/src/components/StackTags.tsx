@@ -24,7 +24,7 @@ export const StackTags = ({
   <section id="skills">
     <div className="container">
       <div className="shead">
-        <span className="snum">02</span>
+        <span className="snum">03</span>
         <h2>Stack at a Glance</h2>
         <div className="sline" />
       </div>

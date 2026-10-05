@@ -11,9 +11,9 @@ import { TechSkills } from "./components/TechSkills";
 
 const SECTION_IDS = [
   "overview",
+  "experience",
   "techskills",
   "skills",
-  "experience",
   "recommendations",
   "education",
 ];
@@ -42,7 +42,7 @@ const scrollWithDynamicOffset = (target: HTMLElement) => {
 function App() {
   const [activeTechs, setActiveTechs] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [activeNav, setActiveNav] = useState("techskills");
+  const [activeNav, setActiveNav] = useState("overview");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -110,20 +110,21 @@ function App() {
 
   return (
     <>
+      <a className="skip-link" href="#experience">Skip to experience</a>
       <Header />
       <Nav activeNav={activeNav} />
       <Overview />
+      <Experience
+        activeTechs={activeTechs}
+        onTechClick={handleTechClick}
+        onClearTech={() => setActiveTechs([])}
+      />
       <TechSkills onAddTechFilters={handleAddTechFilters} />
       <StackTags
         activeCategory={activeCategory}
         activeTechs={activeTechs}
         onCategoryChange={setActiveCategory}
         onTechClick={handleTechClick}
-      />
-      <Experience
-        activeTechs={activeTechs}
-        onTechClick={handleTechClick}
-        onClearTech={() => setActiveTechs([])}
       />
       <Recommendations />
       <Education />

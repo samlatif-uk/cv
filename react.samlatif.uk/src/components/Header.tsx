@@ -1,13 +1,7 @@
 import { PROFILE } from "../data/cv";
 
 export const Header = () => {
-  const hostname =
-    typeof window !== "undefined" ? window.location.hostname : "";
-  const activeSite = hostname.startsWith("react.")
-    ? "react"
-    : hostname.startsWith("network.")
-      ? "network"
-      : "vanilla";
+  const activeSite: string = "react";
 
   const nameParts = PROFILE.name.trim().split(" ");
   const firstName = nameParts.slice(0, -1).join(" ") || PROFILE.name;
@@ -69,34 +63,36 @@ export const Header = () => {
             <em>◆</em>Export PDF
           </button>
         </div>
-        <div className="summary">
-          <p>{PROFILE.bio}</p>
-          <p>
-            An early adopter of React, with deep expertise spanning every major
-            version from 0.13 to 18, and a track record of bringing it into
-            organisations before it became mainstream.
-          </p>
-          <p>
-            Strong eye for design and UX, with a habit of dogfooding work
-            personally — features are QA&apos;d before they ship, eliminating
-            the &quot;chuck it over the fence&quot; bottleneck and getting
-            polished, production-ready work into users&apos; hands faster.
-          </p>
-          <p>
-            This CV is intentionally published as both Vanilla JS and React
-            versions to demonstrate the same product thinking and UX decisions
-            across different delivery styles — useful when teams need either
-            framework flexibility or zero-dependency performance.
-          </p>
-        </div>
-        <div className="hire-cta">
-          <strong>Available for contract roles from July 2026.</strong>
-          <a
-            className="hire-btn"
-            href="mailto:hello@samlatif.uk?subject=Contract%20Opportunity"
-          >
-            Hire Me
-          </a>
+        <div className="hero-grid">
+          <div className="hero-intro">
+            <h2 className="hero-title">
+              Complex products.<br /><span>Considered experiences.</span>
+            </h2>
+            <div className="summary">
+              <p>{PROFILE.bio}</p>
+              <p>I bring frontend engineering and an eye for UX to demanding products — from financial platforms to fast-moving digital businesses.</p>
+            </div>
+            <div className="hero-actions">
+              <a className="hire-btn" href={`mailto:${PROFILE.email}?subject=Contract%20Opportunity`}>
+                Let’s talk <span aria-hidden="true">↗</span>
+              </a>
+              <a className="experience-link" href="#experience">
+                Explore my experience <span aria-hidden="true">↓</span>
+              </a>
+            </div>
+            <p className="availability">Available for contract roles from July 2026.</p>
+          </div>
+          <aside className="hero-proof" aria-label="Selected client experience">
+            <p className="proof-label">EXPERIENCE THAT DELIVERS</p>
+            <p className="proof-intro">Trusted with complex challenges.</p>
+            <ul className="client-list">
+              <li>Bank of America <span>Engineering</span></li>
+              <li>Goldman Sachs <span>Trading platforms</span></li>
+              <li>Visa <span>Frontend delivery</span></li>
+              <li>Deutsche Bank <span>Modernisation</span></li>
+            </ul>
+            <p className="proof-note">React · TypeScript · Fullstack · UX</p>
+          </aside>
         </div>
       </div>
     </header>
