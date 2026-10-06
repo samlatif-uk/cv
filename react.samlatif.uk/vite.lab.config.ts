@@ -5,5 +5,8 @@ export default defineConfig({
   base: '/lab/',
   publicDir: false,
   server: { fs: { allow: ['..'] } },
-  build: { outDir: '../dist/lab', emptyOutDir: true },
+  build: {
+    outDir: '../dist/lab', emptyOutDir: true,
+    rollupOptions: { input: { atlas: 'lab/index.html', stories: 'lab/stories/index.html' } },
+  },
 });

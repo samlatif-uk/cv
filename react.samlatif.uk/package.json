@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build && vite build --config vite.lab.config.ts",
     "dev:lab": "vite --config vite.lab.config.ts",
-    "test:lab": "node --test lab/atlas-data.test.js",
+    "test:lab": "node --test lab/atlas-data.test.js lab/stories.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

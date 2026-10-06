@@ -1,6 +1,9 @@
 # Career atlas
 
 The standalone Three.js experience is served at `/lab/`; the CV remains at `/`.
+The additional `/lab/stories/` page demonstrates seating layouts, report previews
+and virtualised data browsing using synthetic data. These are illustrative
+recreations, not client software; the project context comes from the CV.
 Roles and public recommendations come from `shared/cv-data.json`. Sector groupings
 are editorial; connections are computed from shared stack entries.
 
