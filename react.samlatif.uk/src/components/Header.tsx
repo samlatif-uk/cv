@@ -19,6 +19,7 @@ export const Header = () => {
         </h1>
         <div className="role">{PROFILE.headline}</div>
         <div className="hcontact">
+          <a href="/lab/">Explore in 3D ↗</a>
           <a href={`mailto:${PROFILE.email}`}>
             <em>◆</em>
             {PROFILE.email}

@@ -272,6 +272,16 @@ jobs:
             exit 1
           fi
 
+      - name: Sync career atlas to apex site
+        run: |
+          DEPLOY_USER="${{ secrets.VPS_USER }}"
+          DEPLOY_USER="${DEPLOY_USER:-root}"
+          STATIC_DEPLOY_PATH="${{ secrets.STATIC_DEPLOY_PATH }}"
+          STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
+          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1"
+          ssh $SSH_OPTS "$DEPLOY_USER@vps-target" "mkdir -p '$STATIC_DEPLOY_PATH/lab'"
+          rsync -az -e "ssh $SSH_OPTS" react.samlatif.uk/dist/lab/ "$DEPLOY_USER@vps-target:$STATIC_DEPLOY_PATH/lab/"
+
       - name: Set ownership and reload nginx/certbot
         run: |
           USER="${{ secrets.VPS_USER }}"
