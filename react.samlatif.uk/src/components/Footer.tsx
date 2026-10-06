@@ -24,13 +24,6 @@ export const Footer = () => {
           >
             React Site
           </a>
-          &nbsp;·&nbsp;
-          <a
-            className={`site-link${activeSite === "network" ? " active" : ""}`}
-            href="https://network.samlatif.uk"
-          >
-            Network Site
-          </a>
         </div>
       </div>
     </footer>
