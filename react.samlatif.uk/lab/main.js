@@ -4,7 +4,7 @@ import { jobs, recommendations, firstYear, lastYear, matchingJobs, commonSkills 
 import './style.css';
 
 const $ = id => document.getElementById(id);
-const colors = { Finance: '#edba69', Product: '#94c9b4', Creative: '#b4a4d6' };
+const colors = { Finance: '#f0a500', Product: '#f0e8d8', Creative: '#a67c42' };
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 const state = { skill: 'All', sector: 'All', year: lastYear, selected: 0, paused: motionQuery.matches };
 let sceneApi;
@@ -111,7 +111,7 @@ function createAtlas() {
   const host = $('scene');
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
-  renderer.setClearColor(0x111612, 0);
+  renderer.setClearColor(0x080808, 0);
   host.append(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(40, 1, .1, 100);
@@ -125,9 +125,9 @@ function createAtlas() {
   controls.maxPolarAngle = Math.PI - .55;
   controls.autoRotateSpeed = .22;
   controls.target.set(0, 0, 0);
-  scene.add(new THREE.AmbientLight(0xe3efd4, 1.8));
+  scene.add(new THREE.AmbientLight(0xf0e8d8, 1.8));
   const key = new THREE.PointLight(0xffd299, 80, 30); key.position.set(2, 5, 7); scene.add(key);
-  const fill = new THREE.PointLight(0x7bd9ba, 35, 25); fill.position.set(-5, -2, 4); scene.add(fill);
+  const fill = new THREE.PointLight(0xd9b36d, 35, 25); fill.position.set(-5, -2, 4); scene.add(fill);
   const root = new THREE.Group(); scene.add(root);
   const geometry = new THREE.IcosahedronGeometry(1, 2);
   const nodes = [];
@@ -166,11 +166,11 @@ function createAtlas() {
       const start = nodes[index].position; const end = nodes[other.id].position;
       const middle = start.clone().add(end).multiplyScalar(.5); middle.z -= .5;
       const curve = new THREE.QuadraticBezierCurve3(start, middle, end);
-      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), new THREE.LineBasicMaterial({ color: 0x76947a, transparent: true, opacity: .18 }));
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), new THREE.LineBasicMaterial({ color: 0x9b804d, transparent: true, opacity: .18 }));
       root.add(line); edges.push({ line, a: index, b: other.id, skills });
     });
   });
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(.3, .008, 6, 64), new THREE.MeshBasicMaterial({ color: 0xffd39b, transparent: true, opacity: .8 }));
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(.3, .008, 6, 64), new THREE.MeshBasicMaterial({ color: 0xf0a500, transparent: true, opacity: .8 }));
   root.add(halo);
   // Fine meridians give the field a sculptural form without obscuring the data.
   const scaffold = new THREE.Group(); root.add(scaffold);
@@ -179,7 +179,7 @@ function createAtlas() {
       const angle = index / 160 * Math.PI * 2;
       return new THREE.Vector3(Math.cos(angle) * (4.75 - ring * .21), Math.sin(angle) * (3.05 + ring * .1), 0);
     });
-    const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x60795d, transparent: true, opacity: .09 }));
+    const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x897040, transparent: true, opacity: .09 }));
     orbit.rotation.x = .28 + ring * .33; orbit.rotation.y = ring * .3;
     scaffold.add(orbit);
   }
@@ -192,7 +192,7 @@ function createAtlas() {
     stars[i * 3 + 2] = noise(i + 801) * 5 - 2;
   }
   const dustGeometry = new THREE.BufferGeometry(); dustGeometry.setAttribute('position', new THREE.BufferAttribute(stars, 3));
-  root.add(new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0x95ad88, size: .016, transparent: true, opacity: .4, sizeAttenuation: true })));
+  root.add(new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0xb89b64, size: .016, transparent: true, opacity: .4, sizeAttenuation: true })));
   const projected = new THREE.Vector3();
   let width = 1, height = 1, compact = false, disposed = false;
   let targetFocus = null;
@@ -221,7 +221,7 @@ function createAtlas() {
     edges.forEach(edge => {
       const active = ids.has(edge.a) && ids.has(edge.b);
       const selected = state.selected === edge.a || state.selected === edge.b;
-      edge.line.material.color.set(selected ? 0xe1b774 : 0x739e81);
+      edge.line.material.color.set(selected ? 0xf0a500 : 0x9e8455);
       edge.line.material.opacity = !active ? .025 : selected ? .55 : .19;
     });
     halo.visible = state.selected >= 0;

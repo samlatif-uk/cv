@@ -7,11 +7,11 @@ export function createFloor(host) {
   const camera = new THREE.PerspectiveCamera(38,1,.1,100);
   const controls = new OrbitControls(camera,renderer.domElement); controls.enableZoom = false; controls.enablePan = false; controls.maxPolarAngle = Math.PI / 2.2;
   const reset = () => { camera.position.set(9,12,13); controls.target.set(0,0,0); controls.update(); draw(); };
-  scene.add(new THREE.HemisphereLight(0xffffff,0x405442,3));
+  scene.add(new THREE.HemisphereLight(0xffffff,0x45331c,3));
   const light = new THREE.DirectionalLight(0xffedce,3); light.position.set(4,10,6); scene.add(light);
-  const floor = new THREE.Mesh(new THREE.BoxGeometry(12,.15,8),new THREE.MeshStandardMaterial({color:0x34483a,roughness:1})); floor.position.y=-.15; scene.add(floor);
-  const grid = new THREE.GridHelper(12,12,0x71816c,0x465e4a); grid.position.y=-.06; grid.scale.z=.667; scene.add(grid);
-  const colors = [0xb7d88e,0x8cc9c7,0xd6b38d];
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(12,.15,8),new THREE.MeshStandardMaterial({color:0x28221a,roughness:1})); floor.position.y=-.15; scene.add(floor);
+  const grid = new THREE.GridHelper(12,12,0x806334,0x4a3a24); grid.position.y=-.06; grid.scale.z=.667; scene.add(grid);
+  const colors = [0xf0a500,0xf0e8d8,0xa67c42];
   const units = [];
   const deskGeometry = new THREE.BoxGeometry(1.25,.15,.75);
   const baseGeometry = new THREE.BoxGeometry(.8,.6,.45);
@@ -20,7 +20,7 @@ export function createFloor(host) {
     const group = new THREE.Group();
     const material = new THREE.MeshStandardMaterial({color:colors[i%3],roughness:.55,transparent:true});
     const desk = new THREE.Mesh(deskGeometry,material); desk.position.y=.65;
-    const base = new THREE.Mesh(baseGeometry,new THREE.MeshStandardMaterial({color:0x516355,transparent:true})); base.position.y=.25;
+    const base = new THREE.Mesh(baseGeometry,new THREE.MeshStandardMaterial({color:0x554737,transparent:true})); base.position.y=.25;
     const head = new THREE.Mesh(headGeometry,material); head.position.set(0,.7,.65);
     group.add(desk,base,head); scene.add(group); units.push({group,material,base});
   }
