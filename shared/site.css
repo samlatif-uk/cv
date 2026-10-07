@@ -873,18 +873,18 @@ footer {
   }
 }
 
-/* Portfolio refresh: scoped to the vanilla homepage. */
+/* React landing page: black, gold and warm ivory. */
 .portfolio {
-  --bg: #101211;
-  --bg2: #191c1a;
-  --bg3: #222622;
-  --border: #353a34;
-  --accent: #f4bb57;
-  --accent-light: #26241c;
-  --text: #f5f4ed;
-  --text-dim: #c7cbc3;
-  --text-muted: #a1aa9e;
-  --white: #fffdf5;
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --bg3: #161616;
+  --border: #2a2520;
+  --accent: #f0a500;
+  --accent-light: #241b0c;
+  --text: #f0e8d8;
+  --text-dim: #c8b995;
+  --text-muted: #b8a98a;
+  --white: #f4efe6;
   font-size: 16px;
 }
 .portfolio .container { max-width: 1240px; padding-inline: 40px; }
