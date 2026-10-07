@@ -4,6 +4,9 @@ on:
     paths:
       - 'react.samlatif.uk/**'
       - 'shared/**'
+      - 'analytics/**'
+      - 'scripts/react.nginx.conf'
+      - '.github/workflows/deploy-react-vps.yml'
       - '.github/workflows/check-site.yml'
 permissions:
   contents: read
@@ -20,6 +23,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: react.samlatif.uk/package-lock.json
+      - run: python3 ../analytics/test_server.py
+      - run: bash -n ../analytics/install.sh
       - run: npm ci
       - run: npm run test:lab
       - run: npm run build
