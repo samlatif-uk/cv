@@ -1,5 +1,6 @@
 import { ExploreCards } from "./ExploreCards";
 import { PROFILE } from "../data/cv";
+import { CompanyMark } from "./CompanyMark";
 
 export const Header = () => {
 
@@ -73,10 +74,10 @@ export const Header = () => {
             <p className="proof-label">EXPERIENCE THAT DELIVERS</p>
             <p className="proof-intro">Trusted with complex challenges.</p>
             <ul className="client-list">
-              <li>Bank of America <span>Engineering</span></li>
-              <li>Goldman Sachs <span>Trading platforms</span></li>
-              <li>Visa <span>Frontend delivery</span></li>
-              <li>Deutsche Bank <span>Modernisation</span></li>
+              <li><CompanyMark company="Bank of America" /><strong>Bank of America</strong><span>Engineering</span></li>
+              <li><CompanyMark company="Goldman Sachs" /><strong>Goldman Sachs</strong><span>Trading platforms</span></li>
+              <li><CompanyMark company="Visa" /><strong>Visa</strong><span>Frontend delivery</span></li>
+              <li><CompanyMark company="Deutsche Bank" /><strong>Deutsche Bank</strong><span>Modernisation</span></li>
             </ul>
             <p className="proof-note">React · TypeScript · Fullstack · UX</p>
           </aside>

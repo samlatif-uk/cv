@@ -5,6 +5,7 @@ import {
   JOBS,
 } from "../data/cv";
 import { getSkillMatchStrength, isSkillMatch } from "../utils/filterUtils";
+import { CompanyMark } from "./CompanyMark";
 
 const toCompanyKey = (value: string) =>
   value
@@ -426,7 +427,7 @@ export const Experience = ({
                 style={{ transitionDelay: `${index * 0.03}s` }}
               >
                 <div className="jhead">
-                  <div className="jco">{job.co}</div>
+                  <div className="jco"><CompanyMark company={job.co} />{job.co}</div>
                   <div className="jdate">{job.date}</div>
                 </div>
                 <div className="jtitle">{job.title}</div>
