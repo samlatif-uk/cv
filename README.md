@@ -6,22 +6,12 @@ A minimal personal CV / portfolio website for Sam Latif.
 
 ## Contents
 
-- `index.html` — the site homepage (static HTML).
-- `react.samlatif.uk/` — a modern React mirror of the CV, built with Vite and TypeScript.
+- `react.samlatif.uk/` — the primary site, built with React, Vite and TypeScript. Includes the CV, career atlas at `/lab/`, and case studies at `/lab/stories/`.
 - `network.samlatif.uk/` — Craftfolio network app (Next.js + Prisma + SQLite).
 
 ## Usage
 
-### Static HTML Version
-
-- To run the vanilla site locally using `serve`:
-
-  ```bash
-  npm install
-  npm run dev
-  ```
-
-### React Version
+### React site
 
 - To run the React version locally:
 
@@ -45,13 +35,13 @@ A minimal personal CV / portfolio website for Sam Latif.
 ## Deploy
 
 - Live site: https://samlatif.uk (deployed)
-- React version intended for: https://react.samlatif.uk
+- The same React build also serves https://react.samlatif.uk
 
 ### React VPS Auto Deploy (GitHub Actions)
 
 - Workflow file: `.github/workflows/deploy-react-vps.yml`
-- Trigger: push to `main` when React, static site, shared data/assets, or workflow files change
-- Shared static assets synced include: `shared/cv-data.json`, `shared/filter-utils.js`, `shared/vanilla-site.js`, `shared/site.css`, `shared/ui-shared.css`
+- Trigger: push to `main` when React, shared data/assets, or workflow files change
+- The complete React build (including `/lab/`) is synced to both domain roots. The vanilla homepage is retired.
 - Required GitHub repository secrets:
   - `VPS_HOST` (example: `your-server.example.com`)
   - `VPS_USER` (example: `deploy`)

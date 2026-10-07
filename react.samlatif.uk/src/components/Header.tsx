@@ -1,7 +1,8 @@
+import { ExploreCards } from "./ExploreCards";
 import { PROFILE } from "../data/cv";
 
 export const Header = () => {
-  const activeSite: string = "react";
+
 
   const nameParts = PROFILE.name.trim().split(" ");
   const firstName = nameParts.slice(0, -1).join(" ") || PROFILE.name;
@@ -19,22 +20,14 @@ export const Header = () => {
         </h1>
         <div className="role">{PROFILE.headline}</div>
         <div className="hcontact">
+          <a href="/lab/stories/">Work in practice ↗</a>
+          <a href="/lab/">Career atlas ↗</a>
           <a href={`mailto:${PROFILE.email}`}>
             <em>◆</em>
             {PROFILE.email}
           </a>
-          <a
-            className={`site-link${activeSite === "vanilla" ? " active" : ""}`}
-            href="https://samlatif.uk"
-          >
-            <em>◆</em>Vanilla Site
-          </a>
-          <a
-            className={`site-link${activeSite === "react" ? " active" : ""}`}
-            href="https://react.samlatif.uk"
-          >
-            <em>◆</em>React Site
-          </a>
+
+
           <a
             href="https://uk.linkedin.com/in/samlatifuk"
             target="_blank"
@@ -89,6 +82,7 @@ export const Header = () => {
           </aside>
         </div>
       </div>
+        <div className="container"><ExploreCards /></div>
     </header>
   );
 };

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explore Sam Latif’s career in three dimensions. Discover the clients, technologies and people behind the work." />
+    <title>Career Atlas · Sam Latif</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <a class="skip" href="#project">Skip to selected engagement</a>
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Sam Latif, CV home"><span class="monogram">SL<span>·</span></span><span>Sam Latif<span class="brand-sub">ENGINEER & CREATIVE TECHNOLOGIST</span></span></a>
+      <nav aria-label="Main navigation"><a href="/lab/stories/">Work in practice <span aria-hidden="true">↗</span></a><a href="/">Read the CV <span aria-hidden="true">↗</span></a><a class="contact" href="mailto:hello@samlatif.uk">Let’s talk <span aria-hidden="true">↗</span></a></nav>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <div><p class="eyebrow"><span class="live-dot"></span> AN INTERACTIVE CAREER ATLAS <span class="edition">/ 001</span></p><h1 id="title">Experience.<br><span>Interconnected.</span></h1></div>
+        <div class="intro-copy"><p>Complex products. Considered experiences.<br>Explore the connections behind the work.</p><p class="intro-note">Each point is an engagement. Each line, a shared skill.</p></div>
+      </section>
+      <section class="workspace" aria-label="Interactive career explorer">
+        <div class="explorer">
+          <div class="filter-bar"><span class="micro">TRACE A SKILL</span><div class="skills" role="group" aria-label="Filter by skill"><button data-skill="All" aria-pressed="true">All work</button><button data-skill="React" aria-pressed="false">React</button><button data-skill="TypeScript" aria-pressed="false">TypeScript</button><button data-skill="UX" aria-pressed="false">UX & design</button><button data-skill="Three.js" aria-pressed="false">Three.js</button></div></div>
+          <div class="stage" id="stage" aria-label="Three-dimensional career map">
+            <div class="scene" id="scene" aria-hidden="true"></div>
+            <div class="labels" id="labels"></div>
+            <div class="coordinates" aria-hidden="true"><span>SL / CAREER FIELD</span><span>51.5072° N · LONDON</span></div>
+            <div class="scene-caption"><span class="caption-line"></span><span id="scene-status">Preparing the atlas…</span></div>
+            <div class="scene-tools" role="group" aria-label="Map controls"><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-out" aria-label="Zoom out">−</button><button id="reset" aria-label="Reset camera">↺</button><button id="motion" aria-pressed="false">Pause motion</button></div>
+            <div class="fallback" id="fallback" hidden><span class="fallback-orbit" aria-hidden="true">◎</span><h2>Your career, connected.</h2><p>3D is unavailable in this browser. All engagements, skill filters and recommendations are still available below.</p></div>
+          </div>
+          <div class="map-footer"><div class="legend" role="group" aria-label="Filter by sector"><button data-sector="All" aria-pressed="true">All sectors</button><button data-sector="Finance" aria-pressed="false"><i class="finance"></i>Finance</button><button data-sector="Product" aria-pressed="false"><i class="product"></i>Product</button><button data-sector="Creative" aria-pressed="false"><i class="creative"></i>Creative tech</button></div><span id="count" class="micro" role="status"></span></div>
+        </div>
+        <aside class="project" id="project" aria-labelledby="project-name" tabindex="-1">
+          <div class="project-top"><span class="micro">ENGAGEMENT IN FOCUS</span><span id="project-number" class="micro"></span></div>
+          <div class="project-content"><p id="project-sector" class="eyebrow"></p><h2 id="project-name"></h2><p id="project-date" class="project-date"></p><h3 id="project-role"></h3><p id="project-description"></p><ul id="project-outcomes"></ul><div id="project-stack" class="project-stack"></div><div id="recommendations"></div></div>
+          <div class="project-bottom"><button id="previous" aria-label="Previous matching engagement">←</button><span id="position" class="micro"></span><button id="next" aria-label="Next matching engagement">→</button></div>
+        </aside>
+      </section>
+      <section class="timeline" aria-labelledby="timeline-heading">
+        <div class="timeline-top"><div><h2 id="timeline-heading">A career in motion<span>.</span></h2><p>Move through the years. Follow the connections.</p></div><div class="time-controls"><label for="year">Through <output id="year-label" for="year"></output></label><input id="year" type="range" min="2012" max="2024" value="2024" step="1" /><button id="clear">Show all work ↗</button></div></div>
+        <div class="timeline-rail" id="timeline-rail" aria-label="Matching engagements"></div>
+        <p id="empty" hidden>No engagements match these filters. Try another skill, sector or year.</p>
+        <label class="browse-label" for="engagement">BROWSE ENGAGEMENTS <select id="engagement"></select></label>
+      </section>
+    </main>
+    <footer><span>Sam Latif <span class="footer-muted">/ Engineering with an eye for experience.</span></span><a href="/">Back to the CV ↗</a><span class="footer-muted">Built with Three.js · Made to explore</span></footer>
+    <noscript><div class="noscript">This interactive atlas needs JavaScript. <a href="/">Read the full CV instead.</a></div></noscript>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

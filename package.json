@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "dev": "serve .",
-    "build": "node ./scripts/build-filter-utils.mjs"
+    "dev": "npm --prefix react.samlatif.uk run dev",
+    "build": "npm --prefix react.samlatif.uk run build",
+    "build:filters": "node ./scripts/build-filter-utils.mjs"
   },
   "devDependencies": {
     "serve": "^14.2.5"
