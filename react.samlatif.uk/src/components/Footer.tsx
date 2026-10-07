@@ -1,7 +1,7 @@
 import { PROFILE } from "../data/cv";
 
 export const Footer = () => {
-  const activeSite: string = "react";
+
 
   return (
     <footer>
@@ -11,19 +11,9 @@ export const Footer = () => {
         <div className="finfo">
           <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
           &nbsp;·&nbsp;
-          <a
-            className={`site-link${activeSite === "vanilla" ? " active" : ""}`}
-            href="https://samlatif.uk"
-          >
-            Vanilla Site
-          </a>
+          <a href="/lab/stories/">Work in practice</a>
           &nbsp;·&nbsp;
-          <a
-            className={`site-link${activeSite === "react" ? " active" : ""}`}
-            href="https://react.samlatif.uk"
-          >
-            React Site
-          </a>
+          <a href="/lab/">Career atlas</a>
         </div>
       </div>
     </footer>
