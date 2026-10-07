@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { jobs, recommendations, firstYear, lastYear, matchingJobs, commonSkills } from './atlas-data.js';
 import './style.css';
+import { makeBadge } from './node-badge.js';
 
 const $ = id => document.getElementById(id);
 const colors = { Finance: '#f0a500', Product: '#f0e8d8', Creative: '#a67c42' };
@@ -115,7 +116,7 @@ function createAtlas() {
   host.append(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(40, 1, .1, 100);
-  camera.position.set(0, 3.2, 16);
+  camera.position.set(0, 2.8, 14);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = .065;
@@ -123,13 +124,13 @@ function createAtlas() {
   controls.enablePan = false;
   controls.minPolarAngle = .55;
   controls.maxPolarAngle = Math.PI - .55;
-  controls.autoRotateSpeed = .22;
+  controls.autoRotateSpeed = .12;
   controls.target.set(0, 0, 0);
   scene.add(new THREE.AmbientLight(0xf0e8d8, 1.8));
   const key = new THREE.PointLight(0xffd299, 80, 30); key.position.set(2, 5, 7); scene.add(key);
   const fill = new THREE.PointLight(0xd9b36d, 35, 25); fill.position.set(-5, -2, 4); scene.add(fill);
   const root = new THREE.Group(); scene.add(root);
-  const geometry = new THREE.IcosahedronGeometry(1, 2);
+  const badgeTextures = new Map();
   const nodes = [];
   const labels = [];
   const sectorIndices = { Finance: 0, Product: 0, Creative: 0 };
@@ -141,10 +142,11 @@ function createAtlas() {
     const radius = .7 + Math.sqrt(ordinal) * .45;
     const center = centers[job.sector];
     const position = new THREE.Vector3(center[0] + Math.cos(angle) * radius, center[1] + Math.sin(angle) * radius * .85, center[2] + Math.sin(ordinal * 1.7) * 1.2);
-    const material = new THREE.MeshStandardMaterial({ color: colors[job.sector], emissive: colors[job.sector], emissiveIntensity: .25, roughness: .3, metalness: .5, transparent: true });
-    const mesh = new THREE.Mesh(geometry, material);
+    if (!badgeTextures.has(job.co)) badgeTextures.set(job.co, makeBadge(job.co));
+    const material = new THREE.SpriteMaterial({ map: badgeTextures.get(job.co), transparent: true, depthTest: false });
+    const mesh = new THREE.Sprite(material);
     mesh.position.copy(position);
-    const size = anchors.has(job.id) ? .14 : .085;
+    const size = anchors.has(job.id) ? .9 : .65;
     mesh.scale.setScalar(size);
     mesh.userData = { id: job.id, size, targetScale: size };
     root.add(mesh); nodes.push(mesh);
@@ -167,10 +169,14 @@ function createAtlas() {
       const middle = start.clone().add(end).multiplyScalar(.5); middle.z -= .5;
       const curve = new THREE.QuadraticBezierCurve3(start, middle, end);
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)), new THREE.LineBasicMaterial({ color: 0x9b804d, transparent: true, opacity: .18 }));
-      root.add(line); edges.push({ line, a: index, b: other.id, skills });
+      root.add(line); edges.push({ line, curve, a: index, b: other.id, skills });
     });
   });
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(.3, .008, 6, 64), new THREE.MeshBasicMaterial({ color: 0xf0a500, transparent: true, opacity: .8 }));
+  const pulseGeometry = new THREE.SphereGeometry(.035, 6, 6);
+  const pulseMaterial = new THREE.MeshBasicMaterial({color: 0xffd078});
+  const pulses = edges.map(edge => { const dot = new THREE.Mesh(pulseGeometry, pulseMaterial);root.add(dot);return {dot,edge}; });
+  let flowTime = 0;
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(.61, .012, 8, 80), new THREE.MeshBasicMaterial({ color: 0xf0a500, transparent: true, opacity: .8 }));
   root.add(halo);
   // Fine meridians give the field a sculptural form without obscuring the data.
   const scaffold = new THREE.Group(); root.add(scaffold);
@@ -204,7 +210,7 @@ function createAtlas() {
   };
   const reset = () => {
     targetFocus = null; controls.target.set(0, 0, 0);
-    camera.position.set(0, 3.2, compact ? 22 : 16);
+    camera.position.set(0, 3.2, compact ? 22 : 14);
     controls.update();
   };
   const observer = new ResizeObserver(() => { const old = compact; resize(); if (old !== compact) reset(); });
@@ -214,15 +220,15 @@ function createAtlas() {
     nodes.forEach((mesh, id) => {
       mesh.userData.active = ids.has(id);
       mesh.material.opacity = ids.has(id) ? 1 : .09;
-      mesh.material.emissiveIntensity = id === state.selected ? 1.2 : .25;
-      mesh.userData.targetScale = mesh.userData.size * (id === state.selected ? 1.55 : 1);
+      mesh.renderOrder = id === state.selected ? 10 : 1;
+      mesh.userData.targetScale = mesh.userData.size * (id === state.selected ? 1.3 : 1);
       labels[id].setAttribute('aria-pressed', String(id === state.selected));
     });
     edges.forEach(edge => {
       const active = ids.has(edge.a) && ids.has(edge.b);
       const selected = state.selected === edge.a || state.selected === edge.b;
       edge.line.material.color.set(selected ? 0xf0a500 : 0x9e8455);
-      edge.line.material.opacity = !active ? .025 : selected ? .55 : .19;
+      edge.line.material.opacity = !active ? .015 : selected ? .8 : .1;
     });
     halo.visible = state.selected >= 0;
     if (halo.visible) halo.position.copy(nodes[state.selected].position);
@@ -230,6 +236,7 @@ function createAtlas() {
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let down = null;
+  let hovered = -1;
   const onDown = event => { down = [event.clientX, event.clientY]; targetFocus = null; };
   const onUp = event => {
     if (!down || Math.hypot(event.clientX - down[0], event.clientY - down[1]) > 8) return;
@@ -240,6 +247,18 @@ function createAtlas() {
     if (hit) selectJob(hit.object.userData.id);
     down = null;
   };
+  const onMove = event => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);
+    raycaster.setFromCamera(pointer,camera);
+    const hit = raycaster.intersectObjects(nodes).find(item => item.object.userData.active);
+    hovered = hit?.object.userData.id ?? -1;
+    renderer.domElement.style.cursor = hovered >= 0 ? 'pointer' : 'grab';
+    $('scene-status').textContent = hovered >= 0 ? jobs[hovered].co + ' · ' + jobs[hovered].date : 'Drag to orbit · Select a company to explore';
+  };
+  const onLeave = () => { hovered = -1; $('scene-status').textContent = 'Drag to orbit · Select a company to explore'; };
+  renderer.domElement.addEventListener('pointermove', onMove);
+  renderer.domElement.addEventListener('pointerleave', onLeave);
   renderer.domElement.addEventListener('pointerdown', onDown);
   renderer.domElement.addEventListener('pointerup', onUp);
   const tick = time => {
@@ -253,6 +272,11 @@ function createAtlas() {
     }
     controls.update(delta);
     halo.quaternion.copy(camera.quaternion);
+    if (!state.paused && !motionQuery.matches) flowTime += delta * .18;
+    pulses.forEach(({dot,edge}, index) => {
+      dot.visible = !motionQuery.matches && !state.paused && nodes[edge.a].userData.active && nodes[edge.b].userData.active && (edge.a === state.selected || edge.b === state.selected);
+      if (dot.visible) dot.position.copy(edge.curve.getPoint((flowTime + index * .137) % 1));
+    });
     nodes.forEach(mesh => mesh.scale.lerp(new THREE.Vector3().setScalar(mesh.userData.targetScale), .12));
     renderer.render(scene, camera);
     if (frame++ % 2 === 0) {
@@ -261,11 +285,11 @@ function createAtlas() {
       let labelCount = 0;
       for (const job of order) {
         const label = labels[job.id];
-        const wanted = nodes[job.id].userData.active && (anchors.has(job.id) || job.id === state.selected || visible.length < 9);
+        const wanted = nodes[job.id].userData.active && (job.id === hovered || job.id === state.selected);
         if (!wanted || labelCount >= (compact ? 4 : 8)) { label.hidden = true; continue; }
         projected.copy(nodes[job.id].position).project(camera);
         const x = (projected.x * .5 + .5) * width;
-        const y = (-projected.y * .5 + .5) * height - 26;
+        const y = (-projected.y * .5 + .5) * height - 38;
         const half = Math.min(150, job.co.length * 3.2 + 17);
         const collision = occupied.some(box => Math.abs(box.x - x) < box.half + half && Math.abs(box.y - y) < 42);
         const outside = projected.z > 1 || x < half + 8 || x > width - half - 8 || y < 60 || y > height - 100;
@@ -289,11 +313,14 @@ function createAtlas() {
       if (disposed) return; disposed = true;
       renderer.setAnimationLoop(null); observer.disconnect(); controls.dispose();
       document.removeEventListener('visibilitychange', onVisibility);
+      renderer.domElement.removeEventListener('pointermove', onMove);
+      renderer.domElement.removeEventListener('pointerleave', onLeave);
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('webglcontextlost', onLost);
       const geometries = new Set(); const materials = new Set();
       scene.traverse(object => { if(object.geometry) geometries.add(object.geometry); if(object.material) materials.add(object.material); });
+      badgeTextures.forEach(texture => texture.dispose());
       geometries.forEach(item => item.dispose()); materials.forEach(item => item.dispose()); renderer.dispose(); renderer.domElement.remove(); $('labels').replaceChildren();
     },
   };
