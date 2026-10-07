@@ -27,7 +27,9 @@ export function makeBadge(company) {
     logo.paths.forEach(path=>ctx.fill(new Path2D(path)));ctx.restore();
   } else {
     const initials = alias?.[0] || company.replace(/\([^)]*\)/g,'').replace(/[^a-zA-Z0-9 ]/g,' ').trim().split(/\s+/).slice(0,2).map(word=>word[0]).join('').toUpperCase();
-    ctx.fillStyle='#f0e8d8';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='600 62px Arial';ctx.fillText(initials,128,132);
+    const shortName = company.replace(/\([^)]*\)/g,'').replace(/, University of London/i,'').replace(/ Consulting/i,'').trim();
+    ctx.fillStyle='#f0e8d8';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='600 58px Arial';ctx.fillText(initials,128,119);
+    ctx.font='600 13px Arial';ctx.fillStyle='#080808';ctx.fillText(shortName.slice(0,18).toUpperCase(),128,164);
   }
   const texture = new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
   return texture;
