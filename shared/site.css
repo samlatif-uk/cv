@@ -912,6 +912,21 @@ footer {
 .portfolio .client-list { list-style: none; }
 .portfolio .client-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 14px 0; border-top: 1px solid var(--border); font-size: 14px; font-weight: 600; }
 .portfolio .client-list span { color: var(--text-muted); font-size: 11px; font-weight: 400; align-self: center; }
+.portfolio .client-list li { align-items: center; }
+.portfolio .client-list strong { flex: 1; min-width: 130px; }
+.portfolio .company-mark { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; letter-spacing: -.04em; font-weight: 800; }
+.portfolio .company-mark-sm { width: 30px; height: 30px; font-size: 9px; }
+.portfolio .company-mark-md { width: 36px; height: 36px; font-size: 10px; }
+.portfolio .company-mark-image { object-fit: contain; background: white; }
+.portfolio .client-list .company-mark { color: white; font-weight: 800; }
+.portfolio .company-mark-red { color: #fff; background: #b0162d; }
+.portfolio .company-mark-blue { color: #fff; background: #1f4f86; }
+.portfolio .company-mark-visa { color: #fff; background: #1434cb; font-style: italic; }
+.portfolio .company-mark-cobalt { color: #fff; background: #0018a8; }
+.portfolio .company-mark-green { color: #fff; background: #86bc25; }
+.portfolio .company-mark-gold { color: #20170d; background: var(--accent); }
+.portfolio .company-mark-violet { color: #fff; background: #5d4bb7; }
+.portfolio .company-mark-ink { color: var(--accent); background: var(--ink); border: 1px solid var(--border); }
 .portfolio .proof-note { color: var(--text-muted); font-size: 11px; margin-top: 16px; }
 .portfolio nav { background: var(--bg); }
 .portfolio nav a { font-size: 11px; letter-spacing: .04em; border-right: 0; padding: 18px 20px; }
@@ -929,7 +944,7 @@ footer {
 .portfolio .tl::before, .portfolio .job::before { display: none; }
 .portfolio .job { padding: 30px; margin-bottom: 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); }
 .portfolio .job:first-child { border-top: 3px solid var(--accent); }
-.portfolio .jco { font-size: 23px; letter-spacing: -.025em; }
+.portfolio .jco { display: flex; align-items: center; gap: 12px; font-size: 23px; letter-spacing: -.025em; }
 .portfolio .jdate { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); font-size: 11px; letter-spacing: 0; }
 .portfolio .jtitle { color: var(--accent); letter-spacing: .06em; margin: 7px 0 18px; }
 .portfolio .jdesc, .portfolio .jbuls li { font-size: 15px; max-width: 850px; line-height: 1.75; }
