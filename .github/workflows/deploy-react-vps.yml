@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - react.samlatif.uk/**
+      - analytics/**
+      - scripts/react.nginx.conf
       - shared/cv-data.json
       - shared/filter-utils.js
       - shared/site.css
@@ -196,6 +198,19 @@ jobs:
             echo "Failed to create remote deploy directories after retries."
             exit 1
           fi
+
+      - name: Install first-party analytics
+        run: |
+          DEPLOY_USER="${{ secrets.VPS_USER }}"
+          DEPLOY_USER="${DEPLOY_USER:-root}"
+          STATIC_DEPLOY_PATH="${{ secrets.STATIC_DEPLOY_PATH }}"
+          STATIC_DEPLOY_PATH="${STATIC_DEPLOY_PATH:-/var/www/samlatif.uk}"
+          DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
+          DEPLOY_PATH="${DEPLOY_PATH:-/var/www/react.samlatif.uk}"
+          SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1"
+          ssh $SSH_OPTS "$DEPLOY_USER@vps-target" "mkdir -p /opt/sam-analytics-source"
+          rsync -az -e "ssh $SSH_OPTS" analytics/ "$DEPLOY_USER@vps-target:/opt/sam-analytics-source/"
+          ssh $SSH_OPTS "$DEPLOY_USER@vps-target" "bash /opt/sam-analytics-source/install.sh '$STATIC_DEPLOY_PATH' '$DEPLOY_PATH'"
 
       - name: Sync React nginx vhost config
         run: |

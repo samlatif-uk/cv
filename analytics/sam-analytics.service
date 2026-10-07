@@ -1,0 +1,22 @@
+[Unit]
+Description=Sam Latif first-party analytics
+After=network.target
+
+[Service]
+User=sam-analytics
+Group=sam-analytics
+WorkingDirectory=/opt/sam-analytics
+ExecStart=/usr/bin/python3 /opt/sam-analytics/server.py
+EnvironmentFile=/etc/sam-analytics.env
+StateDirectory=sam-analytics
+StateDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_UNIX
+
+[Install]
+WantedBy=multi-user.target
