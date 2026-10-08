@@ -32,5 +32,19 @@ export function makeBadge(company) {
     ctx.font='600 13px Arial';ctx.fillStyle='#080808';ctx.fillText(shortName.slice(0,18).toUpperCase(),128,164);
   }
   const texture = new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+  if (company === 'Deloitte Digital') {
+    const image = new Image();
+    image.onload = () => {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(128,128,90,0,Math.PI*2); ctx.clip();
+      ctx.fillStyle = '#000'; ctx.fillRect(38,38,180,180);
+      const scale = Math.min(180 / image.naturalWidth, 180 / image.naturalHeight);
+      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
+      ctx.drawImage(image,128-width/2,128-height/2,width,height);
+      ctx.restore();
+      texture.needsUpdate = true;
+    };
+    image.src = '/logos/deloitte.png';
+  }
   return texture;
 }

@@ -22,8 +22,9 @@ const getMeta = (company: string) => {
 export const CompanyMark = ({ company, size = "sm" }: CompanyMarkProps) => {
   const [failedImage, setFailedImage] = useState(false);
   const meta = getMeta(company);
-  if (company === "Anmut Consulting" && !failedImage) {
-    return <img className={`company-mark company-mark-${size} company-mark-image`} src="/logos/anmut.jpg" alt="" width="30" height="30" loading="lazy" onError={() => setFailedImage(true)} />;
+  const imageSrc = company === "Deloitte Digital" ? "/logos/deloitte.png" : company === "Anmut Consulting" ? "/logos/anmut.jpg" : null;
+  if (imageSrc && !failedImage) {
+    return <img className={`company-mark company-mark-${size} company-mark-image`} src={imageSrc} alt="" width="30" height="30" loading="lazy" onError={() => setFailedImage(true)} />;
   }
   const key = Object.keys(logos).find((name) => company.includes(name));
   if (key) {
