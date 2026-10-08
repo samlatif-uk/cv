@@ -1,4 +1,4 @@
-/* First-party page views only. No cookies, identifiers, query strings or form data. */
+/* First-party analytics. No cookies, browser storage, query strings or form data. Server estimates daily visitors and country; see analytics/README.md. */
 (() => {
   if (!['samlatif.uk', 'www.samlatif.uk', 'react.samlatif.uk'].includes(location.hostname)) return;
   if (navigator.doNotTrack === '1' || navigator.globalPrivacyControl) return;

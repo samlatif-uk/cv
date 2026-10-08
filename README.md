@@ -28,7 +28,7 @@ Role and recommendation content comes from `shared/cv-data.json`. Three.js and c
 
 ## First-party analytics
 
-`analytics/` contains a Python and SQLite service used by the VPS. It records aggregate page views by known page, UTC day, referring hostname, coarse device type and browser family. It does not store cookies, visitor IDs, IP addresses, query strings or form data, and respects Do Not Track and Global Privacy Control.
+`analytics/` contains a Python and SQLite service used by the VPS. It reports page views, estimated daily unique visitors, visits after 30 minutes of inactivity, views per visit, and approximate countries. Country lookups use a local DB-IP database. Daily salted visitor hashes expire after 90 days; no raw IP addresses, cookies, browser storage IDs, query strings or form data are stored. Do Not Track and Global Privacy Control are respected. Multi-day unique totals are labelled visitor-days, and historical data is not backfilled. See [analytics documentation](analytics/README.md) for definitions and setup.
 
 ```bash
 python3 analytics/test_server.py

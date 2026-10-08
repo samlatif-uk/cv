@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import datetime as dt
 import http.client
 import json
 from pathlib import Path
@@ -8,7 +9,7 @@ import threading
 import unittest
 import uuid
 from http.server import ThreadingHTTPServer
-from server import Store, handler_for, normalize
+from server import Store, handler_for, normalize, public_address, GeoLocation
 
 class AnalyticsTests(unittest.TestCase):
     def setUp(self):
@@ -57,5 +58,41 @@ class AnalyticsTests(unittest.TestCase):
         self.store.record(event)
         with self.store.connect() as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM views WHERE day='2000-01-01'").fetchone()[0],0)
+
+    def test_daily_unique_visitors_sessions_and_countries(self):
+        event = normalize({'path':'/'}, 'Chrome/120')
+        now = dt.datetime.now(dt.timezone.utc).replace(hour=10, minute=0, second=0, microsecond=0)
+        for minute in (0, 1, 31):
+            self.store.record(event, '8.8.8.8', 'Chrome/120', 'US', now + dt.timedelta(minutes=minute))
+        self.store.record(event, '1.1.1.1', 'Safari/1', 'AU', now)
+        stats = self.store.stats(7)
+        self.assertEqual((stats['total'], stats['daily_uniques'], stats['sessions'], stats['audience_views']), (4, 2, 3, 4))
+        self.assertEqual(sum(row['count'] for row in stats['country']), 2)
+        with self.store.connect() as db:
+            self.assertNotIn('8.8.8.8', str(db.execute('SELECT * FROM audience').fetchall()))
+        self.store.record(event, '8.8.8.8', 'Chrome/120', 'US', now + dt.timedelta(days=1))
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM daily_salt').fetchone()[0], 1)
+            self.assertEqual(db.execute('SELECT COUNT(DISTINCT visitor) FROM audience').fetchone()[0], 3)
+            self.assertIsNone(db.execute('SELECT last_seen FROM audience WHERE day=? LIMIT 1', (str(now.date()),)).fetchone()[0])
+
+    def test_legacy_and_missing_identity_are_not_fake_uniques(self):
+        self.store.record(normalize({'path':'/'}, 'Chrome/120'))
+        stats = self.store.stats(30)
+        self.assertEqual(stats['total'], 1)
+        self.assertEqual(stats['daily_uniques'], 0)
+        self.assertIsNone(stats['audience_since'])
+        self.assertEqual(GeoLocation('/missing.mmdb').country('8.8.8.8'), 'Unknown')
+        for value in ('', 'garbage', '127.0.0.1', '10.0.0.1', '8.8.8.8, 1.1.1.1'):
+            self.assertIsNone(public_address(value))
+        self.assertEqual(public_address('::ffff:8.8.8.8'), '8.8.8.8')
+
+    def test_collector_trusted_header_and_opt_out(self):
+        headers = {'Origin':'https://samlatif.uk', 'Content-Type':'application/json', 'User-Agent':'Chrome/120', 'X-Analytics-IP':'8.8.8.8'}
+        for extra in ({}, {}, {'Sec-GPC':'1'}, {'DNT':'1'}, {'User-Agent':'Googlebot'}):
+            self.assertEqual(self.request('POST', '/api/visit', '{"path":"/"}', {**headers, **extra})[0], 204)
+        stats = self.store.stats(7)
+        self.assertEqual((stats['daily_uniques'], stats['sessions'], stats['total']), (1,1,2))
+        self.assertEqual(stats['country'], [{'label':'Unknown','count':1}])
 
 if __name__ == '__main__': unittest.main()
