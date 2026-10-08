@@ -3,12 +3,22 @@ set -euo pipefail
 [[ "$EUID" -eq 0 ]] || { echo 'Run analytics installation as root.'; exit 1; }
 command -v python3 >/dev/null
 command -v nginx >/dev/null
+if ! python3 -c 'import maxminddb' >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y python3-maxminddb
+fi
 SOURCE="$(cd "$(dirname "$0")" && pwd)"
 APEX_ROOT="${1:-/var/www/samlatif.uk}"
 REACT_ROOT="${2:-/var/www/react.samlatif.uk}"
 id sam-analytics >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin sam-analytics
 install -d -m 755 /opt/sam-analytics /etc/nginx/snippets
 install -m 644 "$SOURCE"/server.py "$SOURCE"/dashboard.html "$SOURCE"/dashboard.js "$SOURCE"/dashboard.css /opt/sam-analytics/
+install -d -o sam-analytics -g sam-analytics -m 700 /var/lib/sam-analytics
+install -m 644 "$SOURCE/update_geo.py" /opt/sam-analytics/update_geo.py
+python3 /opt/sam-analytics/update_geo.py || echo 'Country database update failed; existing data will be retained, or location will show Unknown.'
+cat > /etc/cron.d/sam-analytics-geo <<'EOF'
+17 4 3 * * root /usr/bin/python3 /opt/sam-analytics/update_geo.py && /usr/bin/systemctl restart sam-analytics
+EOF
 if [[ ! -f /etc/sam-analytics.env ]]; then
   python3 - <<'PY'
 import hashlib, os, secrets
