@@ -156,8 +156,8 @@ jobs:
           PORT="${{ secrets.VPS_PORT }}"
           PORT="${PORT:-22}"
           ssh-keyscan -T 10 -p "$PORT" -t ed25519 -H "$HOST" 2>/dev/null > ~/.ssh/known_hosts
-          ACTUAL_FINGERPRINT=$(ssh-keygen -lf ~/.ssh/known_hosts -E sha256 | awk '{print $2}' | tr -d '\r\n[:space:]')
-          VPS_HOST_KEY_SHA256=$(printf '%s' "$VPS_HOST_KEY_SHA256" | tr -d '\r\n[:space:]')
+          ACTUAL_FINGERPRINT=$(ssh-keygen -lf ~/.ssh/known_hosts -E sha256 | awk '{print $2}' | tr -d '[:space:]')
+          VPS_HOST_KEY_SHA256=$(printf '%s' "$VPS_HOST_KEY_SHA256" | tr -d '[:space:]')
           if [ "$ACTUAL_FINGERPRINT" != "$VPS_HOST_KEY_SHA256" ]; then
             echo "VPS SSH host-key fingerprint mismatch. Refusing deployment."
             exit 1
