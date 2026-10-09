@@ -1,9 +1,25 @@
+import { useLayoutEffect, useRef } from "react";
+
 interface NavProps {
   activeNav: string;
 }
 
-export const Nav = ({ activeNav }: NavProps) => (
-  <nav aria-label="Sections">
+export const Nav = ({ activeNav }: NavProps) => {
+  const navRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const updateHeight = () => document.documentElement.style.setProperty("--section-nav-height", `${nav.getBoundingClientRect().height}px`);
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(nav);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--section-nav-height");
+    };
+  }, []);
+  return (
+  <nav ref={navRef} aria-label="Sections">
     <div className="container">
       <div className="nav-inner">
         <a href="#overview" className={activeNav === "overview" ? "act" : ""}>
@@ -33,4 +49,5 @@ export const Nav = ({ activeNav }: NavProps) => (
       </div>
     </div>
   </nav>
-);
+  );
+};
