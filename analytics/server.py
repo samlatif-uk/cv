@@ -1,5 +1,8 @@
 """Small first-party analytics service. Bind only to loopback behind nginx."""
-import base64
+import time
+import threading
+import urllib.request
+from http.cookies import SimpleCookie
 from contextlib import contextmanager
 import datetime as dt
 import hashlib
@@ -130,7 +133,30 @@ class Store:
             result['audience_since'] = since[0] if since else None
         return result
 
-def handler_for(store, password_hash, geo=None):
+def handler_for(store, password_hash, geo=None, secure_cookies=True):
+    sessions = {}
+    lock = threading.Lock()
+    status_cache = {}
+    cookie_name = '__Host-sam_session' if secure_cookies else 'sam_dev_session'
+    policy = {"Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer"}
+
+    def site_status():
+        with lock:
+            if status_cache.get('expires', 0) > time.time():
+                return status_cache['value']
+        checks = []
+        for path, name in PATHS.items():
+            started = time.monotonic()
+            try:
+                with urllib.request.urlopen('https://samlatif.uk' + path, timeout=2) as response:
+                    ok = response.status == 200 and response.headers.get_content_type() == 'text/html'
+                checks.append({'name': name, 'path': path, 'available': ok, 'ms': round((time.monotonic()-started)*1000)})
+            except Exception:
+                checks.append({'name': name, 'path': path, 'available': False, 'ms': None})
+        result = {'checked_at': dt.datetime.now(dt.timezone.utc).isoformat(), 'pages': checks, 'geo_available': bool(geo and geo.reader)}
+        with lock:
+            status_cache.update(value=result, expires=time.time()+60)
+        return result
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
             pass  # Do not retain IPs, URLs or credentials in application logs.
@@ -140,27 +166,49 @@ def handler_for(store, password_hash, geo=None):
             self.send_header('Content-Type', content_type)
             self.send_header('Cache-Control', 'no-store')
             self.send_header('X-Content-Type-Options', 'nosniff')
-            for key, value in (headers or {}).items():
+            for key, value in {**policy, **(headers or {})}.items():
                 self.send_header(key, value)
             self.send_header('Content-Length', str(len(body)))
             self.end_headers()
             self.wfile.write(body)
 
-        def authorized(self):
+        def token(self):
             try:
-                scheme, token = self.headers.get('Authorization', '').split(' ', 1)
-                user, password = base64.b64decode(token, validate=True).decode().split(':', 1)
-                return scheme.lower() == 'basic' and user == 'sam' and hmac.compare_digest(hashlib.sha256(password.encode()).hexdigest(), password_hash)
-            except (ValueError, UnicodeError):
-                return False
+                cookies = SimpleCookie(self.headers.get('Cookie', ''))
+                return cookies[cookie_name].value if cookie_name in cookies else ''
+            except Exception:
+                return ''
+
+        def authorized(self):
+            with lock:
+                now = time.time()
+                for token in list(sessions):
+                    if sessions[token] <= now:
+                        del sessions[token]
+                return self.token() in sessions
+
+        def cookie(self, token='', age=0):
+            return f'{cookie_name}={token}; Path=/; HttpOnly; SameSite=Strict; Max-Age={age}' + ('; Secure' if secure_cookies else '')
+
+        def same_origin(self):
+            origin = self.headers.get('Origin', '')
+            return origin == ('https://' if secure_cookies else 'http://') + self.headers.get('Host', '') and (not secure_cookies or self.headers.get('Host') in HOSTS)
 
         def do_GET(self):
             if self.path == '/health':
                 return self.respond(200, b'{"ok":true}')
             if not self.path.startswith('/insights/'):
                 return self.respond(404)
+            public = {'/insights/login': ('login.html', 'text/html; charset=utf-8'), '/insights/login.js': ('login.js', 'text/javascript'), '/insights/dashboard.css': ('dashboard.css', 'text/css')}
+            if self.path in public:
+                filename, mime = public[self.path]
+                return self.respond(200, (ROOT / filename).read_bytes(), mime)
             if not self.authorized():
-                return self.respond(401, headers={'WWW-Authenticate': 'Basic realm="Sam Latif analytics", charset="UTF-8"'})
+                if self.path in ('/insights/', '/insights/home'):
+                    return self.respond(303, headers={'Location': '/insights/login'})
+                return self.respond(401)
+            if self.path == '/insights/site-status':
+                return self.respond(200, json.dumps(site_status()).encode())
             if self.path.startswith('/insights/stats?days='):
                 try:
                     days = int(self.path.split('=')[1])
@@ -171,13 +219,40 @@ def handler_for(store, password_hash, geo=None):
                     return self.respond(200, json.dumps(stats).encode())
                 except ValueError:
                     return self.respond(400)
-            files = {'/insights/': ('dashboard.html', 'text/html; charset=utf-8'), '/insights/dashboard.js': ('dashboard.js', 'text/javascript'), '/insights/dashboard.css': ('dashboard.css', 'text/css')}
+            files = {'/insights/home': ('home.html', 'text/html; charset=utf-8'), '/insights/home.js': ('home.js', 'text/javascript'), '/insights/session.js': ('session.js', 'text/javascript'), '/insights/': ('dashboard.html', 'text/html; charset=utf-8'), '/insights/dashboard.js': ('dashboard.js', 'text/javascript'), '/insights/dashboard.css': ('dashboard.css', 'text/css')}
             if self.path not in files:
                 return self.respond(404)
             filename, mime = files[self.path]
-            return self.respond(200, (ROOT / filename).read_bytes(), mime, {'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'", 'X-Frame-Options': 'DENY'})
+            return self.respond(200, (ROOT / filename).read_bytes(), mime)
 
         def do_POST(self):
+            if self.path in ('/insights/login', '/insights/logout'):
+                if not self.same_origin():
+                    return self.respond(403)
+                if self.path == '/insights/logout':
+                    with lock:
+                        sessions.pop(self.token(), None)
+                    return self.respond(204, headers={'Set-Cookie': self.cookie()})
+                try:
+                    length = int(self.headers.get('Content-Length', '0'))
+                    if not 0 < length <= 1024 or self.headers.get_content_type() != 'application/json':
+                        return self.respond(400)
+                    data = json.loads(self.rfile.read(length))
+                    password = data.get('password') if isinstance(data, dict) else None
+                    if not isinstance(password, str):
+                        return self.respond(400)
+                    if not hmac.compare_digest(hashlib.sha256(password.encode()).hexdigest(), password_hash):
+                        return self.respond(401)
+                    self.authorized()  # Prune expired sessions before issuing another.
+                    token = secrets.token_urlsafe(32)
+                    with lock:
+                        sessions.pop(self.token(), None)
+                        if len(sessions) >= 100:
+                            sessions.pop(next(iter(sessions)))
+                        sessions[token] = time.time() + 28800
+                    return self.respond(204, headers={'Set-Cookie': self.cookie(token, 28800)})
+                except (ValueError, UnicodeError):
+                    return self.respond(400)
             if self.path != '/api/visit':
                 return self.respond(404)
             if self.headers.get('Origin') not in {'https://' + host for host in HOSTS}:
@@ -206,5 +281,5 @@ if __name__ == '__main__':
         raise SystemExit('Set ANALYTICS_PASSWORD_SHA256 before starting.')
     store = Store(os.environ.get('ANALYTICS_DB', '/var/lib/sam-analytics/views.sqlite'))
     geo = GeoLocation(os.environ.get('ANALYTICS_GEO_DB', '/var/lib/sam-analytics/country.mmdb'))
-    server = ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('ANALYTICS_PORT', '4180'))), handler_for(store, password_hash, geo))
+    server = ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('ANALYTICS_PORT', '4180'))), handler_for(store, password_hash, geo, secure_cookies=os.environ.get('ANALYTICS_LOCAL_HTTP') != '1'))
     server.serve_forever()

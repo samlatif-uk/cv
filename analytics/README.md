@@ -5,7 +5,7 @@ daily aggregate counts in SQLite on the VPS. Betterlytics is removed.
 
 ## Dashboard
 
-After deployment, open `https://samlatif.uk/insights/`. Username: `sam`.
+After deployment, open `https://samlatif.uk/insights/login`.
 Retrieve the generated password from the VPS using:
 
 ```sh
@@ -14,8 +14,7 @@ sudo cat /root/sam-analytics-login.txt
 
 The password is generated once and retained through deployments. It is not
 committed, embedded in the site, or printed in CI logs. The service uses its hash.
-Use HTTPS. Browsers retain HTTP Basic credentials until the authenticated browser
-session closes; there is no application logout button.
+Use HTTPS. Sign out revokes your session immediately.
 
 ## Collected data and metrics
 
@@ -78,3 +77,12 @@ Run tests: `python3 analytics/test_server.py`. The dashboard is served directly
 by Python; it is not included in the public Vite build.
 
 Dashboard rendering regression test: `node analytics/test_dashboard.cjs`.
+
+
+## Workspace login and site overview
+
+Open `/insights/login` and enter the existing analytics password (no username required). Successful login opens `/insights/home`, with seven-day traffic totals and live HTTP checks for the CV, atlas and stories. `/insights/` retains the detailed charts. Checks are cached for one minute and do not claim historical uptime or full functional coverage.
+
+Authentication uses random server-side sessions with an eight-hour absolute expiry. Cookies are host-only, Secure, HttpOnly and SameSite=Strict. Sign out revokes the session; a service restart revokes all sessions. Login/logout require a same-origin request. nginx limits login requests to five per minute per IP with a burst of five. Basic authentication is no longer accepted. Existing password configuration is retained.
+
+For an isolated local HTTP preview only, set `ANALYTICS_LOCAL_HTTP=1`, `ANALYTICS_DB` to a disposable local database, `ANALYTICS_PORT` to an unused port and `ANALYTICS_PASSWORD_SHA256` to a test password hash. This uses a separate development cookie. Never enable local HTTP mode in production. The service still binds to loopback. Run the installer on deployment to copy the new pages and update nginx rate-limit configuration.

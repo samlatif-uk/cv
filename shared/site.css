@@ -677,7 +677,7 @@ h2 {
 .fbar {
   display: none;
   position: sticky;
-  top: 120px;
+  top: var(--section-nav-height, 56px);
   z-index: 15;
   align-items: center;
   gap: 12px;
