@@ -47,7 +47,9 @@ session closes; there is no application logout button.
 ## Country database
 
 Installation requires Debian/Ubuntu's `python3-maxminddb` package and downloads
-DB-IP's current monthly Country Lite database to
+DB-IP's current monthly Country Lite database (with the
+[sapics DB-IP mirror](https://github.com/sapics/ip-location-db) as a fallback for
+blocked downloads) to
 `/var/lib/sam-analytics/country.mmdb`. A monthly cron job refreshes it on the 3rd
 and restarts the service. Downloads are validated and atomically replaced; a
 failed update preserves the previous database. An initial failure is visible as
