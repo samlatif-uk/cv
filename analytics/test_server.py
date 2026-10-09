@@ -29,55 +29,12 @@ class AnalyticsTests(unittest.TestCase):
         conn.request(method, path, body, headers or {})
         response = conn.getresponse(); result = response.status, response.read(); conn.close(); return result
 
-    def login(self, password='test-password', origin='https://samlatif.uk'):
-        conn = http.client.HTTPConnection('127.0.0.1', self.server.server_port, timeout=5)
-        conn.request('POST', '/insights/login', json.dumps({'password':password}), {'Origin':origin, 'Host':'samlatif.uk', 'Content-Type':'application/json'})
-        response = conn.getresponse(); status = response.status; cookie = response.getheader('Set-Cookie'); response.read(); conn.close()
-        return status, cookie
-
     def test_dashboard_requires_auth_and_no_public_stats(self):
-        self.assertEqual(self.request('GET', '/insights/')[0], 303)
-        self.assertEqual(self.request('GET', '/insights/home')[0], 303)
-        self.assertEqual(self.request('GET', '/insights/login')[0], 200)
+        self.assertEqual(self.request('GET', '/insights/')[0], 401)
         self.assertEqual(self.request('GET', '/insights/stats?days=30')[0], 401)
-        self.assertEqual(self.request('GET', '/insights/site-status')[0], 401)
-        self.assertEqual(self.login('wrong')[0], 401)
-        self.assertEqual(self.login(origin='https://evil.example')[0], 403)
-        status, cookie = self.login()
-        self.assertEqual(status, 204)
-        for flag in ('Secure', 'HttpOnly', 'SameSite=Strict', 'Max-Age=28800', '__Host-sam_session='):
-            self.assertIn(flag, cookie)
-        auth = {'Cookie':cookie.split(';')[0]}
+        auth = {'Authorization':'Basic ' + base64.b64encode(b'sam:test-password').decode()}
         self.assertEqual(self.request('GET', '/insights/', headers=auth)[0], 200)
-        self.assertEqual(self.request('GET', '/insights/home', headers=auth)[0], 200)
         self.assertEqual(self.request('GET', '/insights/stats?days=0', headers=auth)[0], 400)
-        self.assertEqual(self.request('POST', '/insights/logout', headers=auth)[0], 403)
-        self.assertEqual(self.request('POST', '/insights/logout', headers={**auth,'Origin':'https://samlatif.uk','Host':'samlatif.uk'})[0], 204)
-        self.assertEqual(self.request('GET', '/insights/stats?days=30', headers=auth)[0], 401)
-
-    def test_expired_and_forged_sessions(self):
-        from unittest.mock import patch
-        status, cookie = self.login()
-        auth = {'Cookie':cookie.split(';')[0]}
-        self.assertEqual(self.request('GET', '/insights/stats?days=7', headers={'Cookie':'__Host-sam_session=forged'})[0], 401)
-        import time
-        with patch('server.time.time', return_value=time.time()+28801):
-            self.assertEqual(self.request('GET', '/insights/stats?days=7', headers=auth)[0], 401)
-
-    def test_site_checks_are_cached_and_report_failures(self):
-        from unittest.mock import patch, MagicMock
-        status, cookie = self.login()
-        auth = {'Cookie':cookie.split(';')[0]}
-        response = MagicMock()
-        response.__enter__.return_value = response
-        response.status = 200
-        response.headers.get_content_type.return_value = 'text/html'
-        with patch('server.urllib.request.urlopen', side_effect=[response, OSError('offline'), response]) as probe:
-            status, body = self.request('GET', '/insights/site-status', headers=auth)
-            self.assertEqual(status, 200)
-            self.assertEqual([p['available'] for p in json.loads(body)['pages']], [True, False, True])
-            self.assertEqual(self.request('GET', '/insights/site-status', headers=auth)[0], 200)
-            self.assertEqual(probe.call_count, 3)
 
     def test_collection_origin_validation_and_privacy(self):
         body = json.dumps({'path':'/lab/', 'referrer':'example.com'})

@@ -26,8 +26,6 @@ jobs:
       - run: python3 ../analytics/test_server.py
       - run: python3 ../analytics/test_update_geo.py
       - run: node ../analytics/test_dashboard.cjs
-      - run: sudo apt-get update && sudo apt-get install -y nginx
-      - run: python3 ../analytics/test_nginx.py
       - run: bash -n ../analytics/install.sh
       - run: npm ci
       - run: npm run test:lab

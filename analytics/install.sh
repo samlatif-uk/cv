@@ -12,7 +12,7 @@ APEX_ROOT="${1:-/var/www/samlatif.uk}"
 REACT_ROOT="${2:-/var/www/react.samlatif.uk}"
 id sam-analytics >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin sam-analytics
 install -d -m 755 /opt/sam-analytics /etc/nginx/snippets
-install -m 644 "$SOURCE"/server.py "$SOURCE"/dashboard.html "$SOURCE"/dashboard.js "$SOURCE"/dashboard.css "$SOURCE"/login.html "$SOURCE"/login.js "$SOURCE"/home.html "$SOURCE"/home.js "$SOURCE"/session.js /opt/sam-analytics/
+install -m 644 "$SOURCE"/server.py "$SOURCE"/dashboard.html "$SOURCE"/dashboard.js "$SOURCE"/dashboard.css /opt/sam-analytics/
 install -d -o sam-analytics -g sam-analytics -m 700 /var/lib/sam-analytics
 install -m 644 "$SOURCE/update_geo.py" /opt/sam-analytics/update_geo.py
 python3 /opt/sam-analytics/update_geo.py || echo 'Country database update failed; existing data will be retained, or location will show Unknown.'
@@ -48,7 +48,6 @@ install -m 644 "$SOURCE/nginx.conf" /etc/nginx/snippets/sam-analytics.conf
 cat > /etc/nginx/conf.d/sam-analytics-limits.conf <<'EOF'
 limit_req_zone $binary_remote_addr zone=sam_views:1m rate=30r/m;
 limit_req_zone $binary_remote_addr zone=sam_dashboard:1m rate=30r/m;
-limit_req_zone $binary_remote_addr zone=sam_login:1m rate=5r/m;
 EOF
 # Add the snippet only to vhosts with the two explicitly supplied site roots.
 # Existing TLS and routing directives remain intact; validate before reloading.

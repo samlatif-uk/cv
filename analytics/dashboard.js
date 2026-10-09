@@ -51,7 +51,6 @@ async function refresh(){
   const current=++request;$('status').textContent='Loading report…';
   try{
     const response=await fetch('/insights/stats?days='+$('period').value);
-    if(response.status===401){location.replace('/insights/login');return;}
     if(!response.ok)throw Error('Unable to load report. Check your login and refresh.');
     const data=await response.json();if(current!==request)return;report=data;
     $('uniques').textContent=data.audience_since?number(data.daily_uniques):'—';
