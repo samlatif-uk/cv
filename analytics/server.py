@@ -31,7 +31,8 @@ class GeoLocation:
         if not self.reader or not address:
             return 'Unknown'
         try:
-            code = (self.reader.get(address) or {}).get('country', {}).get('iso_code', '')
+            record = self.reader.get(address) or {}
+            code = record.get('country', {}).get('iso_code') or record.get('country_code', '')
             return code if re.fullmatch('[A-Z]{2}', code) else 'Unknown'
         except Exception:
             return 'Unknown'
