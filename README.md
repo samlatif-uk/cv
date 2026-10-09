@@ -56,6 +56,6 @@ The workspace login uses the existing analytics password with an eight-hour Http
 
 ## Deployment security
 
-Before merging a deployment change, set the GitHub Actions secret `VPS_KNOWN_HOSTS` to the verified SSH known_hosts entry for the VPS host and port. Obtain the public host key through the trusted VPS console (for example `/etc/ssh/ssh_host_ed25519_key.pub`), not an unauthenticated network scan. Prefix the key type and key with the deployment hostname/IP (or `[host]:port` for a non-default port). Deployment now fails closed if the secret is missing or the key does not match.
+Before merging a deployment change, set the GitHub Actions secret `VPS_HOST_KEY_SHA256` to the verified SSH fingerprint for the VPS host and port. Obtain it through the trusted VPS console with `sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`, not an unauthenticated network scan. Deployment compares the live key against this fingerprint and fails closed if the secret is missing or the key does not match.
 
 The shared nginx analytics snippet blocks hidden paths including `.git` and `.env` on both site roots while preserving `/.well-known/` certificate challenges, and supplies security headers. It blocks access without deleting an existing repository or unknown files on the server. After deployment verify `.git/HEAD`, `.git/config`, and `.git/index` return 404 on both domains. Inspect and relocate any old repository metadata outside public roots separately.
