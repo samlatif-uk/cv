@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 -m unittest discover -s trading -p 'test_*.py'
       - run: node --check trading/static/app.js
+      - run: node --check trading/static/intelligence.js
       - run: bash -n trading/deploy/install.sh
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
@@ -58,4 +59,7 @@ jobs:
           set -euo pipefail
           curl --fail --silent --show-error --max-time 20 https://samlatif.uk/trading/ | grep -q 'Your trading desk'
           code=$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' https://samlatif.uk/trading/api/state)
+          test "$code" = 401
+          curl --fail --silent --show-error --max-time 20 https://samlatif.uk/trading/intelligence/ | grep -q 'Ahead of the outcome'
+          code=$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' https://samlatif.uk/trading/api/intelligence)
           test "$code" = 401

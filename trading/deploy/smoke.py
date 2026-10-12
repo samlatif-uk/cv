@@ -22,7 +22,10 @@ try:
     req=urllib.request.Request(base+'backtest',data=b'{}',headers={'Cookie':cookie,'Content-Type':'application/json','X-CSRF-Token':csrf})
     with urllib.request.urlopen(req,timeout=10) as response: result=json.load(response)
     assert 'return_pct' in result
-    print('Verified: authenticated dashboard, fresh Kraken data, paper-only paused state, backtest.')
+    with urllib.request.urlopen(urllib.request.Request(base+'intelligence',headers={'Cookie':cookie}),timeout=5) as response:
+        intelligence=json.load(response)
+    assert isinstance(intelligence['questions'],list)
+    print('Verified: authenticated dashboard, fresh Kraken data, paper-only paused state, backtest, intelligence workspace.')
 finally:
     if csrf:
         req=urllib.request.Request(base+'logout',data=b'{}',headers={'Cookie':cookie,'Content-Type':'application/json','X-CSRF-Token':csrf})

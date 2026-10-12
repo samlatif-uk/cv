@@ -70,7 +70,7 @@ class ApiTests(unittest.TestCase):
         threading.Thread(target=self.http.serve_forever,daemon=True).start()
         self.cookie='';self.csrf=''
     def tearDown(self):
-        self.http.shutdown();self.http.server_close();server.DB.close()
+        self.http.shutdown();self.http.server_close();server.DB.close();server.INTELLIGENCE.db.close();server.INTELLIGENCE=None
         for suffix in ('','-wal','-shm'): Path(str(self.db_path)+suffix).unlink(missing_ok=True)
     def request(self,path,body=None,csrf=True):
         c=http.client.HTTPConnection('127.0.0.1',self.http.server_port)
@@ -95,6 +95,12 @@ class ApiTests(unittest.TestCase):
     def test_stale_data_prevents_start(self):
         self.login();server.MARKET['fetched']=time.time()-100
         self.assertEqual(self.request('control',{'action':'start'})[0],400)
+    def test_intelligence_uses_existing_auth_and_csrf(self):
+        self.assertEqual(self.request('intelligence')[0],401)
+        self.login()
+        status,data,_=self.request('intelligence')
+        self.assertEqual(status,200);self.assertEqual(data['questions'],[])
+        self.assertEqual(self.request('intelligence/create',{},False)[0],403)
     def test_restart_pauses_preserves_portfolio(self):
         server.STATE['cash']=9876;server.STATE['running']=True;server.save();server.DB.close()
         server.init_db(str(self.db_path))

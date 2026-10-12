@@ -14,6 +14,7 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
 from engine import initial, validate, step, fill, event, equity, backtest
+from intelligence import Workspace
 
 ROOT = Path(__file__).parent
 LOCK = threading.RLock()
@@ -21,12 +22,15 @@ SESSIONS = {}
 ATTEMPTS = {}
 STATE = None
 DB = None
+INTELLIGENCE = None
 MARKET = dict(bars=[], error='Waiting for first market update', fetched=0)
 PASSWORD = os.environ.get('TRADING_PASSWORD_SHA256', '')
 LOCAL = os.environ.get('TRADING_LOCAL') == '1'
 
 def init_db(path):
-    global DB, STATE
+    global DB, STATE, INTELLIGENCE
+    if INTELLIGENCE is not None: INTELLIGENCE.db.close()
+    INTELLIGENCE = Workspace(path)
     DB = sqlite3.connect(path, check_same_thread=False)
     DB.execute('PRAGMA journal_mode=WAL')
     DB.execute('CREATE TABLE IF NOT EXISTS state(id INTEGER PRIMARY KEY, value TEXT NOT NULL)')
@@ -106,12 +110,17 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/health':
             return self.reply(200, dict(ok=True, mode='paper'))
         files = {'/trading/': ('index.html', 'text/html'), '/trading/app.js': ('app.js', 'text/javascript'), '/trading/style.css': ('style.css', 'text/css')}
+        files.update({'/trading/intelligence/': ('intelligence.html','text/html'),
+                      '/trading/intelligence.js': ('intelligence.js','text/javascript'),
+                      '/trading/intelligence.css': ('intelligence.css','text/css')})
         if path in files:
             name, kind = files[path]
             return self.reply(200, (ROOT/'static'/name).read_bytes(), kind)
         with LOCK:
             session = self.session()
             if not session: return self.reply(401, dict(error='Please sign in'))
+            if path == '/trading/api/intelligence':
+                return self.reply(200, dict(**INTELLIGENCE.summary(),csrf=session['csrf']))
             if path == '/trading/api/state':
                 s = copy.deepcopy(STATE)
                 s['trades'] = s['trades'][-200:]
@@ -154,6 +163,9 @@ class Handler(BaseHTTPRequestHandler):
                 if not session: return self.reply(401, dict(error='Please sign in'))
                 if not hmac.compare_digest(self.headers.get('X-CSRF-Token', ''), session['csrf']):
                     return self.reply(403, dict(error='Invalid session token'))
+                if self.path.startswith('/trading/api/intelligence/'):
+                    result=INTELLIGENCE.mutate(self.path.rsplit('/',1)[-1],data)
+                    return self.reply(200,result)
                 if self.path == '/trading/api/logout':
                     for token, value in list(SESSIONS.items()):
                         if value is session: del SESSIONS[token]
@@ -198,5 +210,5 @@ if __name__ == '__main__':
     init_db(os.environ.get('TRADING_DB', 'trading.sqlite3'))
     threading.Thread(target=poll, daemon=True).start()
     server = ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('TRADING_PORT', '4181'))), Handler)
-    print('Paper trading dashboard: http://127.0.0.1:4181/trading/', flush=True)
+    print(f'Paper trading dashboard: http://127.0.0.1:{server.server_port}/trading/', flush=True)
     server.serve_forever()
