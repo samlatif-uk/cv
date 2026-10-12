@@ -18,7 +18,7 @@ source.backup(target)
 target.close();source.close()
 PY
 fi
-install -m 644 "$SOURCE/server.py" "$SOURCE/engine.py" /opt/sam-trading/
+install -m 644 "$SOURCE/server.py" "$SOURCE/engine.py" "$SOURCE/intelligence.py" /opt/sam-trading/
 install -m 644 "$SOURCE"/static/* /opt/sam-trading/static/
 if [[ ! -f /etc/sam-trading.env ]]; then
   python3 - <<'PY'

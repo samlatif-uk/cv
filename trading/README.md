@@ -32,3 +32,23 @@ Check service: `systemctl status sam-trading`; logs: `journalctl -u sam-trading`
 Set `TRADING_PASSWORD_SHA256` to the hex SHA-256 of a development-only password, `TRADING_LOCAL=1` (allows non-Secure local cookies) and `TRADING_DB` to a local database path. Run `python server.py`, then visit http://127.0.0.1:4181/trading/. Never set TRADING_LOCAL in production. The server is intended to sit behind nginx, not serve public traffic directly.
 
 Tests: `python -m unittest discover -s . -p 'test_*.py'`; JS syntax: `node --check static/app.js`.
+
+## Intelligence workspace
+
+Open `/trading/intelligence/` using the same login. This independent implementation is inspired by the public workflow in [the Sikt Intelligence walkthrough](https://www.youtube.com/watch?v=W2E-rN2sgs0), not its proprietary prediction engine or branding.
+
+Create a binary question with explicit resolution rules and a timezone-aware deadline. Record manual forecasts, source links and optional market-odds snapshots. Forecasts are timestamped and cannot be edited; wording locks after the first forecast. Resolve YES, NO or VOID after the deadline with an evidence URL and explanation. Resolution is final. Brier scores use the first pre-deadline forecast for each resolved non-void question. The optional market benchmark has its own sample count and uses only supplied market snapshots. No forecasts, predictions or historical performance are seeded.
+
+Market odds are manually entered and not independently verified or automatically refreshed. Comparison gaps are percentage points, not a profitability claim. This workspace never controls the trading bot or submits prediction-market bets. Custom stock or world-event questions do not add stock trading support to the crypto bot. Source links are stored and displayed, never fetched by the application itself.
+
+### Optional AI configuration
+
+AI is disabled by default, as requested. On the VPS use `sudoedit /etc/sam-trading.env` and add `OPENAI_API_KEY`, `INTELLIGENCE_MODEL` (a model available to your account supporting Responses, web search and structured outputs), `INTELLIGENCE_ENABLED=1`, and optionally `INTELLIGENCE_DAILY_JOBS=10`. Keep this file root-only; never commit it or paste keys into the dashboard. Restart with `sudo systemctl restart sam-trading`; this pauses trading. Configure provider spending limits separately: the job cap bounds requests, not currency spend.
+
+A refinement uses one API request and requires explicit adoption of its suggested wording. A forecast uses one research request with at most five web-search tool calls, then three separate prompts to the same model for base-rate, evidence and sceptical perspectives. Their arithmetic mean is displayed, with each perspective available. This is not an ensemble of independent models or a calibrated forecast. Questions, rules and retrieved research are sent to OpenAI only when a user starts an AI job. Manual market odds are withheld from the model. Research must return source citations or the job fails. The report does not claim independent fact-checking.
+
+Jobs execute off the trading loop, persist progress, run one at a time, and never retry automatically. Restart marks interrupted jobs failed. A forecast finishing after its deadline is rejected. Timeouts and provider errors are visible without exposing credentials. The optional live provider path is tested with mocked responses only until a key is configured; check a small real research job after enablement. No historical replay is offered: today's news and model knowledge cannot safely recreate a past information cutoff.
+
+Storage uses separate `intelligence` and `intelligence_usage` tables in the existing SQLite database and is included in its backups. Limits: 500 questions, 100 forecasts per question, 10 AI jobs per UTC day by default (configurable up to 100). No automatic research schedule or paid call occurs merely by loading a page or deploying.
+
+Integration references: [Responses web search](https://developers.openai.com/api/docs/guides/tools-web-search) and [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
