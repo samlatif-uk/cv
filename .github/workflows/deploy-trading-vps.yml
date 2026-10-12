@@ -1,0 +1,61 @@
+name: Deploy paper trading to VPS
+on:
+  push:
+    branches: [main]
+    paths: ['trading/**', '.github/workflows/deploy-trading-vps.yml']
+  pull_request:
+    paths: ['trading/**', '.github/workflows/deploy-trading-vps.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-trading-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s trading -p 'test_*.py'
+      - run: node --check trading/static/app.js
+      - run: bash -n trading/deploy/install.sh
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+      - name: Deploy isolated paper service
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_HOST_KEY_SHA256: ${{ secrets.VPS_HOST_KEY_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          host="${VPS_HOST:-79.99.45.146}"
+          port="${VPS_PORT:-22}"
+          deploy_user="${VPS_USER:-root}"
+          [[ "$host" =~ ^[a-zA-Z0-9.-]+$ && "$port" =~ ^[0-9]+$ && "$deploy_user" =~ ^[a-zA-Z0-9_-]+$ ]]
+          test -n "$VPS_HOST_KEY_SHA256" || { echo 'Missing verified VPS_HOST_KEY_SHA256'; exit 1; }
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -T 10 -p "$port" -t ed25519 "$host" 2>/dev/null > ~/.ssh/known_hosts
+          actual="$(ssh-keygen -lf ~/.ssh/known_hosts -E sha256 | awk '{print $2}' | sort -u)"
+          expected="$(printf '%s' "$VPS_HOST_KEY_SHA256" | tr -d '[:space:]')"
+          [[ "$actual" == "$expected" ]] || { echo 'SSH host fingerprint mismatch'; exit 1; }
+          chmod 600 ~/.ssh/known_hosts
+          opts=(-p "$port" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          ssh "${opts[@]}" "$deploy_user@$host" 'mkdir -p /opt/sam-trading-source'
+          tar -czf - -C trading . | ssh "${opts[@]}" "$deploy_user@$host" 'tar -xzf - -C /opt/sam-trading-source'
+          ssh "${opts[@]}" "$deploy_user@$host" 'bash /opt/sam-trading-source/deploy/install.sh'
+      - name: Verify HTTPS dashboard and authentication
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 20 https://samlatif.uk/trading/ | grep -q 'Your trading desk'
+          code=$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' https://samlatif.uk/trading/api/state)
+          test "$code" = 401

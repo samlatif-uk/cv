@@ -1,0 +1,23 @@
+[Unit]
+Description=Sam paper trading desk
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=sam-trading
+Group=sam-trading
+WorkingDirectory=/opt/sam-trading
+EnvironmentFile=/etc/sam-trading.env
+Environment=TRADING_DB=/var/lib/sam-trading/trading.sqlite3
+ExecStart=/usr/bin/python3 /opt/sam-trading/server.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/sam-trading
+
+[Install]
+WantedBy=multi-user.target
