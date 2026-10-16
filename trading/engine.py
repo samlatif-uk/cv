@@ -78,28 +78,57 @@ def step(s, bars, price, now):
                                 price >= s['entry']*(1+c['take_profit']/100)):
             fill(s, 'sell', price, now, 'Stop loss / take profit')
             if bars: s['last_bar'] = bars[-1][0]
+        elif s.get('method', {}).get('kind') == 'cash':
+            fill(s, 'sell', price, now, 'Automatic research: hold cash')
         elif len(bars) >= c['slow'] and bars[-1][0] > s['last_bar']:
             s['last_bar'] = bars[-1][0]
-            closes = [x[4] for x in bars]
-            fast = sum(closes[-c['fast']:])/c['fast']
-            slow = sum(closes[-c['slow']:])/c['slow']
-            if fast > slow: fill(s, 'buy', price, now, 'Fast SMA above slow SMA')
-            elif fast < slow: fill(s, 'sell', price, now, 'Fast SMA below slow SMA')
+            decision = signal(bars, c, s.get('method'))
+            if decision: fill(s, decision, price, now, s.get('method', {}).get('name', 'SMA trend'))
     s['equity'] = (s['equity'] + [dict(time=now, value=equity(s))])[-3000:]
 
-def backtest(config, bars):
+def signal(bars, config, method=None):
+    method = method or dict(kind='sma', fast=config['fast'], slow=config['slow'], band=0)
+    kind = method['kind']
+    if kind == 'cash': return 'sell'
+    closes = [b[4] for b in bars]
+    if kind == 'sma':
+        fast, slow = method['fast'], method['slow']
+        if len(bars) < slow: return None
+        ratio = (sum(closes[-fast:])/fast)/(sum(closes[-slow:])/slow)-1
+        if ratio > method['band']: return 'buy'
+        if ratio < -method['band']: return 'sell'
+    elif kind == 'breakout':
+        n = method['period']
+        if len(bars) < n+1: return None
+        if closes[-1] > max(b[2] for b in bars[-n-1:-1]): return 'buy'
+        if closes[-1] < min(b[3] for b in bars[-n//2-1:-1]): return 'sell'
+    elif kind == 'rsi':
+        n = method['period']
+        if len(bars) < n+1: return None
+        changes = [b-a for a,b in zip(closes[-n-1:-1], closes[-n:])]
+        gains, losses = sum(max(x,0) for x in changes), sum(max(-x,0) for x in changes)
+        rsi = 100*gains/(gains+losses) if gains+losses else 50
+        if rsi < method['entry']: return 'buy'
+        if rsi > 55: return 'sell'
+    else: raise ValueError('Unknown strategy')
+    return None
+
+def backtest(config, bars, method=None, start_index=None):
     s = initial()
     s['config'], s['running'] = validate(config), True
+    if method is not None: s['method'] = copy.deepcopy(method)
     # Signal from closed bars only; fill at following bar OPEN, with costs.
-    for i in range(config['slow'], len(bars)):
+    for i in range(max(config['slow'], start_index or 0), len(bars)):
         step(s, bars[:i], bars[i][1], bars[i][0])
     if bars:
         fill(s, 'sell', bars[-1][4], bars[-1][0]+config['interval']*60, 'End of backtest')
+        s['equity'].append(dict(time=bars[-1][0]+config['interval']*60, value=equity(s)))
     peak, drawdown = 10000., 0.
     for point in s['equity']:
         peak = max(peak, point['value'])
         drawdown = max(drawdown, (peak-point['value'])/peak*100)
     return dict(equity=equity(s), return_pct=(equity(s)/10000-1)*100,
                 max_drawdown_pct=drawdown, fills=len(s['trades']), fees=s['fees'],
+                closed_trades=sum(t['side']=='sell' for t in s['trades']),
                 from_time=bars[0][0] if bars else 0, to_time=bars[-1][0] if bars else 0,
                 curve=s['equity'], halted=s['halted'])

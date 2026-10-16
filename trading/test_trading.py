@@ -108,5 +108,18 @@ class ApiTests(unittest.TestCase):
     def test_config_rejected_with_position(self):
         self.login();server.STATE['quantity']=1
         self.assertEqual(self.request('config',engine.DEFAULT)[0],400)
+    def test_manual_settings_disable_auto_and_reenable_requires_flat(self):
+        self.login()
+        self.assertTrue(server.STATE['autopilot']['enabled'])
+        self.assertEqual(self.request('config',engine.DEFAULT)[0],200)
+        self.assertFalse(server.STATE['autopilot']['enabled'])
+        self.assertNotIn('method',server.STATE)
+        server.STATE['quantity']=1
+        self.assertEqual(self.request('control',{'action':'automatic'})[0],400)
+        server.STATE['quantity']=0
+        self.assertEqual(self.request('control',{'action':'automatic'})[0],200)
+        self.assertTrue(server.STATE['autopilot']['enabled'])
+        self.assertEqual(server.STATE['config']['interval'],60)
+        self.assertFalse(server.fresh())
 
 if __name__=='__main__': unittest.main()

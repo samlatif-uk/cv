@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
 from engine import initial, validate, step, fill, event, equity, backtest
 from intelligence import Workspace
+import autopilot
 
 ROOT = Path(__file__).parent
 LOCK = threading.RLock()
@@ -34,8 +35,10 @@ def init_db(path):
     DB = sqlite3.connect(path, check_same_thread=False)
     DB.execute('PRAGMA journal_mode=WAL')
     DB.execute('CREATE TABLE IF NOT EXISTS state(id INTEGER PRIMARY KEY, value TEXT NOT NULL)')
+    DB.execute('CREATE TABLE IF NOT EXISTS candles(pair TEXT, interval INTEGER, stamp INTEGER, value TEXT NOT NULL, PRIMARY KEY(pair,interval,stamp))')
     row = DB.execute('SELECT value FROM state WHERE id=1').fetchone()
     STATE = json.loads(row[0]) if row else initial()
+    autopilot.migrate(STATE)
     # Restarts always require explicit resume, preserving balances and positions.
     STATE['running'] = False
     event(STATE, 'Service started paused', time.time())
@@ -70,6 +73,14 @@ def poll():
             with LOCK:
                 if config != STATE['config']: continue
                 MARKET.update(bars=bars, error='', fetched=time.time())
+                with DB:
+                    DB.executemany('INSERT OR IGNORE INTO candles VALUES (?,?,?,?)',
+                        [(config['pair'],config['interval'],b[0],json.dumps(b)) for b in bars])
+                history=[json.loads(r[0]) for r in DB.execute(
+                    'SELECT value FROM candles WHERE pair=? AND interval=? ORDER BY stamp DESC LIMIT 2160',
+                    (config['pair'],config['interval'])).fetchall()][::-1]
+                autopilot.update(STATE, history, time.time())
+                autopilot.prepare(STATE, time.time())
                 step(STATE, bars, price, time.time())
                 save()
         except Exception as exc:
@@ -173,12 +184,19 @@ class Handler(BaseHTTPRequestHandler):
                 if self.path == '/trading/api/config':
                     if STATE['running'] or STATE['quantity']: raise ValueError('Pause and close the position before editing settings')
                     STATE['config'] = validate(data)
+                    STATE['autopilot']['enabled'] = False
+                    STATE.pop('method',None)
                     STATE['last_bar'] = 0
                     MARKET.update(error='Settings changed; waiting for fresh market data', fetched=0, bars=[])
                     event(STATE, 'Strategy settings updated', now)
                 elif self.path == '/trading/api/control':
                     action = data.get('action')
-                    if action == 'start':
+                    if action == 'automatic':
+                        if STATE['running'] or STATE['quantity']: raise ValueError('Close position and pause before enabling automatic research')
+                        STATE.pop('autopilot',None)
+                        autopilot.migrate(STATE)
+                        MARKET.update(error='Automatic research enabled; waiting for hourly data',fetched=0,bars=[])
+                    elif action == 'start':
                         if not fresh(): raise ValueError('Fresh market data required')
                         if STATE['halted']: raise ValueError('Acknowledge the circuit breaker first')
                         STATE['running'] = True
@@ -196,7 +214,7 @@ class Handler(BaseHTTPRequestHandler):
                     event(STATE, f'Control: {action}', now)
                 elif self.path == '/trading/api/backtest':
                     if not fresh(): raise ValueError('Fresh market history required')
-                    return self.reply(200, backtest(STATE['config'], MARKET['bars']))
+                    return self.reply(200, backtest(STATE['config'], MARKET['bars'], STATE.get('method')))
                 else: return self.reply(404, dict(error='Not found'))
                 save()
                 self.reply(200, dict(ok=True))
