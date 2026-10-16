@@ -95,6 +95,17 @@ class ApiTests(unittest.TestCase):
     def test_stale_data_prevents_start(self):
         self.login();server.MARKET['fetched']=time.time()-100
         self.assertEqual(self.request('control',{'action':'start'})[0],400)
+    def test_repeated_automatic_enable_keeps_feed_report_and_running_state(self):
+        self.login()
+        server.STATE['running']=True
+        server.STATE['autopilot']['report']={'at':123}
+        fetched=server.MARKET['fetched']
+        for _ in range(2):
+            self.assertEqual(self.request('control',{'action':'automatic'})[0],200)
+        self.assertEqual(server.MARKET['fetched'],fetched)
+        self.assertTrue(server.fresh())
+        self.assertTrue(server.STATE['running'])
+        self.assertEqual(server.STATE['autopilot']['report'],{'at':123})
     def test_intelligence_uses_existing_auth_and_csrf(self):
         self.assertEqual(self.request('intelligence')[0],401)
         self.login()
