@@ -192,6 +192,8 @@ class Handler(BaseHTTPRequestHandler):
                 elif self.path == '/trading/api/control':
                     action = data.get('action')
                     if action == 'automatic':
+                        if STATE['autopilot']['enabled']:
+                            return self.reply(200, dict(ok=True))
                         if STATE['running'] or STATE['quantity']: raise ValueError('Close position and pause before enabling automatic research')
                         STATE.pop('autopilot',None)
                         autopilot.migrate(STATE)
