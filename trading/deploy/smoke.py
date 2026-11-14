@@ -17,7 +17,7 @@ try:
         csrf=state['csrf']
         assert state['mode']=='paper' and not state['state']['running']
         auto=state['state'].get('autopilot',{})
-        if state['fresh'] and (not auto.get('enabled') or auto.get('report')): break
+        if state['fresh'] and len(state['shadow']['accounts'])==18 and (not auto.get('enabled') or auto.get('report')): break
         if attempt==9: raise RuntimeError('Market data did not become fresh; bot remains paused')
         time.sleep(5)
     req=urllib.request.Request(base+'backtest',data=b'{}',headers={'Cookie':cookie,'Content-Type':'application/json','X-CSRF-Token':csrf})
@@ -36,4 +36,3 @@ finally:
     if csrf:
         req=urllib.request.Request(base+'logout',data=b'{}',headers={'Cookie':cookie,'Content-Type':'application/json','X-CSRF-Token':csrf})
         with urllib.request.urlopen(req,timeout=5) as response: response.read()
-

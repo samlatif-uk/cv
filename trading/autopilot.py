@@ -3,7 +3,7 @@ import copy
 from engine import backtest, initial, fill, equity
 
 CASH = dict(kind='cash', name='Cash — no qualified strategy')
-CADENCE = 6*3600
+CADENCE = 300
 CANDIDATES = [
     dict(kind='sma',name='Trend 12 / 48',fast=12,slow=48,band=.005),
     dict(kind='sma',name='Trend 24 / 96',fast=24,slow=96,band=.01),
@@ -66,12 +66,20 @@ def migrate(state):
             allocation=min(10,state['config']['allocation']),daily_loss=min(2,state['config']['daily_loss']))
         state['last_bar']=0
 
-def update(state, bars, now):
+def update(state, bars, now, trials=None):
     auto=state['autopilot']
     if not auto['enabled']: return
     report=auto['report']
-    if report and now-report['at']<CADENCE: return
+    if report and int(now//CADENCE)==int(report['at']//CADENCE): return
     report=research(state['config'],bars[-2160:],now)
+    if trials is not None and report['selected']['kind']!='cash':
+        nominee=report['selected']['name']
+        qualified=any(r['pair']==state['config']['pair'] and r['name']==nominee and
+                      0<=now-r['updated']<=2*CADENCE and not r['halted'] and
+                      r['closed']>=3 and r['realized']>0 and r['net']>0 and r['drawdown']<=2
+                      for r in trials)
+        if not qualified:
+            report.update(selected=CASH.copy(),reason=nominee+': historical checks passed; waiting for positive forward evidence (3 closed trades, positive realized and net return, drawdown ≤ 2%).')
     auto['report']=report
     auto['history']=(auto['history']+[copy.deepcopy(report)])[-30:]
     # Never relabel an existing position as a different strategy. Flatten first while running.
