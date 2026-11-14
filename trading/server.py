@@ -16,6 +16,7 @@ from http.cookies import SimpleCookie
 from engine import initial, validate, step, fill, event, equity, backtest
 from intelligence import Workspace
 import autopilot
+import shadow
 
 ROOT = Path(__file__).parent
 LOCK = threading.RLock()
@@ -34,6 +35,7 @@ def init_db(path):
     INTELLIGENCE = Workspace(path)
     DB = sqlite3.connect(path, check_same_thread=False)
     DB.execute('PRAGMA journal_mode=WAL')
+    shadow.setup(DB)
     DB.execute('CREATE TABLE IF NOT EXISTS state(id INTEGER PRIMARY KEY, value TEXT NOT NULL)')
     DB.execute('CREATE TABLE IF NOT EXISTS candles(pair TEXT, interval INTEGER, stamp INTEGER, value TEXT NOT NULL, PRIMARY KEY(pair,interval,stamp))')
     row = DB.execute('SELECT value FROM state WHERE id=1').fetchone()
@@ -79,7 +81,7 @@ def poll():
                 history=[json.loads(r[0]) for r in DB.execute(
                     'SELECT value FROM candles WHERE pair=? AND interval=? ORDER BY stamp DESC LIMIT 2160',
                     (config['pair'],config['interval'])).fetchall()][::-1]
-                autopilot.update(STATE, history, time.time())
+                autopilot.update(STATE, history, time.time(),shadow.summary(DB)['accounts'])
                 autopilot.prepare(STATE, time.time())
                 step(STATE, bars, price, time.time())
                 save()
@@ -135,7 +137,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/trading/api/state':
                 s = copy.deepcopy(STATE)
                 s['trades'] = s['trades'][-200:]
-                return self.reply(200, dict(state=s, equity=equity(s), market=MARKET,
+                return self.reply(200, dict(state=s, equity=equity(s), market=MARKET, shadow=shadow.summary(DB),
                                            fresh=fresh(), mode='paper', csrf=session['csrf']))
             if path == '/trading/api/export':
                 output = io.StringIO()
@@ -228,6 +230,7 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     if len(PASSWORD) != 64: raise SystemExit('Set TRADING_PASSWORD_SHA256 to a password SHA-256 hash')
     init_db(os.environ.get('TRADING_DB', 'trading.sqlite3'))
+    threading.Thread(target=shadow.run,args=(os.environ.get('TRADING_DB','trading.sqlite3'),fetch_market),daemon=True).start()
     threading.Thread(target=poll, daemon=True).start()
     server = ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('TRADING_PORT', '4181'))), Handler)
     print(f'Paper trading dashboard: http://127.0.0.1:{server.server_port}/trading/', flush=True)
